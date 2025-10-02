@@ -72,8 +72,11 @@ class _BackupScreenState extends State<BackupScreen> {
       if (result != null && result.files.first.bytes != null) {
         final jsonString = String.fromCharCodes(result.files.first.bytes!);
         
+        // Debug: pokaż pierwsze 200 znaków pliku
+        debugPrint('Import JSON preview: ${jsonString.substring(0, jsonString.length < 200 ? jsonString.length : 200)}...');
+        
         if (!_backupService.validateBackup(jsonString)) {
-          throw Exception('Nieprawidłowy format pliku backup');
+          throw Exception('Nieprawidłowy format pliku backup. Sprawdź czy plik zawiera prawidłowy obiekt JSON z polami version, timestamp i cars.');
         }
 
         await _showConfirmationDialog(() async {
