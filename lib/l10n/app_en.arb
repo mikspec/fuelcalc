@@ -1042,5 +1042,60 @@
   "expenseTypeUnknown": "Unknown",
   "@expenseTypeUnknown": {
     "description": "Unknown expense type"
+  },
+  
+  "refuelStatistics": "Refuel Statistics",
+  "@refuelStatistics": {
+    "description": "Refuel statistics card title"
+  },
+  
+  "expenseStatistics": "Expense Statistics",
+  "@expenseStatistics": {
+    "description": "Expense statistics card title"
+  },
+  
+  "numberOfRefuels": "Number of refuels",
+  "@numberOfRefuels": {
+    "description": "Number of refuels label"
+  },
+  
+  "totalDistance": "Total distance",
+  "@totalDistance": {
+    "description": "Total distance label"
+  },
+  
+  "totalFuelAmount": "Total fuel amount",
+  "@totalFuelAmount": {
+    "description": "Total fuel amount label"
+  },
+  
+  "totalCost": "Total cost",
+  "@totalCost": {
+    "description": "Total cost label"
+  },
+  
+  "averageConsumption": "Average consumption",
+  "@averageConsumption": {
+    "description": "Average consumption label"
+  },
+  
+  "averagePricePerLiter": "Average price per liter",
+  "@averagePricePerLiter": {
+    "description": "Average price per liter label"
+  },
+  
+  "costPer100km": "Cost per 100 km",
+  "@costPer100km": {
+    "description": "Cost per 100 km label"
+  },
+  
+  "numberOfExpenses": "Number of expenses",
+  "@numberOfExpenses": {
+    "description": "Number of expenses label"
+  },
+  
+  "averageCost": "Average cost",
+  "@averageCost": {
+    "description": "Average cost label"
   }
 }

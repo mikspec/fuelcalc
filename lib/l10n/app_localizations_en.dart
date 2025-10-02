@@ -173,7 +173,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get total => 'Total:';
 
   @override
-  String get costPer100km => 'Cost per 100 km:';
+  String get costPer100km => 'Cost per 100 km';
 
   @override
   String get refuelChart => 'Refuel Chart';
@@ -474,10 +474,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFirstExpense => 'Add your first expense using the button below';
 
   @override
-  String get totalCost => 'Total Cost';
+  String get totalCost => 'Total cost';
 
   @override
-  String get numberOfExpenses => 'Number of Expenses';
+  String get numberOfExpenses => 'Number of expenses';
 
   @override
   String get addExpenseTooltip => 'Add Expense';
@@ -590,4 +590,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expenseTypeUnknown => 'Unknown';
+
+  @override
+  String get refuelStatistics => 'Refuel Statistics';
+
+  @override
+  String get expenseStatistics => 'Expense Statistics';
+
+  @override
+  String get numberOfRefuels => 'Number of refuels';
+
+  @override
+  String get totalFuelAmount => 'Total fuel amount';
+
+  @override
+  String get averagePricePerLiter => 'Average price per liter';
+
+  @override
+  String get averageCost => 'Average cost';
 }
