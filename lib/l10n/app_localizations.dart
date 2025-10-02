@@ -404,10 +404,10 @@ abstract class AppLocalizations {
   /// **'Total:'**
   String get total;
 
-  /// Cost per 100km label
+  /// Cost per 100 km label
   ///
   /// In en, this message translates to:
-  /// **'Cost per 100 km:'**
+  /// **'Cost per 100 km'**
   String get costPer100km;
 
   /// Refuel chart section title
@@ -947,13 +947,13 @@ abstract class AppLocalizations {
   /// Total cost label
   ///
   /// In en, this message translates to:
-  /// **'Total Cost'**
+  /// **'Total cost'**
   String get totalCost;
 
   /// Number of expenses label
   ///
   /// In en, this message translates to:
-  /// **'Number of Expenses'**
+  /// **'Number of expenses'**
   String get numberOfExpenses;
 
   /// Add expense tooltip
@@ -1153,6 +1153,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get expenseTypeUnknown;
+
+  /// Refuel statistics card title
+  ///
+  /// In en, this message translates to:
+  /// **'Refuel Statistics'**
+  String get refuelStatistics;
+
+  /// Expense statistics card title
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Statistics'**
+  String get expenseStatistics;
+
+  /// Number of refuels label
+  ///
+  /// In en, this message translates to:
+  /// **'Number of refuels'**
+  String get numberOfRefuels;
+
+  /// Total fuel amount label
+  ///
+  /// In en, this message translates to:
+  /// **'Total fuel amount'**
+  String get totalFuelAmount;
+
+  /// Average price per liter label
+  ///
+  /// In en, this message translates to:
+  /// **'Average price per liter'**
+  String get averagePricePerLiter;
+
+  /// Average cost label
+  ///
+  /// In en, this message translates to:
+  /// **'Average cost'**
+  String get averageCost;
 }
 
 class _AppLocalizationsDelegate

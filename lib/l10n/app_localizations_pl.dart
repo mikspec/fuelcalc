@@ -173,7 +173,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get total => 'Razem:';
 
   @override
-  String get costPer100km => 'Koszt na 100 km:';
+  String get costPer100km => 'Koszt na 100 km';
 
   @override
   String get refuelChart => 'Wykres Tankowań';
@@ -307,7 +307,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get averageConsumption => 'Średnie spalanie';
 
   @override
-  String get totalDistance => 'Łączny dystans';
+  String get totalDistance => 'Całkowity dystans';
 
   @override
   String get lastRefuel => 'Ostatnie tankowanie';
@@ -475,7 +475,7 @@ class AppLocalizationsPl extends AppLocalizations {
       'Dodaj pierwszy wydatek używając przycisku poniżej';
 
   @override
-  String get totalCost => 'Łączny koszt';
+  String get totalCost => 'Całkowity koszt';
 
   @override
   String get numberOfExpenses => 'Liczba wydatków';
@@ -591,4 +591,22 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get expenseTypeUnknown => 'Nieznane';
+
+  @override
+  String get refuelStatistics => 'Statystyki tankowań';
+
+  @override
+  String get expenseStatistics => 'Statystyki wydatków';
+
+  @override
+  String get numberOfRefuels => 'Liczba tankowań';
+
+  @override
+  String get totalFuelAmount => 'Całkowita ilość paliwa';
+
+  @override
+  String get averagePricePerLiter => 'Średnia cena za litr';
+
+  @override
+  String get averageCost => 'Średni koszt';
 }

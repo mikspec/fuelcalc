@@ -225,7 +225,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Statystyki tankowań',
+              l10n.refuelStatistics,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -236,14 +236,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             if (_refuelStats.isEmpty || _refuelStats['count'] == 0)
               Text(l10n.noDataToDisplay)
             else ...[
-              _buildStatRow('Liczba tankowań', '${_refuelStats['count']}'),
-              _buildStatRow('Całkowity dystans', '${NumberFormat('#,##0', 'pl_PL').format(_refuelStats['totalDistance'])} km'),
-              _buildStatRow('Całkowita ilość paliwa', '${NumberFormat('#,##0.0', 'pl_PL').format(_refuelStats['totalVolume'])} l'),
-              _buildStatRow('Całkowity koszt', '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['totalCost'])}'),
-              _buildStatRow('Średnie spalanie', '${NumberFormat('#,##0.0', 'pl_PL').format(_refuelStats['avgConsumption'])} l/100km'),
-              _buildStatRow('Średnia cena za litr', '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['avgPricePerLiter'])}'),
+              _buildStatRow(l10n.numberOfRefuels, '${_refuelStats['count']}'),
+              _buildStatRow(l10n.totalDistance, '${NumberFormat('#,##0', 'pl_PL').format(_refuelStats['totalDistance'])} km'),
+              _buildStatRow(l10n.totalFuelAmount, '${NumberFormat('#,##0.0', 'pl_PL').format(_refuelStats['totalVolume'])} l'),
+              _buildStatRow(l10n.totalCost, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['totalCost'])}'),
+              _buildStatRow(l10n.averageConsumption, '${NumberFormat('#,##0.0', 'pl_PL').format(_refuelStats['avgConsumption'])} l/100km'),
+              _buildStatRow(l10n.averagePricePerLiter, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['avgPricePerLiter'])}'),
               if (_refuelStats['totalDistance'] > 0)
-                _buildStatRow('Koszt na 100 km', '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format((_refuelStats['totalCost'] / _refuelStats['totalDistance']) * 100)}'),
+                _buildStatRow(l10n.costPer100km, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format((_refuelStats['totalCost'] / _refuelStats['totalDistance']) * 100)}'),
             ],
           ],
         ),
@@ -259,7 +259,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Statystyki wydatków',
+              l10n.expenseStatistics,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -270,9 +270,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             if (_expenseStats.isEmpty || _expenseStats['count'] == 0)
               Text(l10n.noDataToDisplay)
             else ...[
-              _buildStatRow('Liczba wydatków', '${_expenseStats['count']}'),
-              _buildStatRow('Całkowity koszt', '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['totalCost'])}'),
-              _buildStatRow('Średni koszt', '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['avgCost'])}'),
+              _buildStatRow(l10n.numberOfExpenses, '${_expenseStats['count']}'),
+              _buildStatRow(l10n.totalCost, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['totalCost'])}'),
+              _buildStatRow(l10n.averageCost, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['avgCost'])}'),
             ],
           ],
         ),

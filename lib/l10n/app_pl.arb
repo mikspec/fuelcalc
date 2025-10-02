@@ -184,5 +184,16 @@
   "expenseTypeTowing": "Laweta",
   "expenseTypeInsurance": "Ubezpieczenie",
   "expenseTypeInspection": "Przegląd",
-  "expenseTypeUnknown": "Nieznane"
+  "expenseTypeUnknown": "Nieznane",
+  "refuelStatistics": "Statystyki tankowań",
+  "expenseStatistics": "Statystyki wydatków",
+  "numberOfRefuels": "Liczba tankowań",
+  "totalDistance": "Całkowity dystans",
+  "totalFuelAmount": "Całkowita ilość paliwa",
+  "totalCost": "Całkowity koszt",
+  "averageConsumption": "Średnie spalanie",
+  "averagePricePerLiter": "Średnia cena za litr",
+  "costPer100km": "Koszt na 100 km",
+  "numberOfExpenses": "Liczba wydatków",
+  "averageCost": "Średni koszt"
 }
