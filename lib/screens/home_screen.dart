@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../services/database_service.dart';
+import '../services/language_service.dart';
+import '../l10n/app_localizations.dart';
 import 'car_form_screen.dart';
 import 'car_details_screen.dart';
 import 'backup_screen.dart';
@@ -35,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd ładowania pojazdów: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingVehicles(e.toString()))),
         );
       }
     }
@@ -64,19 +67,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _deleteCar(Car car) async {
+    final l10n = AppLocalizations.of(context)!;
+    
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Usuń pojazd'),
-        content: Text('Czy na pewno chcesz usunąć pojazd "${car.carAliasName}"?\n\nWszystkie tankowania i wydatki zostaną trwale usunięte.'),
+        title: Text(l10n.deleteVehicle),
+        content: Text(l10n.deleteVehicleConfirm(car.carAliasName ?? car.carName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Anuluj'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Usuń'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -88,13 +93,13 @@ class _HomeScreenState extends State<HomeScreen> {
         _loadCars();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Pojazd został usunięty')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.vehicleDeleted)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Błąd usuwania pojazdu: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.errorDeleteVehicle(e.toString()))),
           );
         }
       }
@@ -110,11 +115,47 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showLanguageDialog(BuildContext context, LanguageService languageService) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.language),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: languageService.supportedLocales.map((locale) {
+            return RadioListTile<Locale>(
+              title: Text(languageService.languageNames[locale.languageCode]!),
+              value: locale,
+              groupValue: languageService.currentLocale,
+              onChanged: (Locale? value) {
+                if (value != null) {
+                  languageService.changeLanguage(value);
+                  Navigator.pop(context);
+                }
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final languageService = Provider.of<LanguageService>(context);
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fuel Calculator'),
+        title: Text(l10n.homeTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           PopupMenuButton<String>(
@@ -126,16 +167,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context) => const BackupScreen(),
                   ),
                 );
+              } else if (value == 'language') {
+                _showLanguageDialog(context, languageService);
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'backup',
                 child: Row(
                   children: [
-                    Icon(Icons.backup),
-                    SizedBox(width: 8),
-                    Text('Zarządzanie backup'),
+                    const Icon(Icons.backup),
+                    const SizedBox(width: 8),
+                    Text(l10n.backup),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'language',
+                child: Row(
+                  children: [
+                    const Icon(Icons.language),
+                    const SizedBox(width: 8),
+                    Text(l10n.language),
                   ],
                 ),
               ),
@@ -146,20 +199,15 @@ class _HomeScreenState extends State<HomeScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _cars.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.directions_car, size: 64, color: Colors.grey),
-                      SizedBox(height: 16),
+                      const Icon(Icons.directions_car, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
                       Text(
-                        'Brak pojazdów',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Dodaj swój pierwszy pojazd używając przycisku poniżej',
-                        style: TextStyle(color: Colors.grey),
+                        l10n.noVehicles,
+                        style: const TextStyle(color: Colors.grey),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -189,23 +237,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                           },
                           itemBuilder: (context) => [
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'edit',
                               child: Row(
                                 children: [
-                                  Icon(Icons.edit),
-                                  SizedBox(width: 8),
-                                  Text('Edytuj'),
+                                  const Icon(Icons.edit),
+                                  const SizedBox(width: 8),
+                                  Text(l10n.edit),
                                 ],
                               ),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'delete',
                               child: Row(
                                 children: [
-                                  Icon(Icons.delete),
-                                  SizedBox(width: 8),
-                                  Text('Usuń'),
+                                  const Icon(Icons.delete),
+                                  const SizedBox(width: 8),
+                                  Text(l10n.delete),
                                 ],
                               ),
                             ),
@@ -218,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addCar,
-        tooltip: 'Dodaj pojazd',
+        tooltip: l10n.addVehicle,
         child: const Icon(Icons.add),
       ),
     );

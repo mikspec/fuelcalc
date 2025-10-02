@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/car.dart';
 import '../services/database_service.dart';
+import '../l10n/app_localizations.dart';
 
 class CarFormScreen extends StatefulWidget {
   final Car? car;
@@ -73,7 +74,7 @@ class _CarFormScreenState extends State<CarFormScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing ? 'Pojazd zaktualizowany' : 'Pojazd dodany'),
+            content: Text(_isEditing ? AppLocalizations.of(context)!.vehicleUpdated : AppLocalizations.of(context)!.vehicleAdded),
           ),
         );
       }
@@ -81,7 +82,7 @@ class _CarFormScreenState extends State<CarFormScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd zapisu: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorSaving(e.toString()))),
         );
       }
     }
@@ -89,9 +90,11 @@ class _CarFormScreenState extends State<CarFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edytuj pojazd' : 'Dodaj pojazd'),
+        title: Text(_isEditing ? l10n.editVehicleTitle : l10n.addVehicleTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           if (_isLoading)
@@ -108,7 +111,7 @@ class _CarFormScreenState extends State<CarFormScreen> {
           else
             TextButton(
               onPressed: _saveCar,
-              child: const Text('Zapisz'),
+              child: Text(l10n.save),
             ),
         ],
       ),
@@ -123,21 +126,21 @@ class _CarFormScreenState extends State<CarFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Podstawowe informacje',
+                    Text(
+                      l10n.basicInformation,
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _aliasNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nazwa pojazdu *',
-                        hintText: 'np. Honda Civic',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: '${l10n.vehicleName} *',
+                        hintText: 'Honda Civic',
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Nazwa pojazdu jest wymagana';
+                          return l10n.pleaseEnterVehicleName;
                         }
                         return null;
                       },
@@ -145,10 +148,10 @@ class _CarFormScreenState extends State<CarFormScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Opis',
-                        hintText: 'np. 1.6 VTEC, 2005r.',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.description,
+                        hintText: '1.6 VTEC, 2005r.',
+                        border: const OutlineInputBorder(),
                       ),
                       maxLines: 2,
                     ),
@@ -163,16 +166,16 @@ class _CarFormScreenState extends State<CarFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Parametry techniczne',
+                    Text(
+                      l10n.technicalParameters,
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _initialMileageController,
-                      decoration: const InputDecoration(
-                        labelText: 'Początkowy przebieg (km)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.initialMileage,
+                        border: const OutlineInputBorder(),
                         suffixText: 'km',
                       ),
                       keyboardType: TextInputType.number,
@@ -180,7 +183,7 @@ class _CarFormScreenState extends State<CarFormScreen> {
                         if (value != null && value.isNotEmpty) {
                           final mileage = int.tryParse(value);
                           if (mileage == null || mileage < 0) {
-                            return 'Wprowadź prawidłowy przebieg';
+                            return l10n.enterValidMileage;
                           }
                         }
                         return null;
@@ -189,9 +192,9 @@ class _CarFormScreenState extends State<CarFormScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _relativeVolumeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Pojemność baku (l)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.tankCapacity,
+                        border: const OutlineInputBorder(),
                         suffixText: 'l',
                       ),
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -199,7 +202,7 @@ class _CarFormScreenState extends State<CarFormScreen> {
                         if (value != null && value.isNotEmpty) {
                           final volume = double.tryParse(value);
                           if (volume == null || volume <= 0) {
-                            return 'Wprowadź prawidłową pojemność';
+                            return l10n.enterValidCapacity;
                           }
                         }
                         return null;
@@ -217,7 +220,7 @@ class _CarFormScreenState extends State<CarFormScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: Text(
-                  _isEditing ? 'Zaktualizuj pojazd' : 'Dodaj pojazd',
+                  _isEditing ? l10n.updateVehicle : l10n.addVehicleButton,
                   style: const TextStyle(fontSize: 16),
                 ),
               ),

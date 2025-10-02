@@ -4,6 +4,8 @@ import '../models/car.dart';
 import '../models/refuel.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
+import '../l10n/app_localizations.dart';
+import '../utils/expense_type_helper.dart';
 import 'refuel_form_screen.dart';
 import 'expense_form_screen.dart';
 import 'refuel_list_screen.dart';
@@ -52,7 +54,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd ładowania danych: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingData(e.toString()))),
         );
       }
     }
@@ -111,6 +113,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.car.carAliasName ?? widget.car.carName),
@@ -119,7 +123,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           IconButton(
             icon: const Icon(Icons.analytics),
             onPressed: _showStatistics,
-            tooltip: 'Statystyki',
+            tooltip: AppLocalizations.of(context)!.statistics,
           ),
         ],
       ),
@@ -137,23 +141,23 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Ostatnie 10 tankowań',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          Text(
+                            AppLocalizations.of(context)!.lastRefuels,
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 16),
                           Row(
                             children: [
                               Expanded(
                                 child: _buildStatItem(
-                                  'Średnie spalanie',
+                                  AppLocalizations.of(context)!.avgConsumption,
                                   '${_numberFormat.format(_statistics['avgConsumption'] ?? 0)} l/100km',
                                   Icons.local_gas_station,
                                 ),
                               ),
                               Expanded(
                                 child: _buildStatItem(
-                                  'Średnia cena',
+                                  AppLocalizations.of(context)!.avgPrice,
                                   '${_numberFormat.format(_statistics['avgPricePerLiter'] ?? 0)} zł/l',
                                   Icons.attach_money,
                                 ),
@@ -165,14 +169,14 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             children: [
                               Expanded(
                                 child: _buildStatItem(
-                                  'Dystans',
+                                  AppLocalizations.of(context)!.distance,
                                   '${_numberFormat.format(_statistics['totalDistance'] ?? 0)} km',
                                   Icons.route,
                                 ),
                               ),
                               Expanded(
                                 child: _buildStatItem(
-                                  'Koszty paliwa',
+                                  AppLocalizations.of(context)!.fuelCosts,
                                   _currencyFormat.format(_statistics['totalCost'] ?? 0),
                                   Icons.receipt,
                                 ),
@@ -190,13 +194,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     child: Column(
                       children: [
                         ListTile(
-                          title: const Text('Ostatnie tankowania'),
+                          title: Text(l10n.recentRefuels),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               TextButton(
                                 onPressed: _showAllRefuels,
-                                child: const Text('Zobacz wszystkie'),
+                                child: Text(l10n.viewAll),
                               ),
                               IconButton(
                                 icon: const Icon(Icons.add),
@@ -206,9 +210,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           ),
                         ),
                         if (_recentRefuels.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Text('Brak tankowań'),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(l10n.noRefuels),
                           )
                         else
                           ListView.builder(
@@ -235,13 +239,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     child: Column(
                       children: [
                         ListTile(
-                          title: const Text('Ostatnie wydatki'),
+                          title: Text(l10n.recentExpenses),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               TextButton(
                                 onPressed: _showAllExpenses,
-                                child: const Text('Zobacz wszystkie'),
+                                child: Text(l10n.viewAll),
                               ),
                               IconButton(
                                 icon: const Icon(Icons.add),
@@ -251,9 +255,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           ),
                         ),
                         if (_recentExpenses.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Text('Brak wydatków'),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(l10n.noExpenses),
                           )
                         else
                           ListView.builder(
@@ -265,7 +269,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                               return ListTile(
                                 leading: const Icon(Icons.build),
                                 title: Text(expense.statisticTitle),
-                                subtitle: Text('${expense.typeName} • ${DateFormat('dd.MM.yyyy').format(expense.date)}'),
+                                subtitle: Text('${ExpenseTypeHelper.getLocalizedTypeName(l10n, expense.statisticType)} • ${DateFormat('dd.MM.yyyy').format(expense.date)}'),
                                 trailing: Text(_currencyFormat.format(expense.statisticCost)),
                               );
                             },
@@ -282,14 +286,14 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           FloatingActionButton(
             heroTag: 'expense',
             onPressed: _addExpense,
-            tooltip: 'Dodaj wydatek',
+            tooltip: AppLocalizations.of(context)!.addExpense,
             child: const Icon(Icons.build),
           ),
           const SizedBox(height: 8),
           FloatingActionButton(
             heroTag: 'refuel',
             onPressed: _addRefuel,
-            tooltip: 'Dodaj tankowanie',
+            tooltip: AppLocalizations.of(context)!.addRefuel,
             child: const Icon(Icons.local_gas_station),
           ),
         ],

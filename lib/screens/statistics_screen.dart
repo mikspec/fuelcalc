@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/car.dart';
 import '../services/database_service.dart';
+import '../l10n/app_localizations.dart';
 
 class StatisticsScreen extends StatefulWidget {
   final Car car;
@@ -24,12 +25,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   final List<int> _rangeOptions = [5, 10, 0]; // 0 oznacza wszystkie
   
-  String _getRangeLabel(int range) {
+  String _getRangeLabel(int range, AppLocalizations l10n) {
     switch (range) {
-      case 5: return 'Ostatnie 5';
-      case 10: return 'Ostatnie 10';
-      case 0: return 'Wszystkie';
-      default: return 'Ostatnie $range';
+      case 5: return l10n.last5;
+      case 10: return l10n.last10;
+      case 0: return l10n.all;
+      default: return '${l10n.last10} $range';
     }
   }
 
@@ -58,7 +59,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd ładowania statystyk: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingStatistics(e.toString()))),
         );
       }
     }
@@ -73,9 +74,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text('Statystyki - ${widget.car.carAliasName}'),
+        title: Text(l10n.statisticsTitle(widget.car.carAliasName ?? widget.car.carName)),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: _isLoading
@@ -92,21 +95,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Zakres danych',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          Text(
+                            l10n.dataRange,
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 16),
                           DropdownButtonFormField<int>(
                             value: _selectedRange,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Wybierz zakres',
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: l10n.dataRange,
                             ),
                             items: _rangeOptions.map((range) {
                               return DropdownMenuItem(
                                 value: range,
-                                child: Text(_getRangeLabel(range)),
+                                child: Text(_getRangeLabel(range, l10n)),
                               );
                             }).toList(),
                             onChanged: _onRangeChanged,
@@ -118,22 +121,22 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   const SizedBox(height: 16),
                   
                   // Podsumowanie kosztów
-                  _buildCostSummaryCard(),
+                  _buildCostSummaryCard(l10n),
                   const SizedBox(height: 16),
                   
                   // Statystyki tankowań
-                  _buildRefuelStatisticsCard(),
+                  _buildRefuelStatisticsCard(l10n),
                   const SizedBox(height: 16),
                   
                   // Statystyki wydatków
-                  _buildExpenseStatisticsCard(),
+                  _buildExpenseStatisticsCard(l10n),
                   const SizedBox(height: 16),
                   
                   // Wykresy
                   if (_chartData.isNotEmpty) ...[
-                    _buildVolumeChart(),
+                    _buildVolumeChart(l10n),
                     const SizedBox(height: 16),
-                    _buildConsumptionChart(),
+                    _buildConsumptionChart(l10n),
                   ],
                 ],
               ),
@@ -141,7 +144,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildCostSummaryCard() {
+  Widget _buildCostSummaryCard(AppLocalizations l10n) {
     final refuelTotalCost = _refuelStats['totalCost'] ?? 0.0;
     final expenseTotalCost = _expenseStats['totalCost'] ?? 0.0;
     final totalCost = refuelTotalCost + expenseTotalCost;
@@ -154,8 +157,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Podsumowanie kosztów',
-              style: TextStyle(
+              l10n.summary,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.purple,
@@ -165,10 +168,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Paliwo:', style: TextStyle(fontSize: 16)),
+                Text(l10n.fuel, style: const TextStyle(fontSize: 16)),
                 Text(
-                  '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(refuelTotalCost)}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(refuelTotalCost),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -176,10 +179,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Wydatki:', style: TextStyle(fontSize: 16)),
+                Text(l10n.expenses, style: const TextStyle(fontSize: 16)),
                 Text(
-                  '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(expenseTotalCost)}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(expenseTotalCost),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -187,10 +190,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Razem:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(l10n.total, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 Text(
-                  '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(totalCost)}',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.purple),
+                  NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(totalCost),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.purple),
                 ),
               ],
             ),
@@ -200,10 +203,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Koszt na 100 km:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  Text(l10n.costPer100km, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                   Text(
-                    '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format((totalCost / totalDistance) * 100)}',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.purple),
+                    NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format((totalCost / totalDistance) * 100),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.purple),
                   ),
                 ],
               ),
@@ -214,7 +217,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildRefuelStatisticsCard() {
+  Widget _buildRefuelStatisticsCard(AppLocalizations l10n) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -231,7 +234,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             ),
             const SizedBox(height: 16),
             if (_refuelStats.isEmpty || _refuelStats['count'] == 0)
-              const Text('Brak danych do wyświetlenia')
+              Text(l10n.noDataToDisplay)
             else ...[
               _buildStatRow('Liczba tankowań', '${_refuelStats['count']}'),
               _buildStatRow('Całkowity dystans', '${NumberFormat('#,##0', 'pl_PL').format(_refuelStats['totalDistance'])} km'),
@@ -248,7 +251,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildExpenseStatisticsCard() {
+  Widget _buildExpenseStatisticsCard(AppLocalizations l10n) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -265,7 +268,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             ),
             const SizedBox(height: 16),
             if (_expenseStats.isEmpty || _expenseStats['count'] == 0)
-              const Text('Brak danych do wyświetlenia')
+              Text(l10n.noDataToDisplay)
             else ...[
               _buildStatRow('Liczba wydatków', '${_expenseStats['count']}'),
               _buildStatRow('Całkowity koszt', '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['totalCost'])}'),
@@ -293,7 +296,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildVolumeChart() {
+  Widget _buildVolumeChart(AppLocalizations l10n) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -301,7 +304,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Wykres ilości paliwa',
+              l10n.refuelChart,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -364,7 +367,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildConsumptionChart() {
+  Widget _buildConsumptionChart(AppLocalizations l10n) {
     final consumptionData = _chartData.where((data) => data['consumption'] != null).toList();
     
     if (consumptionData.isEmpty) {
@@ -375,7 +378,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Wykres spalania',
+                l10n.consumptionChart,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -383,7 +386,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Brak danych o spalaniu'),
+              Text(l10n.noConsumptionData),
             ],
           ),
         ),
@@ -397,7 +400,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Wykres spalania',
+              l10n.consumptionChart,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

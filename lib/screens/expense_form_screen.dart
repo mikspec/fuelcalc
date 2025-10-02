@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import '../models/car.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
+import '../l10n/app_localizations.dart';
+import '../utils/expense_type_helper.dart';
 
 class ExpenseFormScreen extends StatefulWidget {
   final Car car;
@@ -114,7 +116,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing ? 'Wydatek zaktualizowany' : 'Wydatek dodany'),
+            content: Text(_isEditing ? AppLocalizations.of(context)!.expenseUpdated : AppLocalizations.of(context)!.expenseAdded),
           ),
         );
       }
@@ -122,7 +124,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd zapisu: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.saveError(e.toString()))),
         );
       }
     }
@@ -130,9 +132,10 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edytuj wydatek' : 'Dodaj wydatek'),
+        title: Text(_isEditing ? l10n.editExpense : l10n.addExpense),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           if (_isLoading)
@@ -149,7 +152,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
           else
             TextButton(
               onPressed: _saveExpense,
-              child: const Text('Zapisz'),
+              child: Text(l10n.save),
             ),
         ],
       ),
@@ -164,21 +167,21 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Podstawowe dane',
+                    Text(
+                      l10n.basicData,
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _titleController,
-                      decoration: const InputDecoration(
-                        labelText: 'Tytuł wydatku *',
+                      decoration: InputDecoration(
+                        labelText: '${l10n.title} *',
                         border: OutlineInputBorder(),
-                        hintText: 'np. Wymiana oleju',
+                        hintText: l10n.titleHint,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Tytuł jest wymagany';
+                          return l10n.titleRequired;
                         }
                         return null;
                       },
@@ -189,19 +192,19 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _costController,
-                            decoration: const InputDecoration(
-                              labelText: 'Koszt *',
+                            decoration: InputDecoration(
+                              labelText: '${l10n.cost} *',
                               border: OutlineInputBorder(),
                               suffixText: 'zł',
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Wymagane';
+                                return l10n.required;
                               }
                               final cost = double.tryParse(value);
                               if (cost == null || cost < 0) {
-                                return 'Nieprawidłowy koszt';
+                                return l10n.invalidCost;
                               }
                               return null;
                             },
@@ -211,11 +214,11 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                         Expanded(
                           child: DropdownButtonFormField<int>(
                             value: _expenseType,
-                            decoration: const InputDecoration(
-                              labelText: 'Kategoria',
+                            decoration: InputDecoration(
+                              labelText: l10n.category,
                               border: OutlineInputBorder(),
                             ),
-                            items: Expense.expenseTypes.entries.map((entry) {
+                            items: ExpenseTypeHelper.getLocalizedExpenseTypes(l10n).entries.map((entry) {
                               return DropdownMenuItem(
                                 value: entry.key,
                                 child: Text(entry.value),
@@ -237,8 +240,8 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Data i szczegóły',
+                    Text(
+                      l10n.dateAndDetails,
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
@@ -246,7 +249,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                       children: [
                         Expanded(
                           child: ListTile(
-                            title: const Text('Data'),
+                            title: Text(l10n.date),
                             subtitle: Text(DateFormat('dd.MM.yyyy').format(_selectedDate)),
                             leading: const Icon(Icons.calendar_today),
                             onTap: _selectDate,
@@ -255,7 +258,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                         ),
                         Expanded(
                           child: ListTile(
-                            title: const Text('Godzina'),
+                            title: Text(l10n.time),
                             subtitle: Text(DateFormat('HH:mm').format(_selectedDate)),
                             leading: const Icon(Icons.access_time),
                             onTap: _selectTime,
@@ -265,7 +268,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const Text('Ocena usługi'),
+                    Text(l10n.serviceRating),
                     Slider(
                       value: _rating,
                       min: 1,
@@ -277,10 +280,10 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _informationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Opis/Notatki',
+                      decoration: InputDecoration(
+                        labelText: l10n.descriptionLabel,
                         border: OutlineInputBorder(),
-                        hintText: 'Dodatkowe informacje o wydatku...',
+                        hintText: l10n.descriptionHint,
                       ),
                       maxLines: 3,
                     ),
@@ -296,7 +299,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: Text(
-                  _isEditing ? 'Zaktualizuj wydatek' : 'Dodaj wydatek',
+                  _isEditing ? l10n.updateExpense : l10n.addExpense,
                   style: const TextStyle(fontSize: 16),
                 ),
               ),

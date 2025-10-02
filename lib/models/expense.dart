@@ -67,15 +67,16 @@ class Expense {
     );
   }
 
-  // Kategorie wydatków
+  // Kategorie wydatków - tylko identyfikatory
   static const Map<int, String> expenseTypes = {
-    0: 'Inne',
-    1: 'Akumulator',
-    2: 'Naprawa',
-    3: 'Laweta',
-    4: 'Ubezpieczenie',
-    5: 'Przegląd',
+    0: 'other',
+    1: 'battery',
+    2: 'repair',
+    3: 'towing',
+    4: 'insurance',
+    5: 'inspection',
   };
 
-  String get typeName => expenseTypes[statisticType] ?? 'Nieznane';
+  // Getter zwracający tylko klucz typu (do użycia z lokalizacją)
+  String get typeKey => expenseTypes[statisticType] ?? 'unknown';
 }

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/backup_service.dart';
+import '../l10n/app_localizations.dart';
 // Warunkowy import dla różnych platform
 import '../utils/web_download_helper_stub.dart'
     if (dart.library.html) '../utils/web_download_helper.dart';
@@ -28,8 +29,8 @@ class _BackupScreenState extends State<BackupScreen> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Backup został pobrany'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.backupDownloaded),
               backgroundColor: Colors.green,
             ),
           );
@@ -38,8 +39,8 @@ class _BackupScreenState extends State<BackupScreen> {
         // Eksport na mobile - na razie tylko komunikat
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Eksport na mobile - funkcja w rozwoju'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.exportInDevelopment),
               backgroundColor: Colors.orange,
             ),
           );
@@ -49,7 +50,7 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Błąd eksportu: $e'),
+            content: Text(AppLocalizations.of(context)!.exportError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -76,7 +77,7 @@ class _BackupScreenState extends State<BackupScreen> {
         debugPrint('Import JSON preview: ${jsonString.substring(0, jsonString.length < 200 ? jsonString.length : 200)}...');
         
         if (!_backupService.validateBackup(jsonString)) {
-          throw Exception('Nieprawidłowy format pliku backup. Sprawdź czy plik zawiera prawidłowy obiekt JSON z polami version, timestamp i cars.');
+          throw Exception(AppLocalizations.of(context)!.invalidBackupFormat);
         }
 
         await _showConfirmationDialog(() async {
@@ -84,8 +85,8 @@ class _BackupScreenState extends State<BackupScreen> {
           
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Dane zostały zaimportowane pomyślnie'),
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.dataImportedSuccessfully),
                 backgroundColor: Colors.green,
               ),
             );
@@ -97,7 +98,7 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Błąd importu: $e'),
+            content: Text(AppLocalizations.of(context)!.importError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -110,8 +111,8 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _exportSqlite() async {
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Eksport SQLite nie jest dostępny na web'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.sqliteExportNotAvailableOnWeb),
           backgroundColor: Colors.orange,
         ),
       );
@@ -127,8 +128,8 @@ class _BackupScreenState extends State<BackupScreen> {
         // Na desktop - pokaż dane w dialogu (docelowo save file dialog)
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Baza SQLite została wyeksportowana'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.sqliteDatabaseExported),
               backgroundColor: Colors.green,
             ),
           );
@@ -138,7 +139,7 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Błąd eksportu SQLite: $e'),
+            content: Text(AppLocalizations.of(context)!.sqliteExportError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -151,8 +152,8 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _importSqlite() async {
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Import SQLite nie jest dostępny na web'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.sqliteImportNotAvailableOnWeb),
           backgroundColor: Colors.orange,
         ),
       );
@@ -172,7 +173,7 @@ class _BackupScreenState extends State<BackupScreen> {
         final sqliteData = result.files.first.bytes!;
         
         if (!_backupService.validateSqliteFile(sqliteData)) {
-          throw Exception('Nieprawidłowy format pliku SQLite');
+          throw Exception(AppLocalizations.of(context)!.invalidSqliteFormat);
         }
 
         await _showSqliteConfirmationDialog(() async {
@@ -180,8 +181,8 @@ class _BackupScreenState extends State<BackupScreen> {
           
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Baza SQLite została zaimportowana pomyślnie'),
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.sqliteDatabaseImportedSuccessfully),
                 backgroundColor: Colors.green,
               ),
             );
@@ -193,7 +194,7 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Błąd importu SQLite: $e'),
+            content: Text(AppLocalizations.of(context)!.sqliteImportError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -208,16 +209,14 @@ class _BackupScreenState extends State<BackupScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
-          title: const Text('Potwierdź import'),
-          content: const Text(
-            'Import danych z backup może nadpisać istniejące dane. '
-            'Czy chcesz kontynuować?'
-          ),
+          title: Text(l10n.confirmImport),
+          content: Text(l10n.confirmImportMessage),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Anuluj'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -227,7 +226,7 @@ class _BackupScreenState extends State<BackupScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
               ),
-              child: const Text('Importuj'),
+              child: Text(l10n.import),
             ),
           ],
         );
@@ -240,17 +239,14 @@ class _BackupScreenState extends State<BackupScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
-          title: const Text('Potwierdź import SQLite'),
-          content: const Text(
-            'Import pliku SQLite zastąpi całą istniejącą bazę danych. '
-            'Ta operacja nie może być cofnięta. '
-            'Czy chcesz kontynuować?'
-          ),
+          title: Text(l10n.confirmSqliteImport),
+          content: Text(l10n.confirmSqliteImportMessage),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Anuluj'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -260,7 +256,7 @@ class _BackupScreenState extends State<BackupScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-              child: const Text('ZASTĄP BAZĘ'),
+              child: Text(l10n.replaceDatabase),
             ),
           ],
         );
@@ -276,7 +272,7 @@ class _BackupScreenState extends State<BackupScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Plik $fileName został pobrany'),
+              content: Text(AppLocalizations.of(context)!.fileDownloaded(fileName)),
               backgroundColor: Colors.green,
             ),
           );
@@ -286,32 +282,35 @@ class _BackupScreenState extends State<BackupScreen> {
         if (mounted) {
           showDialog(
             context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Backup JSON'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Automatyczne pobieranie nie powiodło się. Skopiuj dane poniżej:'),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 300,
-                    width: 500,
-                    child: SingleChildScrollView(
-                      child: SelectableText(
-                        content,
-                        style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            builder: (context) {
+              final l10n = AppLocalizations.of(context)!;
+              return AlertDialog(
+                title: Text(l10n.backupJson),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.automaticDownloadFailed),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 300,
+                      width: 500,
+                      child: SingleChildScrollView(
+                        child: SelectableText(
+                          content,
+                          style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                        ),
                       ),
                     ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(l10n.close),
                   ),
                 ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Zamknij'),
-                ),
-              ],
-            ),
+              );
+            },
           );
         }
       }
@@ -319,8 +318,8 @@ class _BackupScreenState extends State<BackupScreen> {
       // Na platformach mobilnych/desktop - na razie fallback
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Pobieranie plików na tej platformie w rozwoju'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.fileDownloadInDevelopment),
             backgroundColor: Colors.orange,
           ),
         );
@@ -330,9 +329,10 @@ class _BackupScreenState extends State<BackupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zarządzanie Backup'),
+        title: Text(l10n.backupManagement),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: _isLoading
@@ -353,7 +353,7 @@ class _BackupScreenState extends State<BackupScreen> {
                               Icon(Icons.backup, color: Colors.green, size: 24),
                               const SizedBox(width: 8),
                               Text(
-                                'Eksport danych',
+                                l10n.exportData,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -362,9 +362,8 @@ class _BackupScreenState extends State<BackupScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          const Text(
-                            'Utwórz kopię zapasową wszystkich danych aplikacji '
-                            '(samochody, tankowania, wydatki).',
+                          Text(
+                            l10n.exportDataDescription,
                             style: TextStyle(fontSize: 16),
                           ),
                           const SizedBox(height: 16),
@@ -373,7 +372,7 @@ class _BackupScreenState extends State<BackupScreen> {
                             child: ElevatedButton.icon(
                               onPressed: _exportBackup,
                               icon: const Icon(Icons.download),
-                              label: const Text('Eksportuj dane'),
+                              label: Text(l10n.exportDataButton),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
@@ -396,7 +395,7 @@ class _BackupScreenState extends State<BackupScreen> {
                               Icon(Icons.restore, color: Colors.orange, size: 24),
                               const SizedBox(width: 8),
                               Text(
-                                'Import danych',
+                                l10n.importData,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -405,9 +404,8 @@ class _BackupScreenState extends State<BackupScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          const Text(
-                            'Wczytaj dane z pliku backup. Uwaga: może to nadpisać '
-                            'istniejące dane.',
+                          Text(
+                            l10n.importDataDescription,
                             style: TextStyle(fontSize: 16),
                           ),
                           const SizedBox(height: 16),
@@ -416,7 +414,7 @@ class _BackupScreenState extends State<BackupScreen> {
                             child: ElevatedButton.icon(
                               onPressed: _importBackup,
                               icon: const Icon(Icons.upload),
-                              label: const Text('Importuj dane'),
+                              label: Text(l10n.importDataButton),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
                                 foregroundColor: Colors.white,
@@ -442,7 +440,7 @@ class _BackupScreenState extends State<BackupScreen> {
                                 Icon(Icons.storage, color: Colors.teal, size: 24),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Eksport bazy SQLite',
+                                  l10n.exportSqliteDatabase,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -451,9 +449,8 @@ class _BackupScreenState extends State<BackupScreen> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            const Text(
-                              'Eksportuj oryginalny plik bazy danych SQLite. '
-                              'Można go otworzyć w innych aplikacjach SQLite.',
+                            Text(
+                              l10n.exportSqliteDescription,
                               style: TextStyle(fontSize: 16),
                             ),
                             const SizedBox(height: 16),
@@ -462,7 +459,7 @@ class _BackupScreenState extends State<BackupScreen> {
                               child: ElevatedButton.icon(
                                 onPressed: _exportSqlite,
                                 icon: const Icon(Icons.download),
-                                label: const Text('Eksportuj SQLite'),
+                                label: Text(l10n.exportSqliteButton),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.teal,
                                   foregroundColor: Colors.white,
@@ -488,7 +485,7 @@ class _BackupScreenState extends State<BackupScreen> {
                                 Icon(Icons.input, color: Colors.red, size: 24),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Import bazy SQLite',
+                                  l10n.importSqliteDatabase,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -497,9 +494,8 @@ class _BackupScreenState extends State<BackupScreen> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            const Text(
-                              'Wczytaj plik bazy SQLite. UWAGA: zastąpi to całą '
-                              'istniejącą bazę danych!',
+                            Text(
+                              l10n.importSqliteDescription,
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                             const SizedBox(height: 16),
@@ -508,7 +504,7 @@ class _BackupScreenState extends State<BackupScreen> {
                               child: ElevatedButton.icon(
                                 onPressed: _importSqlite,
                                 icon: const Icon(Icons.upload),
-                                label: const Text('Importuj SQLite'),
+                                label: Text(l10n.importSqliteButton),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
                                   foregroundColor: Colors.white,
@@ -533,7 +529,7 @@ class _BackupScreenState extends State<BackupScreen> {
                               Icon(Icons.info_outline, color: Colors.blue, size: 24),
                               const SizedBox(width: 8),
                               Text(
-                                'Informacje',
+                                l10n.information,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -543,11 +539,7 @@ class _BackupScreenState extends State<BackupScreen> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            '• Backup JSON: uniwersalny format, działa na wszystkich platformach\n'
-                            '• Backup SQLite: oryginalny plik bazy, tylko na desktop/mobile\n'
-                            '• Oba formaty zawierają wszystkie dane\n'
-                            '• SQLite można otworzyć w zewnętrznych narzędziach\n'
-                            '• Import może nadpisać istniejące dane',
+                            l10n.backupInformation,
                             style: TextStyle(fontSize: 14),
                           ),
                         ],
