@@ -83,16 +83,36 @@ class BackupService {
   // Eksport do pliku (web)
   Future<String> exportToJson() async {
     final data = await exportData();
-    return jsonEncode(data);
+    final jsonString = jsonEncode(data);
+    
+    // Sprawdź czy wygenerowany JSON można parsować z powrotem
+    try {
+      jsonDecode(jsonString);
+    } catch (e) {
+      throw Exception('Błąd generowania JSON: $e');
+    }
+    
+    return jsonString;
   }
 
   // Import z JSON string
   Future<void> importFromJson(String jsonString) async {
     try {
-      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+      // Sprawdź czy string to prawidłowy JSON
+      final data = jsonDecode(jsonString);
+      
+      // Sprawdź czy to Map (obiekt JSON)
+      if (data is! Map<String, dynamic>) {
+        throw Exception('JSON musi być obiektem, nie tablicą lub wartością prymitywną');
+      }
+      
       await importData(data);
     } catch (e) {
-      throw Exception('Błąd parsowania JSON: $e');
+      if (e is FormatException) {
+        throw Exception('Nieprawidłowy format JSON: ${e.message}');
+      } else {
+        throw Exception('Błąd parsowania JSON: $e');
+      }
     }
   }
 
@@ -105,10 +125,26 @@ class BackupService {
   // Sprawdzenie czy backup jest prawidłowy
   bool validateBackup(String jsonString) {
     try {
-      final data = jsonDecode(jsonString) as Map<String, dynamic>;
-      return data.containsKey('version') && 
-             data.containsKey('timestamp') && 
-             data.containsKey('cars');
+      final data = jsonDecode(jsonString);
+      
+      // Sprawdź czy to obiekt JSON
+      if (data is! Map<String, dynamic>) {
+        return false;
+      }
+      
+      // Sprawdź wymagane pola
+      if (!data.containsKey('version') || 
+          !data.containsKey('timestamp') || 
+          !data.containsKey('cars')) {
+        return false;
+      }
+      
+      // Sprawdź czy cars to lista
+      if (data['cars'] is! List) {
+        return false;
+      }
+      
+      return true;
     } catch (e) {
       return false;
     }
