@@ -5,6 +5,7 @@ import '../models/refuel.dart';
 import '../services/database_service.dart';
 import '../services/location_service.dart';
 import '../services/distance_calculator_service.dart';
+import '../l10n/app_localizations.dart';
 
 class RefuelFormScreen extends StatefulWidget {
   final Car car;
@@ -194,7 +195,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing ? 'Tankowanie zaktualizowane' : 'Tankowanie dodane'),
+            content: Text(_isEditing ? AppLocalizations.of(context)!.refuelUpdated : AppLocalizations.of(context)!.refuelAdded),
           ),
         );
       }
@@ -202,7 +203,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd zapisu: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorSaving(e.toString()))),
         );
       }
     }
@@ -210,9 +211,11 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edytuj tankowanie' : 'Dodaj tankowanie'),
+        title: Text(_isEditing ? l10n.editRefuel : l10n.refuelForm),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           if (_isLoading)
@@ -229,7 +232,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
           else
             TextButton(
               onPressed: _saveRefuel,
-              child: const Text('Zapisz'),
+              child: Text(l10n.save),
             ),
         ],
       ),
@@ -254,9 +257,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _volumesController,
-                            decoration: const InputDecoration(
-                              labelText: 'Ilość paliwa *',
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              labelText: '${l10n.amount} *',
+                              border: const OutlineInputBorder(),
                               suffixText: 'l',
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -276,9 +279,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _prizeController,
-                            decoration: const InputDecoration(
-                              labelText: 'Koszt całkowity *',
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              labelText: '${l10n.cost} *',
+                              border: const OutlineInputBorder(),
                               suffixText: 'zł',
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -302,9 +305,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _odometerController,
-                            decoration: const InputDecoration(
-                              labelText: 'Stan licznika *',
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              labelText: '${l10n.odometer} *',
+                              border: const OutlineInputBorder(),
                               suffixText: 'km',
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -395,7 +398,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                       children: [
                         Expanded(
                           child: ListTile(
-                            title: const Text('Data'),
+                            title: Text(l10n.date),
                             subtitle: Text(DateFormat('dd.MM.yyyy').format(_selectedDate)),
                             leading: const Icon(Icons.calendar_today),
                             onTap: _selectDate,
@@ -404,7 +407,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                         ),
                         Expanded(
                           child: ListTile(
-                            title: const Text('Godzina'),
+                            title: Text(l10n.time),
                             subtitle: Text(DateFormat('HH:mm').format(_selectedDate)),
                             leading: const Icon(Icons.access_time),
                             onTap: _selectTime,
@@ -414,21 +417,21 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const Text('Typ tankowania'),
+                    Text(l10n.refuelType),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
                       value: _refuelType,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                       ),
-                      items: const [
-                        DropdownMenuItem(value: 11, child: Text('Pełny bak')),
-                        DropdownMenuItem(value: 0, child: Text('Częściowe')),
+                      items: [
+                        DropdownMenuItem(value: 11, child: Text(l10n.fullTank)),
+                        DropdownMenuItem(value: 0, child: Text(l10n.partial)),
                       ],
                       onChanged: (value) => setState(() => _refuelType = value ?? 11),
                     ),
                     const SizedBox(height: 16),
-                    const Text('Ocena stacji'),
+                    Text(l10n.stationRating),
                     Slider(
                       value: _rating,
                       min: 1,
@@ -440,9 +443,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _informationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Notatki',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.notes,
+                        border: const OutlineInputBorder(),
                         hintText: 'Dodatkowe informacje...',
                       ),
                       maxLines: 3,
@@ -478,7 +481,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             if (!_isLoadingLocation && (_gpsLatitude == 0.0 && _gpsLongitude == 0.0))
                               TextButton(
                                 onPressed: _getCurrentLocation,
-                                child: const Text('Pobierz', style: TextStyle(fontSize: 12)),
+                                child: Text(l10n.getLocation, style: const TextStyle(fontSize: 12)),
                               ),
                           ],
                         ),

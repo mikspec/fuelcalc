@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
 import '../services/database_service.dart';
+import '../l10n/app_localizations.dart';
 import 'refuel_form_screen.dart';
 
 class RefuelListScreen extends StatefulWidget {
@@ -40,7 +41,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd ładowania tankowań: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingRefuels(e.toString()))),
         );
       }
     }
@@ -71,19 +72,21 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
   }
 
   void _deleteRefuel(Refuel refuel) async {
+    final l10n = AppLocalizations.of(context)!;
+    
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Usuń tankowanie'),
-        content: Text('Czy na pewno chcesz usunąć tankowanie z ${DateFormat('dd.MM.yyyy').format(refuel.date)}?'),
+        title: Text(l10n.deleteRefuel),
+        content: Text(l10n.deleteRefuelConfirm(DateFormat('dd.MM.yyyy').format(refuel.date))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Anuluj'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Usuń'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -95,13 +98,13 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
         _loadRefuels();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Tankowanie zostało usunięte')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.refuelDeleted)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Błąd usuwania tankowania: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.errorDeleteRefuel(e.toString()))),
           );
         }
       }
@@ -110,9 +113,11 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tankowania - ${widget.car.carAliasName}'),
+        title: Text(l10n.refuelsTitle(widget.car.carAliasName ?? widget.car.carName)),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: _isLoading
@@ -169,23 +174,23 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                               }
                             },
                             itemBuilder: (context) => [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'edit',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.edit),
-                                    SizedBox(width: 8),
-                                    Text('Edytuj'),
+                                    const Icon(Icons.edit),
+                                    const SizedBox(width: 8),
+                                    Text(l10n.edit),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'delete',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.delete),
-                                    SizedBox(width: 8),
-                                    Text('Usuń'),
+                                    const Icon(Icons.delete),
+                                    const SizedBox(width: 8),
+                                    Text(l10n.delete),
                                   ],
                                 ),
                               ),
@@ -262,7 +267,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Text('Ocena: '),
+                                      Text('${l10n.rating} '),
                                       ...List.generate(5, (i) => Icon(
                                         i < refuel.rating ? Icons.star : Icons.star_border,
                                         color: Colors.amber,

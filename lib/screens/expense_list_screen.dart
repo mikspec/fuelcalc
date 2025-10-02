@@ -4,6 +4,8 @@ import '../models/car.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
 import 'expense_form_screen.dart';
+import '../l10n/app_localizations.dart';
+import '../utils/expense_type_helper.dart';
 
 class ExpenseListScreen extends StatefulWidget {
   final Car car;
@@ -70,19 +72,20 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   }
 
   void _deleteExpense(Expense expense) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Usuń wydatek'),
-        content: Text('Czy na pewno chcesz usunąć wydatek "${expense.statisticTitle}"?'),
+        title: Text(l10n.deleteExpense),
+        content: Text(l10n.confirmDeleteExpense(expense.statisticTitle)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Anuluj'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Usuń'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -94,7 +97,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
         _loadExpenses();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Wydatek został usunięty')),
+            SnackBar(content: Text(l10n.expenseDeleted)),
           );
         }
       } catch (e) {
@@ -131,27 +134,28 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Wydatki - ${widget.car.carAliasName}'),
+        title: Text('${l10n.recentExpenses} - ${widget.car.carAliasName}'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _expenses.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.receipt, size: 64, color: Colors.grey),
                       SizedBox(height: 16),
                       Text(
-                        'Brak wydatków',
+                        l10n.noExpenses,
                         style: TextStyle(fontSize: 18, color: Colors.grey),
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Dodaj pierwszy wydatek używając przycisku poniżej',
+                        l10n.addFirstExpense,
                         style: TextStyle(color: Colors.grey),
                         textAlign: TextAlign.center,
                       ),
@@ -176,8 +180,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                             children: [
                               Column(
                                 children: [
-                                  const Text(
-                                    'Łączny koszt',
+                                  Text(
+                                    l10n.totalCost,
                                     style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   Text(
@@ -194,8 +198,8 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                               ),
                               Column(
                                 children: [
-                                  const Text(
-                                    'Liczba wydatków',
+                                  Text(
+                                    l10n.numberOfExpenses,
                                     style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   Text(
@@ -233,7 +237,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                   style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 subtitle: Text(
-                                  '${expense.typeName} • ${DateFormat('dd.MM.yyyy').format(expense.date)}',
+                                  '${ExpenseTypeHelper.getLocalizedTypeName(l10n, expense.statisticType)} • ${DateFormat('dd.MM.yyyy').format(expense.date)}',
                                 ),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -257,23 +261,23 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                         }
                                       },
                                       itemBuilder: (context) => [
-                                        const PopupMenuItem(
+                                        PopupMenuItem(
                                           value: 'edit',
                                           child: Row(
                                             children: [
                                               Icon(Icons.edit),
                                               SizedBox(width: 8),
-                                              Text('Edytuj'),
+                                              Text(l10n.edit),
                                             ],
                                           ),
                                         ),
-                                        const PopupMenuItem(
+                                        PopupMenuItem(
                                           value: 'delete',
                                           child: Row(
                                             children: [
                                               Icon(Icons.delete),
                                               SizedBox(width: 8),
-                                              Text('Usuń'),
+                                              Text(l10n.delete),
                                             ],
                                           ),
                                         ),
@@ -311,7 +315,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
-                                              'Kategoria: ${expense.typeName}',
+                                              '${l10n.category}: ${ExpenseTypeHelper.getLocalizedTypeName(l10n, expense.statisticType)}',
                                               style: TextStyle(color: Colors.grey[600]),
                                             ),
                                           ],
@@ -356,7 +360,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addExpense,
-        tooltip: 'Dodaj wydatek',
+        tooltip: l10n.addExpenseTooltip,
         child: const Icon(Icons.add),
       ),
     );

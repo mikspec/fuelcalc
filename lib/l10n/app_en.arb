@@ -1,0 +1,1046 @@
+{
+  "@@locale": "en",
+  "appTitle": "Fuel Calculator",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "homeTitle": "Fuel Calculator",
+  "@homeTitle": {
+    "description": "Home screen title"
+  },
+  
+  "vehicles": "Vehicles",
+  "@vehicles": {
+    "description": "Vehicles section title"
+  },
+  
+  "addVehicle": "Add Vehicle",
+  "@addVehicle": {
+    "description": "Add vehicle button text"
+  },
+  
+  "backup": "Backup",
+  "@backup": {
+    "description": "Backup menu item"
+  },
+  
+  "language": "Language",
+  "@language": {
+    "description": "Language menu item"
+  },
+  
+  "deleteVehicle": "Delete Vehicle",
+  "@deleteVehicle": {
+    "description": "Delete vehicle dialog title"
+  },
+  
+  "deleteVehicleConfirm": "Are you sure you want to delete vehicle \"{vehicleName}\"?\n\nAll refuels and expenses will be permanently deleted.",
+  "@deleteVehicleConfirm": {
+    "description": "Delete vehicle confirmation message",
+    "placeholders": {
+      "vehicleName": {
+        "type": "String",
+        "example": "Toyota Corolla"
+      }
+    }
+  },
+  
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  
+  "vehicleDeleted": "Vehicle has been deleted",
+  "@vehicleDeleted": {
+    "description": "Vehicle deleted success message"
+  },
+  
+  "errorDeleteVehicle": "Error deleting vehicle: {error}",
+  "@errorDeleteVehicle": {
+    "description": "Error deleting vehicle message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Database error"
+      }
+    }
+  },
+  
+  "errorLoadingVehicles": "Error loading vehicles: {error}",
+  "@errorLoadingVehicles": {
+    "description": "Error loading vehicles message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Database error"
+      }
+    }
+  },
+  
+  "viewDetails": "View Details",
+  "@viewDetails": {
+    "description": "View vehicle details button"
+  },
+  
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  
+  "noVehicles": "No vehicles added yet.\nTap the + button to add your first vehicle.",
+  "@noVehicles": {
+    "description": "Empty vehicles list message"
+  },
+  
+  "refuels": "Refuels",
+  "@refuels": {
+    "description": "Refuels tab title"
+  },
+  
+  "statistics": "Statistics",
+  "@statistics": {
+    "description": "Statistics tab title"
+  },
+  
+  "addRefuel": "Add Refuel",
+  "@addRefuel": {
+    "description": "Add refuel button text"
+  },
+  
+  "refuelForm": "Refuel Form",
+  "@refuelForm": {
+    "description": "Refuel form screen title"
+  },
+  
+  "editRefuel": "Edit Refuel",
+  "@editRefuel": {
+    "description": "Edit refuel screen title"
+  },
+  
+  "amount": "Amount",
+  "@amount": {
+    "description": "Fuel amount field label"
+  },
+  
+  "cost": "Cost",
+  "@cost": {
+    "description": "Cost field label"
+  },
+  
+  "date": "Date",
+  "@date": {
+    "description": "Date field label"
+  },
+  
+  "time": "Time",
+  "@time": {
+    "description": "Time field label"
+  },
+  
+  "odometer": "Odometer",
+  "@odometer": {
+    "description": "Odometer field label"
+  },
+  
+  "fuelType": "Fuel Type",
+  "@fuelType": {
+    "description": "Fuel type field label"
+  },
+  
+  "gasoline": "Gasoline",
+  "@gasoline": {
+    "description": "Gasoline fuel type"
+  },
+  
+  "diesel": "Diesel",
+  "@diesel": {
+    "description": "Diesel fuel type"
+  },
+  
+  "lpg": "LPG",
+  "@lpg": {
+    "description": "LPG fuel type"
+  },
+  
+  "refuelType": "Refuel Type",
+  "@refuelType": {
+    "description": "Refuel type field label"
+  },
+  
+  "fullTank": "Full Tank",
+  "@fullTank": {
+    "description": "Full tank refuel type"
+  },
+  
+  "partial": "Partial",
+  "@partial": {
+    "description": "Partial refuel type"
+  },
+  
+  "stationRating": "Station Rating",
+  "@stationRating": {
+    "description": "Station rating field label"
+  },
+  
+  "location": "Location",
+  "@location": {
+    "description": "Location field label"
+  },
+  
+  "getLocation": "Get",
+  "@getLocation": {
+    "description": "Get location button text"
+  },
+  
+  "notes": "Notes",
+  "@notes": {
+    "description": "Notes field label"
+  },
+  
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  
+  "errorSaving": "Error saving: {error}",
+  "@errorSaving": {
+    "description": "Error saving message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Database error"
+      }
+    }
+  },
+  
+  "pleaseEnterAmount": "Please enter amount",
+  "@pleaseEnterAmount": {
+    "description": "Amount validation error"
+  },
+  
+  "pleaseEnterCost": "Please enter cost",
+  "@pleaseEnterCost": {
+    "description": "Cost validation error"
+  },
+  
+  "pleaseEnterOdometer": "Please enter odometer reading",
+  "@pleaseEnterOdometer": {
+    "description": "Odometer validation error"
+  },
+  
+  "statisticsTitle": "Statistics - {vehicleName}",
+  "@statisticsTitle": {
+    "description": "Statistics screen title",
+    "placeholders": {
+      "vehicleName": {
+        "type": "String",
+        "example": "Toyota Corolla"
+      }
+    }
+  },
+  
+  "dataRange": "Data Range",
+  "@dataRange": {
+    "description": "Data range section title"
+  },
+  
+  "last5": "Last 5",
+  "@last5": {
+    "description": "Last 5 items range option"
+  },
+  
+  "last10": "Last 10",
+  "@last10": {
+    "description": "Last 10 items range option"
+  },
+  
+  "all": "All",
+  "@all": {
+    "description": "All items range option"
+  },
+  
+  "summary": "Summary",
+  "@summary": {
+    "description": "Summary section title"
+  },
+  
+  "fuel": "Fuel:",
+  "@fuel": {
+    "description": "Fuel costs label"
+  },
+  
+  "expenses": "Expenses:",
+  "@expenses": {
+    "description": "Expenses costs label"
+  },
+  
+  "total": "Total:",
+  "@total": {
+    "description": "Total costs label"
+  },
+  
+  "costPer100km": "Cost per 100 km:",
+  "@costPer100km": {
+    "description": "Cost per 100km label"
+  },
+  
+  "refuelChart": "Refuel Chart",
+  "@refuelChart": {
+    "description": "Refuel chart section title"
+  },
+  
+  "consumptionChart": "Consumption Chart",
+  "@consumptionChart": {
+    "description": "Consumption chart section title"
+  },
+  
+  "noDataToDisplay": "No data to display",
+  "@noDataToDisplay": {
+    "description": "No data message"
+  },
+  
+  "noConsumptionData": "No consumption data",
+  "@noConsumptionData": {
+    "description": "No consumption data message"
+  },
+  
+  "errorLoadingStatistics": "Error loading statistics: {error}",
+  "@errorLoadingStatistics": {
+    "description": "Error loading statistics message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Database error"
+      }
+    }
+  },
+  
+  "backupTitle": "Backup",
+  "@backupTitle": {
+    "description": "Backup screen title"
+  },
+  
+  "exportBackup": "Export Backup",
+  "@exportBackup": {
+    "description": "Export backup button text"
+  },
+  
+  "importBackup": "Import Backup",
+  "@importBackup": {
+    "description": "Import backup button text"
+  },
+  
+  "exportSqlite": "Export SQLite",
+  "@exportSqlite": {
+    "description": "Export SQLite button text"
+  },
+  
+  "importSqlite": "Import SQLite",
+  "@importSqlite": {
+    "description": "Import SQLite button text"
+  },
+  
+  "backupDownloaded": "Backup has been downloaded",
+  "@backupDownloaded": {
+    "description": "Backup downloaded success message"
+  },
+  
+  "dataImportedSuccessfully": "Data imported successfully",
+  "@dataImportedSuccessfully": {
+    "description": "Data imported success message"
+  },
+  
+  "confirmImport": "Confirm Import",
+  "@confirmImport": {
+    "description": "Confirm import dialog title"
+  },
+  
+  "importWarning": "Importing backup data may overwrite existing data. Do you want to continue?",
+  "@importWarning": {
+    "description": "Import warning message"
+  },
+  
+  "import": "Import",
+  "@import": {
+    "description": "Import button text"
+  },
+  
+  "errorExport": "Export error: {error}",
+  "@errorExport": {
+    "description": "Export error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "File error"
+      }
+    }
+  },
+  
+  "errorImport": "Import error: {error}",
+  "@errorImport": {
+    "description": "Import error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "File error"
+      }
+    }
+  },
+  
+  "vehicleName": "Vehicle Name",
+  "@vehicleName": {
+    "description": "Vehicle name field label"
+  },
+  
+  "vehicleAlias": "Vehicle Alias",
+  "@vehicleAlias": {
+    "description": "Vehicle alias field label"
+  },
+  
+  "pleaseEnterVehicleName": "Please enter vehicle name",
+  "@pleaseEnterVehicleName": {
+    "description": "Vehicle name validation error"
+  },
+  
+  "addVehicleTitle": "Add Vehicle",
+  "@addVehicleTitle": {
+    "description": "Add vehicle screen title"
+  },
+  
+  "editVehicleTitle": "Edit Vehicle",
+  "@editVehicleTitle": {
+    "description": "Edit vehicle screen title"
+  },
+  
+  "rating": "Rating: ",
+  "@rating": {
+    "description": "Rating label"
+  },
+  
+  "deleteRefuel": "Delete Refuel",
+  "@deleteRefuel": {
+    "description": "Delete refuel dialog title"
+  },
+  
+  "deleteRefuelConfirm": "Are you sure you want to delete refuel from {date}?",
+  "@deleteRefuelConfirm": {
+    "description": "Delete refuel confirmation message",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "01.12.2024"
+      }
+    }
+  },
+  
+  "refuelDeleted": "Refuel has been deleted",
+  "@refuelDeleted": {
+    "description": "Refuel deleted success message"
+  },
+  
+  "errorDeleteRefuel": "Error deleting refuel: {error}",
+  "@errorDeleteRefuel": {
+    "description": "Error deleting refuel message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Database error"
+      }
+    }
+  },
+  
+  "refuelsTitle": "Refuels - {vehicleName}",
+  "@refuelsTitle": {
+    "description": "Refuels screen title",
+    "placeholders": {
+      "vehicleName": {
+        "type": "String",
+        "example": "Toyota Corolla"
+      }
+    }
+  },
+  
+  "errorLoadingRefuels": "Error loading refuels: {error}",
+  "@errorLoadingRefuels": {
+    "description": "Error loading refuels message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Database error"
+      }
+    }
+  },
+  
+  "errorLoadingData": "Error loading data: {error}",
+  "@errorLoadingData": {
+    "description": "Error loading data message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Database error"
+      }
+    }
+  },
+  
+  "recentRefuels": "Recent Refuels",
+  "@recentRefuels": {
+    "description": "Recent refuels section title"
+  },
+  
+  "viewAll": "View All",
+  "@viewAll": {
+    "description": "View all button text"
+  },
+  
+  "noRefuels": "No refuels",
+  "@noRefuels": {
+    "description": "No refuels message"
+  },
+  
+  "recentExpenses": "Recent Expenses",
+  "@recentExpenses": {
+    "description": "Recent expenses section title"
+  },
+  
+  "noExpenses": "No expenses",
+  "@noExpenses": {
+    "description": "No expenses message"
+  },
+  
+  "quickStats": "Quick Statistics",
+  "@quickStats": {
+    "description": "Quick statistics section title"
+  },
+  
+  "totalRefuels": "Total refuels",
+  "@totalRefuels": {
+    "description": "Total refuels label"
+  },
+  
+  "averageConsumption": "Average consumption",
+  "@averageConsumption": {
+    "description": "Average consumption label"
+  },
+  
+  "totalDistance": "Total distance",
+  "@totalDistance": {
+    "description": "Total distance label"
+  },
+  
+  "lastRefuel": "Last refuel",
+  "@lastRefuel": {
+    "description": "Last refuel label"
+  },
+  
+  "description": "Description",
+  "@description": {
+    "description": "Description field label"
+  },
+  
+  "initialMileage": "Initial mileage (km)",
+  "@initialMileage": {
+    "description": "Initial mileage field label"
+  },
+  
+  "tankCapacity": "Tank capacity (l)",
+  "@tankCapacity": {
+    "description": "Tank capacity field label"
+  },
+  
+  "refuelAdded": "Refuel added",
+  "@refuelAdded": {
+    "description": "Refuel added success message"
+  },
+  
+  "refuelUpdated": "Refuel updated",
+  "@refuelUpdated": {
+    "description": "Refuel updated success message"
+  },
+  
+  "backupManagement": "Backup Management",
+  "@backupManagement": {
+    "description": "Backup screen title"
+  },
+  
+  "exportData": "Export Data",
+  "@exportData": {
+    "description": "Export data section title"
+  },
+  
+  "importData": "Import Data",
+  "@importData": {
+    "description": "Import data section title"
+  },
+  
+  "exportDataDescription": "Create a backup of all application data (cars, refuels, expenses).",
+  "@exportDataDescription": {
+    "description": "Export data section description"
+  },
+  
+  "importDataDescription": "Load data from backup file. Warning: this may overwrite existing data.",
+  "@importDataDescription": {
+    "description": "Import data section description"
+  },
+  
+  "exportDataButton": "Export Data",
+  "@exportDataButton": {
+    "description": "Export data button text"
+  },
+  
+  "importDataButton": "Import Data",
+  "@importDataButton": {
+    "description": "Import data button text"
+  },
+  
+  "exportSqliteDatabase": "Export SQLite Database",
+  "@exportSqliteDatabase": {
+    "description": "Export SQLite section title"
+  },
+  
+  "importSqliteDatabase": "Import SQLite Database",
+  "@importSqliteDatabase": {
+    "description": "Import SQLite section title"
+  },
+  
+  "exportSqliteDescription": "Export the original SQLite database file. Can be opened in other SQLite applications.",
+  "@exportSqliteDescription": {
+    "description": "Export SQLite section description"
+  },
+  
+  "importSqliteDescription": "Load SQLite database file. WARNING: this will replace the entire existing database!",
+  "@importSqliteDescription": {
+    "description": "Import SQLite section description"
+  },
+  
+  "exportSqliteButton": "Export SQLite",
+  "@exportSqliteButton": {
+    "description": "Export SQLite button text"
+  },
+  
+  "importSqliteButton": "Import SQLite",
+  "@importSqliteButton": {
+    "description": "Import SQLite button text"
+  },
+  
+  "information": "Information",
+  "@information": {
+    "description": "Information section title"
+  },
+  
+  "backupInformation": "• JSON Backup: universal format, works on all platforms\n• SQLite Backup: original database file, desktop/mobile only\n• Both formats contain all data\n• SQLite can be opened in external tools\n• Import may overwrite existing data",
+  "@backupInformation": {
+    "description": "Backup information text"
+  },
+  
+  "dataImportedSuccessfully": "Data imported successfully",
+  "@dataImportedSuccessfully": {
+    "description": "Data import success message"
+  },
+  
+  "sqliteExportNotAvailableOnWeb": "SQLite export is not available on web",
+  "@sqliteExportNotAvailableOnWeb": {
+    "description": "SQLite export not available on web message"
+  },
+  
+  "sqliteImportNotAvailableOnWeb": "SQLite import is not available on web",
+  "@sqliteImportNotAvailableOnWeb": {
+    "description": "SQLite import not available on web message"
+  },
+  
+  "sqliteDatabaseExported": "SQLite database exported",
+  "@sqliteDatabaseExported": {
+    "description": "SQLite database exported message"
+  },
+  
+  "sqliteDatabaseImportedSuccessfully": "SQLite database imported successfully",
+  "@sqliteDatabaseImportedSuccessfully": {
+    "description": "SQLite database import success message"
+  },
+  
+  "confirmImport": "Confirm Import",
+  "@confirmImport": {
+    "description": "Confirm import dialog title"
+  },
+  
+  "confirmImportMessage": "Importing data from backup may overwrite existing data. Do you want to continue?",
+  "@confirmImportMessage": {
+    "description": "Confirm import dialog message"
+  },
+  
+  "confirmSqliteImport": "Confirm SQLite Import",
+  "@confirmSqliteImport": {
+    "description": "Confirm SQLite import dialog title"
+  },
+  
+  "confirmSqliteImportMessage": "Importing SQLite file will replace the entire existing database. This operation cannot be undone. Do you want to continue?",
+  "@confirmSqliteImportMessage": {
+    "description": "Confirm SQLite import dialog message"
+  },
+  
+  "import": "Import",
+  "@import": {
+    "description": "Import button text"
+  },
+  
+  "replaceDatabase": "REPLACE DATABASE",
+  "@replaceDatabase": {
+    "description": "Replace database button text"
+  },
+  
+  "backupJson": "Backup JSON",
+  "@backupJson": {
+    "description": "Backup JSON dialog title"
+  },
+  
+  "automaticDownloadFailed": "Automatic download failed. Copy the data below:",
+  "@automaticDownloadFailed": {
+    "description": "Automatic download failed message"
+  },
+  
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+  
+  "fileDownloadInDevelopment": "File download on this platform is in development",
+  "@fileDownloadInDevelopment": {
+    "description": "File download in development message"
+  },
+  
+  "exportInDevelopment": "Export on mobile - feature in development",
+  "@exportInDevelopment": {
+    "description": "Export in development message"
+  },
+  
+  "expenseAdded": "Expense added",
+  "@expenseAdded": {
+    "description": "Expense added success message"
+  },
+  
+  "expenseUpdated": "Expense updated",
+  "@expenseUpdated": {
+    "description": "Expense updated success message"
+  },
+  
+  "addExpense": "Add Expense",
+  "@addExpense": {
+    "description": "Add expense title"
+  },
+  
+  "editExpense": "Edit Expense",
+  "@editExpense": {
+    "description": "Edit expense title"
+  },
+  
+  "basicData": "Basic Data",
+  "@basicData": {
+    "description": "Basic data section title"
+  },
+  
+  "titleRequired": "Title is required",
+  "@titleRequired": {
+    "description": "Title required validation message"
+  },
+  
+  "cost": "Cost",
+  "@cost": {
+    "description": "Cost field label"
+  },
+  
+  "required": "Required",
+  "@required": {
+    "description": "Required validation message"
+  },
+  
+  "invalidCost": "Invalid cost",
+  "@invalidCost": {
+    "description": "Invalid cost validation message"
+  },
+  
+  "category": "Category",
+  "@category": {
+    "description": "Category field label"
+  },
+  
+  "dateAndDetails": "Date and Details",
+  "@dateAndDetails": {
+    "description": "Date and details section title"
+  },
+  
+  "serviceRating": "Service Rating",
+  "@serviceRating": {
+    "description": "Service rating section title"
+  },
+  
+  "updateExpense": "Update Expense",
+  "@updateExpense": {
+    "description": "Update expense button text"
+  },
+  
+  "deleteExpense": "Delete Expense",
+  "@deleteExpense": {
+    "description": "Delete expense dialog title"
+  },
+  
+  "confirmDeleteExpense": "Are you sure you want to delete expense \"{title}\"?",
+  "@confirmDeleteExpense": {
+    "description": "Confirm delete expense message",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Gas station visit"
+      }
+    }
+  },
+  
+  "expenseDeleted": "Expense deleted",
+  "@expenseDeleted": {
+    "description": "Expense deleted success message"
+  },
+  
+  "noExpenses": "No Expenses",
+  "@noExpenses": {
+    "description": "No expenses message"
+  },
+  
+  "addFirstExpense": "Add your first expense using the button below",
+  "@addFirstExpense": {
+    "description": "Add first expense message"
+  },
+  
+  "totalCost": "Total Cost",
+  "@totalCost": {
+    "description": "Total cost label"
+  },
+  
+  "numberOfExpenses": "Number of Expenses",
+  "@numberOfExpenses": {
+    "description": "Number of expenses label"
+  },
+  
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit menu item text"
+  },
+  
+  "addExpenseTooltip": "Add Expense",
+  "@addExpenseTooltip": {
+    "description": "Add expense tooltip"
+  },
+  
+  "title": "Title",
+  "@title": {
+    "description": "Title field label"
+  },
+  
+  "vehicleAdded": "Vehicle added",
+  "@vehicleAdded": {
+    "description": "Vehicle added success message"
+  },
+  
+  "vehicleUpdated": "Vehicle updated",
+  "@vehicleUpdated": {
+    "description": "Vehicle updated success message"
+  },
+  
+  "basicInformation": "Basic Information",
+  "@basicInformation": {
+    "description": "Basic information section title"
+  },
+  
+  "technicalParameters": "Technical Parameters",
+  "@technicalParameters": {
+    "description": "Technical parameters section title"
+  },
+  
+  "enterValidMileage": "Enter valid mileage",
+  "@enterValidMileage": {
+    "description": "Valid mileage validation message"
+  },
+  
+  "enterValidCapacity": "Enter valid capacity",
+  "@enterValidCapacity": {
+    "description": "Valid capacity validation message"
+  },
+  
+  "updateVehicle": "Update Vehicle",
+  "@updateVehicle": {
+    "description": "Update vehicle button text"
+  },
+  
+  "addVehicleButton": "Add Vehicle",
+  "@addVehicleButton": {
+    "description": "Add vehicle button text"
+  },
+  
+  "exportError": "Export error: {error}",
+  "@exportError": {
+    "description": "Export error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "File access denied"
+      }
+    }
+  },
+  
+  "importError": "Import error: {error}",
+  "@importError": {
+    "description": "Import error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Invalid file format"
+      }
+    }
+  },
+  
+  "invalidBackupFormat": "Invalid backup file format. Check if the file contains a valid JSON object with version, timestamp and cars fields.",
+  "@invalidBackupFormat": {
+    "description": "Invalid backup format error message"
+  },
+  
+  "sqliteExportError": "SQLite export error: {error}",
+  "@sqliteExportError": {
+    "description": "SQLite export error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Database access denied"
+      }
+    }
+  },
+  
+  "sqliteImportError": "SQLite import error: {error}",
+  "@sqliteImportError": {
+    "description": "SQLite import error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Invalid database file"
+      }
+    }
+  },
+  
+  "invalidSqliteFormat": "Invalid SQLite file format",
+  "@invalidSqliteFormat": {
+    "description": "Invalid SQLite format error message"
+  },
+  
+  "fileDownloaded": "File {fileName} has been downloaded",
+  "@fileDownloaded": {
+    "description": "File downloaded success message",
+    "placeholders": {
+      "fileName": {
+        "type": "String",
+        "example": "backup.json"
+      }
+    }
+  },
+  
+  "statistics": "Statistics",
+  "@statistics": {
+    "description": "Statistics tooltip"
+  },
+  
+  "lastRefuels": "Last 10 refuels",
+  "@lastRefuels": {
+    "description": "Recent refuels card title"
+  },
+  
+  "avgConsumption": "Average consumption",
+  "@avgConsumption": {
+    "description": "Average consumption label"
+  },
+  
+  "avgPrice": "Average price",
+  "@avgPrice": {
+    "description": "Average price label"
+  },
+  
+  "distance": "Distance",
+  "@distance": {
+    "description": "Distance label"
+  },
+  
+  "fuelCosts": "Fuel costs",
+  "@fuelCosts": {
+    "description": "Fuel costs label"
+  },
+  
+  "addExpense": "Add expense",
+  "@addExpense": {
+    "description": "Add expense tooltip"
+  },
+  
+  "addRefuel": "Add refuel",
+  "@addRefuel": {
+    "description": "Add refuel tooltip"
+  },
+  
+  "saveError": "Save error: {error}",
+  "@saveError": {
+    "description": "Save error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "titleHint": "e.g. Oil change",
+  "@titleHint": {
+    "description": "Title field hint text"
+  },
+  
+  "descriptionLabel": "Description/Notes",
+  "@descriptionLabel": {
+    "description": "Description field label"
+  },
+  
+  "descriptionHint": "Additional information about the expense...",
+  "@descriptionHint": {
+    "description": "Description field hint text"
+  },
+  
+  "expenseTypeOther": "Other",
+  "@expenseTypeOther": {
+    "description": "Other expense type"
+  },
+  
+  "expenseTypeBattery": "Battery",
+  "@expenseTypeBattery": {
+    "description": "Battery expense type"
+  },
+  
+  "expenseTypeRepair": "Repair",
+  "@expenseTypeRepair": {
+    "description": "Repair expense type"
+  },
+  
+  "expenseTypeTowing": "Towing",
+  "@expenseTypeTowing": {
+    "description": "Towing expense type"
+  },
+  
+  "expenseTypeInsurance": "Insurance",
+  "@expenseTypeInsurance": {
+    "description": "Insurance expense type"
+  },
+  
+  "expenseTypeInspection": "Inspection",
+  "@expenseTypeInspection": {
+    "description": "Inspection expense type"
+  },
+  
+  "expenseTypeUnknown": "Unknown",
+  "@expenseTypeUnknown": {
+    "description": "Unknown expense type"
+  }
+}
