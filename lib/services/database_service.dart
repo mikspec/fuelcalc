@@ -21,7 +21,7 @@ class DatabaseService {
 
   Future<Database?> get database async {
     if (kIsWeb) {
-      return null; // Na web używamy SharedPreferences
+      return null; // On web we use SharedPreferences
     }
     
     if (_database != null) return _database!;
@@ -55,7 +55,7 @@ class DatabaseService {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    // Tabela główna z pojazdami
+    // Main table with cars
     await db.execute('''
       CREATE TABLE car_host (
         _car_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,7 +72,7 @@ class DatabaseService {
       )
     ''');
 
-    // Tabela sekwencji (dla kompatybilności z SQLite)
+    // Sequence table (for SQLite compatibility)
     await db.execute('''
       CREATE TABLE sqlite_sequence(name TEXT, seq INTEGER)
     ''');
@@ -106,11 +106,11 @@ class DatabaseService {
     
     cars.add(carWithTables);
     
-    // Zapisz listę samochodów
+    // Save car list
     final carsJson = cars.map((c) => c.toMap()).toList();
     await prefs.setString(_carsKey, jsonEncode(carsJson));
     
-    // Utwórz puste listy dla tankowań i wydatków
+    // Create empty lists for refuels and expenses
     await prefs.setString('$_refuelsPrefix$carTableName', jsonEncode([]));
     await prefs.setString('$_expensesPrefix$statsTableName', jsonEncode([]));
     
@@ -126,23 +126,23 @@ class DatabaseService {
     final carTableName = 'car_${car.id ?? timestamp}';
     final statsTableName = 'stats_${car.id ?? timestamp}';
     
-    // Utwórz nowy samochód z odpowiednimi nazwami tabel
+    // Create new car with appropriate table names
     final carWithTables = car.copyWith(
       carName: carTableName,
       carStatisticsTable: statsTableName,
     );
     
-    // Wstaw samochód do tabeli car_host
+    // Insert car into car_host table
     final carId = await db.insert('car_host', carWithTables.toMap());
     
-    // Utwórz dedykowane tabele dla tankowań i wydatków
+    // Create dedicated tables for refuels and expenses
     await _createCarTables(db, carTableName, statsTableName);
     
     return carId;
   }
 
   Future<void> _createCarTables(Database db, String carTableName, String statsTableName) async {
-    // Tabela tankowań dla samochodu
+    // Refuel table for the car
     await db.execute('''
       CREATE TABLE $carTableName (
         _id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -159,7 +159,7 @@ class DatabaseService {
       )
     ''');
 
-    // Tabela wydatków dla samochodu
+    // Expense table for the car
     await db.execute('''
       CREATE TABLE $statsTableName (
         _statistics_row_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -256,14 +256,14 @@ class DatabaseService {
     final car = await getCarById(id);
     if (car == null) return 0;
     
-    // Usuń dane pojazdu
+    // Remove car data
     final cars = await getAllCars();
     cars.removeWhere((c) => c.id == id);
     
     final carsJson = cars.map((c) => c.toMap()).toList();
     await prefs.setString(_carsKey, jsonEncode(carsJson));
     
-    // Usuń dane tankowań i wydatków
+    // Remove refuel and expense data
     await prefs.remove('$_refuelsPrefix${car.carName}');
     await prefs.remove('$_expensesPrefix${car.carStatisticsTable}');
     
@@ -278,11 +278,11 @@ class DatabaseService {
     final car = await getCarById(id);
     if (car == null) return 0;
     
-    // Usuń dedykowane tabele
+    // Remove dedicated tables
     await db.execute('DROP TABLE IF EXISTS ${car.carName}');
     await db.execute('DROP TABLE IF EXISTS ${car.carStatisticsTable}');
     
-    // Usuń samochód z tabeli głównej
+    // Remove car from main table
     return await db.delete(
       'car_host',
       where: '_car_id = ?',
@@ -305,7 +305,7 @@ class DatabaseService {
     final refuels = await getRefuels(tableName);
     
     final newRefuel = refuel.copyWith(id: refuels.length + 1);
-    refuels.insert(0, newRefuel); // Dodaj na początek (najnowsze pierwsze)
+    refuels.insert(0, newRefuel); // Add at beginning (newest first)
     
     final refuelsJson = refuels.map((r) => r.toMap()).toList();
     await prefs.setString('$_refuelsPrefix$tableName', jsonEncode(refuelsJson));
@@ -439,7 +439,7 @@ class DatabaseService {
     final expenses = await getExpenses(tableName);
     
     final newExpense = expense.copyWith(id: expenses.length + 1);
-    expenses.insert(0, newExpense); // Dodaj na początek (najnowsze pierwsze)
+    expenses.insert(0, newExpense); // Add at beginning (newest first)
     
     final expensesJson = expenses.map((e) => e.toMap()).toList();
     await prefs.setString('$_expensesPrefix$tableName', jsonEncode(expensesJson));
@@ -606,7 +606,7 @@ class DatabaseService {
     final totalCost = expenses.fold(0.0, (sum, expense) => sum + expense.statisticCost);
     final avgCost = totalCost / expenses.length;
     
-    // Grupuj koszty według kategorii
+    // Group costs by category
     final Map<int, double> categoryCosts = {};
     for (final expense in expenses) {
       categoryCosts[expense.statisticType] = 
@@ -632,7 +632,7 @@ class DatabaseService {
     }).toList();
   }
 
-  // Zamknij bazę danych
+  // Close database
   Future<void> close() async {
     final db = _database;
     if (db != null) {
@@ -641,7 +641,7 @@ class DatabaseService {
     }
   }
 
-  // Zresetuj połączenie z bazą danych (dla importu SQLite)
+  // Reset database connection (for SQLite import)
   Future<void> resetDatabase() async {
     await close();
     if (!kIsWeb) {

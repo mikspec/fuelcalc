@@ -34,7 +34,7 @@ class BackupService {
 
       return backupData;
     } catch (e) {
-      throw Exception('Błąd podczas eksportu danych: $e');
+      throw Exception('Error exporting data: $e');
     }
   }
 
@@ -42,7 +42,7 @@ class BackupService {
   Future<void> importData(Map<String, dynamic> backupData) async {
     try {
       if (backupData['version'] == null) {
-        throw Exception('Nieprawidłowy format backupu');
+        throw Exception('Invalid backup format');
       }
 
       final cars = backupData['cars'] as List<dynamic>;
@@ -51,16 +51,16 @@ class BackupService {
         final carMap = carData['car'] as Map<String, dynamic>;
         final car = Car.fromMap(carMap);
         
-        // Sprawdź czy samochód już istnieje
+        // Check if car already exists
         final existingCars = await _databaseService.getAllCars();
         final carExists = existingCars.any((c) => c.carName == car.carName);
         
         if (!carExists) {
-          // Dodaj samochód
+          // Add car
           await _databaseService.insertCar(car);
         }
         
-        // Dodaj tankowania
+        // Add refuels
         final refuelsData = carData['refuels'] as List<dynamic>;
         for (final refuelMap in refuelsData) {
           final refuel = Refuel.fromMap(refuelMap as Map<String, dynamic>);
@@ -75,7 +75,7 @@ class BackupService {
         }
       }
     } catch (e) {
-      throw Exception('Błąd podczas importu danych: $e');
+      throw Exception('Error importing data: $e');
     }
   }
 
@@ -84,11 +84,11 @@ class BackupService {
     final data = await exportData();
     final jsonString = jsonEncode(data);
     
-    // Sprawdź czy wygenerowany JSON można parsować z powrotem
+    // Check if generated JSON can be parsed back
     try {
       jsonDecode(jsonString);
     } catch (e) {
-      throw Exception('Błąd generowania JSON: $e');
+      throw Exception('Error generating JSON: $e');
     }
     
     return jsonString;
@@ -97,20 +97,20 @@ class BackupService {
   // Import z JSON string
   Future<void> importFromJson(String jsonString) async {
     try {
-      // Sprawdź czy string to prawidłowy JSON
+      // Check if string is valid JSON
       final data = jsonDecode(jsonString);
       
-      // Sprawdź czy to Map (obiekt JSON)
+      // Check if it's a Map (JSON object)
       if (data is! Map<String, dynamic>) {
-        throw Exception('JSON musi być obiektem, nie tablicą lub wartością prymitywną');
+        throw Exception('JSON must be an object, not an array or primitive value');
       }
       
       await importData(data);
     } catch (e) {
       if (e is FormatException) {
-        throw Exception('Nieprawidłowy format JSON: ${e.message}');
+        throw Exception('Invalid JSON format: ${e.message}');
       } else {
-        throw Exception('Błąd parsowania JSON: $e');
+        throw Exception('Error parsing JSON: $e');
       }
     }
   }
@@ -121,24 +121,24 @@ class BackupService {
     return Uint8List.fromList(utf8.encode(jsonString));
   }
 
-  // Sprawdzenie czy backup jest prawidłowy
+  // Check if backup is valid
   bool validateBackup(String jsonString) {
     try {
       final data = jsonDecode(jsonString);
       
-      // Sprawdź czy to obiekt JSON
+      // Check if it's a JSON object
       if (data is! Map<String, dynamic>) {
         return false;
       }
       
-      // Sprawdź wymagane pola
+      // Check required fields
       if (!data.containsKey('version') || 
           !data.containsKey('timestamp') || 
           !data.containsKey('cars')) {
         return false;
       }
       
-      // Sprawdź czy cars to lista
+      // Check if cars is a list
       if (data['cars'] is! List) {
         return false;
       }
@@ -149,70 +149,70 @@ class BackupService {
     }
   }
 
-  // ===== OBSŁUGA SQLITE =====
+  // ===== SQLITE HANDLING =====
 
-  // Eksport pliku SQLite (tylko na platformach z SQLite)
+  // Export SQLite file (only on platforms with SQLite)
   Future<Uint8List?> exportSqliteDatabase() async {
     if (kIsWeb) {
-      throw UnsupportedError('SQLite export nie jest obsługiwany na web');
+      throw UnsupportedError('SQLite export is not supported on web');
     }
 
     try {
-      // Pobierz ścieżkę do bazy danych
+      // Get database path
       final databasePath = await _getDatabasePath();
       final file = File(databasePath);
       
       if (await file.exists()) {
         return await file.readAsBytes();
       } else {
-        throw Exception('Plik bazy danych nie istnieje');
+        throw Exception('Database file does not exist');
       }
     } catch (e) {
-      throw Exception('Błąd eksportu bazy SQLite: $e');
+      throw Exception('Error exporting SQLite database: $e');
     }
   }
 
-  // Import pliku SQLite (tylko na platformach z SQLite)
+  // Import SQLite file (only on platforms with SQLite)
   Future<void> importSqliteDatabase(Uint8List sqliteData) async {
     if (kIsWeb) {
-      throw UnsupportedError('SQLite import nie jest obsługiwany na web');
+      throw UnsupportedError('SQLite import is not supported on web');
     }
 
     try {
-      // Zamknij istniejące połączenie z bazą
+      // Close existing database connection
       await _databaseService.close();
       
-      // Pobierz ścieżkę do bazy danych
+      // Get database path
       final databasePath = await _getDatabasePath();
       
-      // Utwórz backup istniejącej bazy
+      // Create backup of existing database
       final existingFile = File(databasePath);
       if (await existingFile.exists()) {
         final backupPath = '$databasePath.backup.${DateTime.now().millisecondsSinceEpoch}';
         await existingFile.copy(backupPath);
       }
       
-      // Zapisz nową bazę danych
+      // Save new database
       await File(databasePath).writeAsBytes(sqliteData);
       
-      // Zresetuj połączenie z bazą w DatabaseService
+      // Reset database connection in DatabaseService
       await _databaseService.resetDatabase();
       
     } catch (e) {
-      throw Exception('Błąd importu bazy SQLite: $e');
+      throw Exception('Error importing SQLite database: $e');
     }
   }
 
-  // Sprawdzenie czy plik to SQLite
+  // Check if file is SQLite
   bool validateSqliteFile(Uint8List data) {
     if (data.length < 16) return false;
     
-    // SQLite pliki zaczynają się od "SQLite format 3\0"
+    // SQLite files start with "SQLite format 3\0"
     final header = String.fromCharCodes(data.take(15));
     return header == 'SQLite format 3';
   }
 
-  // Pobierz ścieżkę do pliku bazy danych
+  // Get database file path
   Future<String> _getDatabasePath() async {
     final String databaseName = 'fuel_calculator.db';
     return join(await getDatabasesPath(), databaseName);

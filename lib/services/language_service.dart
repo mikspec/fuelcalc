@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LanguageService extends ChangeNotifier {
   static const String _languageKey = 'selected_language';
   
-  Locale _currentLocale = const Locale('pl'); // Domyślnie polski
+  Locale _currentLocale = const Locale('pl'); // Default to Polish
   
   Locale get currentLocale => _currentLocale;
   
@@ -25,7 +25,7 @@ class LanguageService extends ChangeNotifier {
     if (languageCode != null) {
       _currentLocale = Locale(languageCode);
     } else {
-      // Sprawdź język systemowy
+      // Check system language
       final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
       if (supportedLocales.any((locale) => locale.languageCode == systemLocale.languageCode)) {
         _currentLocale = Locale(systemLocale.languageCode);

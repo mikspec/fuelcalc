@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/database_service.dart';
 
 class DistanceCalculatorService {
@@ -22,7 +25,9 @@ class DistanceCalculatorService {
       
       return currentOdometer - lastOdometer;
     } catch (e) {
-      print('Błąd obliczania dystansu: $e');
+      if (kDebugMode) {
+        debugPrint('Error calculating distance: $e');
+      }
       return 0.0;
     }
   }
@@ -40,13 +45,15 @@ class DistanceCalculatorService {
     return currentOdometer > lastOdometer;
   }
 
-  static String? getOdometerValidationMessage(double currentOdometer, double? lastOdometer) {
+  static String? getOdometerValidationMessage(BuildContext context, double currentOdometer, double? lastOdometer) {
+    final localizations = AppLocalizations.of(context)!;
+    
     if (currentOdometer <= 0) {
-      return 'Stan licznika musi być większy od 0';
+      return localizations.odometerMustBeGreaterThanZero;
     }
     
     if (lastOdometer != null && lastOdometer > 0 && currentOdometer <= lastOdometer) {
-      return 'Stan licznika musi być większy od ostatniego odczytu (${lastOdometer.toStringAsFixed(0)} km)';
+      return localizations.odometerMustBeGreaterThanLast(lastOdometer.toStringAsFixed(0));
     }
     
     return null;

@@ -17,13 +17,13 @@ class LocationService {
   static Future<bool> requestPermission() async {
     if (!isLocationSupported) return false;
     
-    // Sprawdź czy usługi lokalizacji są włączone
+    // Check if location services are enabled
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return false;
     }
 
-    // Sprawdź uprawnienia
+    // Check permissions
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -51,7 +51,9 @@ class LocationService {
         timeLimit: const Duration(seconds: 10),
       );
     } catch (e) {
-      print('Błąd pobierania lokalizacji: $e');
+      if (kDebugMode) {
+        debugPrint('Error getting location: $e');
+      }
       return null;
     }
   }
