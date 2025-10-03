@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'services/language_service.dart';
+import 'services/currency_service.dart';
 import 'l10n/app_localizations.dart';
 
 void main() {
@@ -14,8 +15,11 @@ class FuelCalcApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LanguageService()..init(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => LanguageService()..init()),
+        ChangeNotifierProvider(create: (context) => CurrencyService()..init()),
+      ],
       child: Consumer<LanguageService>(
         builder: (context, languageService, child) {
           return MaterialApp(

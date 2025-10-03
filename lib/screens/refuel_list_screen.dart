@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
 import '../services/database_service.dart';
+import '../services/currency_service.dart';
 import '../l10n/app_localizations.dart';
 import 'refuel_form_screen.dart';
+import 'refuel_map_screen.dart';
 
 class RefuelListScreen extends StatefulWidget {
   final Car car;
@@ -17,7 +20,6 @@ class RefuelListScreen extends StatefulWidget {
 
 class _RefuelListScreenState extends State<RefuelListScreen> {
   final DatabaseService _databaseService = DatabaseService();
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pl_PL', symbol: 'zł');
   final NumberFormat _numberFormat = NumberFormat('#,##0.0', 'pl_PL');
   
   List<Refuel> _refuels = [];
@@ -114,11 +116,26 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencyService = Provider.of<CurrencyService>(context);
     
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.refuelsTitle(widget.car.carAliasName ?? widget.car.carName)),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RefuelMapScreen(car: widget.car),
+                ),
+              );
+            },
+            icon: const Icon(Icons.map),
+            tooltip: l10n.refuelMap,
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -148,6 +165,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                     padding: const EdgeInsets.all(8.0),
                     itemCount: _refuels.length,
                     itemBuilder: (context, index) {
+                      final l10n = AppLocalizations.of(context)!;
                       final refuel = _refuels[index];
                       return Card(
                         child: ExpansionTile(
@@ -156,11 +174,57 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                             child: const Icon(Icons.local_gas_station, color: Colors.white),
                           ),
                           title: Text(
-                            '${_numberFormat.format(refuel.volumes)} l • ${_currencyFormat.format(refuel.prize)}',
+                            '${_numberFormat.format(refuel.volumes)} l • ${currencyService.formatCurrency(refuel.prize)}',
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text(
-                            '${DateFormat('dd.MM.yyyy HH:mm').format(refuel.date)} • ${refuel.refuelType == 11 ? 'Pełny bak' : 'Częściowe'}',
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '${DateFormat('dd.MM.yyyy HH:mm').format(refuel.date)} • ${refuel.refuelType == 11 ? l10n.fullTank : l10n.partial}',
+                                    ),
+                                  ),
+                                  if (refuel.gpsLatitude != 0.0 || refuel.gpsLongitude != 0.0)
+                                    Tooltip(
+                                      message: l10n.gpsLocation,
+                                      child: Icon(
+                                        Icons.location_on,
+                                        size: 16,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              if (refuel.distance > 0) ...[
+                                const SizedBox(height: 2),
+                                Row(
+                                  children: [
+                                    Icon(Icons.route, size: 14, color: Colors.grey[600]),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${_numberFormat.format(refuel.distance)} km',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Icon(Icons.speed, size: 14, color: Colors.grey[600]),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${_numberFormat.format(refuel.consumption)} l/100km',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ],
                           ),
                           trailing: PopupMenuButton(
                             onSelected: (value) {
@@ -206,7 +270,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                     children: [
                                       _buildDetailItem(
                                         l10n.pricePerLiter,
-                                        '${_numberFormat.format(refuel.pricePerLiter)} zł/l',
+                                        currencyService.formatPricePerLiter(refuel.pricePerLiter),
                                         Icons.attach_money,
                                       ),
                                       if (refuel.distance > 0)

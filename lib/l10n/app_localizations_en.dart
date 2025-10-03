@@ -706,4 +706,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String odometerMustBeGreaterThanLast(String lastReading) {
     return 'Odometer reading must be greater than the last reading ($lastReading km)';
   }
+
+  @override
+  String get refuelMap => 'Refuel Map';
+
+  @override
+  String get centerMap => 'Center Map';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get volume => 'Volume';
+
+  @override
+  String get refuel => 'Refuel';
+
+  @override
+  String get noGpsRefuels => 'No GPS refuels found';
+
+  @override
+  String get noGpsRefuelsDescription =>
+      'Add refuels with GPS location to see them on the map';
+
+  @override
+  String get legend => 'Legend';
+
+  @override
+  String get currency => 'Currency';
+
+  @override
+  String get selectCurrency => 'Select Currency';
 }

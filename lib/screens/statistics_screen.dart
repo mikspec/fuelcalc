@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../services/database_service.dart';
+import '../services/currency_service.dart';
 import '../l10n/app_localizations.dart';
 
 class StatisticsScreen extends StatefulWidget {
@@ -75,6 +77,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencyService = Provider.of<CurrencyService>(context);
     
     return Scaffold(
       appBar: AppBar(
@@ -121,15 +124,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   const SizedBox(height: 16),
                   
                   // Cost summary
-                  _buildCostSummaryCard(l10n),
+                  _buildCostSummaryCard(l10n, currencyService),
                   const SizedBox(height: 16),
                   
                   // Refuel statistics
-                  _buildRefuelStatisticsCard(l10n),
+                  _buildRefuelStatisticsCard(l10n, currencyService),
                   const SizedBox(height: 16),
                   
                   // Expense statistics
-                  _buildExpenseStatisticsCard(l10n),
+                  _buildExpenseStatisticsCard(l10n, currencyService),
                   const SizedBox(height: 16),
                   
                   // Charts
@@ -144,7 +147,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildCostSummaryCard(AppLocalizations l10n) {
+  Widget _buildCostSummaryCard(AppLocalizations l10n, CurrencyService currencyService) {
     final refuelTotalCost = _refuelStats['totalCost'] ?? 0.0;
     final expenseTotalCost = _expenseStats['totalCost'] ?? 0.0;
     final totalCost = refuelTotalCost + expenseTotalCost;
@@ -170,7 +173,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Text(l10n.fuel, style: const TextStyle(fontSize: 16)),
                 Text(
-                  NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(refuelTotalCost),
+                  currencyService.formatCurrency(refuelTotalCost),
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -181,7 +184,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Text(l10n.expenses, style: const TextStyle(fontSize: 16)),
                 Text(
-                  NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(expenseTotalCost),
+                  currencyService.formatCurrency(expenseTotalCost),
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -192,7 +195,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Text(l10n.total, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 Text(
-                  NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(totalCost),
+                  currencyService.formatCurrency(totalCost),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.purple),
                 ),
               ],
@@ -205,7 +208,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 children: [
                   Text(l10n.costPer100km, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                   Text(
-                    NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format((totalCost / totalDistance) * 100),
+                    currencyService.formatCurrency((totalCost / totalDistance) * 100),
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.purple),
                   ),
                 ],
@@ -217,7 +220,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildRefuelStatisticsCard(AppLocalizations l10n) {
+  Widget _buildRefuelStatisticsCard(AppLocalizations l10n, CurrencyService currencyService) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -239,11 +242,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               _buildStatRow(l10n.numberOfRefuels, '${_refuelStats['count']}'),
               _buildStatRow(l10n.totalDistance, '${NumberFormat('#,##0', 'pl_PL').format(_refuelStats['totalDistance'])} km'),
               _buildStatRow(l10n.totalFuelAmount, '${NumberFormat('#,##0.0', 'pl_PL').format(_refuelStats['totalVolume'])} l'),
-              _buildStatRow(l10n.totalCost, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['totalCost'])),
+              _buildStatRow(l10n.totalCost, currencyService.formatCurrency(_refuelStats['totalCost'])),
               _buildStatRow(l10n.averageConsumption, '${NumberFormat('#,##0.0', 'pl_PL').format(_refuelStats['avgConsumption'])} l/100km'),
-              _buildStatRow(l10n.averagePricePerLiter, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['avgPricePerLiter'])),
+              _buildStatRow(l10n.averagePricePerLiter, currencyService.formatPricePerLiter(_refuelStats['avgPricePerLiter'])),
               if (_refuelStats['totalDistance'] > 0)
-                _buildStatRow(l10n.costPer100km, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format((_refuelStats['totalCost'] / _refuelStats['totalDistance']) * 100)),
+                _buildStatRow(l10n.costPer100km, currencyService.formatCurrency((_refuelStats['totalCost'] / _refuelStats['totalDistance']) * 100)),
             ],
           ],
         ),
@@ -251,7 +254,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildExpenseStatisticsCard(AppLocalizations l10n) {
+  Widget _buildExpenseStatisticsCard(AppLocalizations l10n, CurrencyService currencyService) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -271,8 +274,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               Text(l10n.noDataToDisplay)
             else ...[
               _buildStatRow(l10n.numberOfExpenses, '${_expenseStats['count']}'),
-              _buildStatRow(l10n.totalCost, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['totalCost'])),
-              _buildStatRow(l10n.averageCost, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['avgCost'])),
+              _buildStatRow(l10n.totalCost, currencyService.formatCurrency(_expenseStats['totalCost'])),
+              _buildStatRow(l10n.averageCost, currencyService.formatCurrency(_expenseStats['avgCost'])),
             ],
           ],
         ),

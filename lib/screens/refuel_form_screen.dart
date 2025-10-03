@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
 import '../services/database_service.dart';
 import '../services/location_service.dart';
 import '../services/distance_calculator_service.dart';
+import '../services/currency_service.dart';
 import '../l10n/app_localizations.dart';
 
 class RefuelFormScreen extends StatefulWidget {
@@ -267,6 +269,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencyService = Provider.of<CurrencyService>(context);
     
     return Scaffold(
       appBar: AppBar(
@@ -338,7 +341,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             decoration: InputDecoration(
                               labelText: l10n.pricePerLiter,
                               border: const OutlineInputBorder(),
-                              suffixText: 'zł/l',
+                              suffixText: '${currencyService.currencySymbol}/l',
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             onChanged: (value) => _calculateValues(changedField: 'pricePerLiter'),
@@ -351,7 +354,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             decoration: InputDecoration(
                               labelText: '${l10n.cost} *',
                               border: const OutlineInputBorder(),
-                              suffixText: 'zł',
+                              suffixText: currencyService.currencySymbol,
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             onChanged: (value) => _calculateValues(changedField: 'totalCost'),

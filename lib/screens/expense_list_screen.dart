@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
+import '../services/currency_service.dart';
 import 'expense_form_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/expense_type_helper.dart';
@@ -18,7 +20,6 @@ class ExpenseListScreen extends StatefulWidget {
 
 class _ExpenseListScreenState extends State<ExpenseListScreen> {
   final DatabaseService _databaseService = DatabaseService();
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pl_PL', symbol: 'zł');
   
   List<Expense> _expenses = [];
   bool _isLoading = true;
@@ -135,6 +136,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencyService = Provider.of<CurrencyService>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('${l10n.recentExpenses} - ${widget.car.carAliasName}'),
@@ -185,7 +187,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                     style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    _currencyFormat.format(
+                                    currencyService.formatCurrency(
                                       _expenses.fold(0.0, (sum, expense) => sum + expense.statisticCost),
                                     ),
                                     style: TextStyle(
@@ -243,7 +245,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      _currencyFormat.format(expense.statisticCost),
+                                      currencyService.formatCurrency(expense.statisticCost),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,

@@ -626,7 +626,7 @@ abstract class AppLocalizations {
   /// **'Quick Statistics'**
   String get quickStats;
 
-  /// Total refuels label
+  /// Total refuels count label
   ///
   /// In en, this message translates to:
   /// **'Total refuels'**
@@ -1351,6 +1351,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Odometer reading must be greater than the last reading ({lastReading} km)'**
   String odometerMustBeGreaterThanLast(String lastReading);
+
+  /// Refuel map screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Refuel Map'**
+  String get refuelMap;
+
+  /// Center map button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Center Map'**
+  String get centerMap;
+
+  /// Refresh button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// Volume field label
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get volume;
+
+  /// Refuel label
+  ///
+  /// In en, this message translates to:
+  /// **'Refuel'**
+  String get refuel;
+
+  /// Message when no refuels with GPS are found
+  ///
+  /// In en, this message translates to:
+  /// **'No GPS refuels found'**
+  String get noGpsRefuels;
+
+  /// Description for no GPS refuels
+  ///
+  /// In en, this message translates to:
+  /// **'Add refuels with GPS location to see them on the map'**
+  String get noGpsRefuelsDescription;
+
+  /// Map legend title
+  ///
+  /// In en, this message translates to:
+  /// **'Legend'**
+  String get legend;
+
+  /// Currency settings menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currency;
+
+  /// Currency selection dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Currency'**
+  String get selectCurrency;
 }
 
 class _AppLocalizationsDelegate

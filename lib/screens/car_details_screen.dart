@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
+import '../services/currency_service.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/expense_type_helper.dart';
 import 'refuel_form_screen.dart';
@@ -23,7 +25,6 @@ class CarDetailsScreen extends StatefulWidget {
 
 class _CarDetailsScreenState extends State<CarDetailsScreen> {
   final DatabaseService _databaseService = DatabaseService();
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pl_PL', symbol: 'zł');
   final NumberFormat _numberFormat = NumberFormat('#,##0.0', 'pl_PL');
   
   List<Refuel> _recentRefuels = [];
@@ -114,6 +115,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencyService = Provider.of<CurrencyService>(context);
     
     return Scaffold(
       appBar: AppBar(
@@ -158,7 +160,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                               Expanded(
                                 child: _buildStatItem(
                                   AppLocalizations.of(context)!.avgPrice,
-                                  '${_numberFormat.format(_statistics['avgPricePerLiter'] ?? 0)} zł/l',
+                                  currencyService.formatPricePerLiter(_statistics['avgPricePerLiter'] ?? 0),
                                   Icons.attach_money,
                                 ),
                               ),
@@ -177,7 +179,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                               Expanded(
                                 child: _buildStatItem(
                                   AppLocalizations.of(context)!.fuelCosts,
-                                  _currencyFormat.format(_statistics['totalCost'] ?? 0),
+                                  currencyService.formatCurrency(_statistics['totalCost'] ?? 0),
                                   Icons.receipt,
                                 ),
                               ),
@@ -225,7 +227,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                 leading: const Icon(Icons.local_gas_station),
                                 title: Text('${_numberFormat.format(refuel.volumes)} l'),
                                 subtitle: Text(DateFormat('dd.MM.yyyy').format(refuel.date)),
-                                trailing: Text(_currencyFormat.format(refuel.prize)),
+                                trailing: Text(currencyService.formatCurrency(refuel.prize)),
                               );
                             },
                           ),
@@ -270,7 +272,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                 leading: const Icon(Icons.build),
                                 title: Text(expense.statisticTitle),
                                 subtitle: Text('${ExpenseTypeHelper.getLocalizedTypeName(l10n, expense.statisticType)} • ${DateFormat('dd.MM.yyyy').format(expense.date)}'),
-                                trailing: Text(_currencyFormat.format(expense.statisticCost)),
+                                trailing: Text(currencyService.formatCurrency(expense.statisticCost)),
                               );
                             },
                           ),

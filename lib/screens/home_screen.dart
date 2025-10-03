@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../services/database_service.dart';
 import '../services/language_service.dart';
+import '../services/currency_service.dart';
 import '../l10n/app_localizations.dart';
 import 'car_form_screen.dart';
 import 'car_details_screen.dart';
@@ -148,10 +149,46 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showCurrencyDialog(BuildContext context, CurrencyService currencyService) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.selectCurrency),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: currencyService.availableCurrencies.map((currency) {
+            final currencyInfo = currencyService.supportedCurrencies[currency]!;
+            return RadioListTile<String>(
+              title: Text('${currencyInfo['name']} (${currencyInfo['symbol']})'),
+              subtitle: Text(currencyInfo['code']!),
+              value: currency,
+              groupValue: currencyService.currentCurrency,
+              onChanged: (String? value) {
+                if (value != null) {
+                  currencyService.changeCurrency(value);
+                  Navigator.pop(context);
+                }
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final languageService = Provider.of<LanguageService>(context);
+    final currencyService = Provider.of<CurrencyService>(context);
     
     return Scaffold(
       appBar: AppBar(
@@ -169,6 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               } else if (value == 'language') {
                 _showLanguageDialog(context, languageService);
+              } else if (value == 'currency') {
+                _showCurrencyDialog(context, currencyService);
               }
             },
             itemBuilder: (context) => [
@@ -189,6 +228,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Icon(Icons.language),
                     const SizedBox(width: 8),
                     Text(l10n.language),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'currency',
+                child: Row(
+                  children: [
+                    const Icon(Icons.attach_money),
+                    const SizedBox(width: 8),
+                    Text(l10n.currency),
                   ],
                 ),
               ),

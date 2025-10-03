@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
+import '../services/currency_service.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/expense_type_helper.dart';
 
@@ -133,6 +135,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencyService = Provider.of<CurrencyService>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? l10n.editExpense : l10n.addExpense),
@@ -195,7 +198,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                             decoration: InputDecoration(
                               labelText: '${l10n.cost} *',
                               border: OutlineInputBorder(),
-                              suffixText: 'zł',
+                              suffixText: currencyService.currencySymbol,
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             validator: (value) {
