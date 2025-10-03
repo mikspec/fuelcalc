@@ -132,7 +132,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   _buildExpenseStatisticsCard(l10n),
                   const SizedBox(height: 16),
                   
-                  // Wykresy
+                  // Charts
                   if (_chartData.isNotEmpty) ...[
                     _buildVolumeChart(l10n),
                     const SizedBox(height: 16),
@@ -334,8 +334,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt();
                           if (index >= 0 && index < _chartData.length) {
-                            final date = DateTime.parse(_chartData[index]['date']);
-                            return Text('${date.day}/${date.month}', style: TextStyle(fontSize: 10));
+                            return Text('${index + 1}', style: TextStyle(fontSize: 10));
                           }
                           return const Text('');
                         },
@@ -430,8 +429,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt();
                           if (index >= 0 && index < consumptionData.length) {
-                            final date = DateTime.parse(consumptionData[index]['date']);
-                            return Text('${date.day}/${date.month}', style: TextStyle(fontSize: 10));
+                            return Text('${index + 1}', style: TextStyle(fontSize: 10));
                           }
                           return const Text('');
                         },
