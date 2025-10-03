@@ -213,7 +213,7 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: DropdownButtonFormField<int>(
-                            value: _expenseType,
+                            initialValue: _expenseType,
                             decoration: InputDecoration(
                               labelText: l10n.category,
                               border: OutlineInputBorder(),

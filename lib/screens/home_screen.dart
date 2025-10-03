@@ -224,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Icon(Icons.directions_car),
                         ),
                         title: Text(car.carAliasName ?? car.carName),
-                        subtitle: Text(car.carDescription ?? 'Brak opisu'),
+                        subtitle: Text(car.carDescription ?? l10n.noDescription),
                         trailing: PopupMenuButton(
                           onSelected: (value) {
                             switch (value) {

@@ -609,4 +609,94 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get averageCost => 'Średni koszt';
+
+  @override
+  String get invalidVolume => 'Nieprawidłowa ilość';
+
+  @override
+  String get invalidOdometerReading => 'Nieprawidłowy stan';
+
+  @override
+  String errorLoadingLastOdometer(String error) {
+    return 'Błąd ładowania ostatniego odczytu licznika: $error';
+  }
+
+  @override
+  String errorLoadingLocation(String error) {
+    return 'Błąd pobierania lokalizacji: $error';
+  }
+
+  @override
+  String errorCalculatingDistance(String error) {
+    return 'Błąd obliczania dystansu: $error';
+  }
+
+  @override
+  String get distanceFromLast => 'Dystans od ostatniego';
+
+  @override
+  String lastOdometer(String reading) {
+    return 'Ostatni: $reading km';
+  }
+
+  @override
+  String get additionalInfoHint => 'Dodatkowe informacje...';
+
+  @override
+  String get loadingLocation => 'Pobieranie lokalizacji...';
+
+  @override
+  String locationCoordinates(String latitude, String longitude) {
+    return 'Lokalizacja: $latitude, $longitude';
+  }
+
+  @override
+  String get locationUnavailable => 'Lokalizacja niedostępna';
+
+  @override
+  String get updateRefuel => 'Zaktualizuj tankowanie';
+
+  @override
+  String get addRefuelButton => 'Dodaj tankowanie';
+
+  @override
+  String errorLoadingExpenses(String error) {
+    return 'Błąd ładowania wydatków: $error';
+  }
+
+  @override
+  String errorDeletingExpense(String error) {
+    return 'Błąd usuwania wydatku: $error';
+  }
+
+  @override
+  String get dateLabel => 'Data:';
+
+  @override
+  String get ratingLabel => 'Ocena:';
+
+  @override
+  String get noDescription => 'Brak opisu';
+
+  @override
+  String get noRefuelsYet => 'Brak tankowań';
+
+  @override
+  String get addFirstRefuel =>
+      'Dodaj pierwsze tankowanie używając przycisku poniżej';
+
+  @override
+  String get pricePerLiter => 'Cena za litr';
+
+  @override
+  String get consumption => 'Spalanie';
+
+  @override
+  String get odometerReading => 'Stan licznika';
+
+  @override
+  String get gpsLocation => 'Lokalizacja GPS';
+
+  @override
+  String get addRefuelTooltip => 'Dodaj tankowanie';
 }

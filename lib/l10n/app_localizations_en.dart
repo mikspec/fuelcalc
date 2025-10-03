@@ -608,4 +608,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get averageCost => 'Average cost';
+
+  @override
+  String get invalidVolume => 'Invalid volume';
+
+  @override
+  String get invalidOdometerReading => 'Invalid odometer reading';
+
+  @override
+  String errorLoadingLastOdometer(String error) {
+    return 'Error loading last odometer reading: $error';
+  }
+
+  @override
+  String errorLoadingLocation(String error) {
+    return 'Error loading location: $error';
+  }
+
+  @override
+  String errorCalculatingDistance(String error) {
+    return 'Error calculating distance: $error';
+  }
+
+  @override
+  String get distanceFromLast => 'Distance from last';
+
+  @override
+  String lastOdometer(String reading) {
+    return 'Last: $reading km';
+  }
+
+  @override
+  String get additionalInfoHint => 'Additional information...';
+
+  @override
+  String get loadingLocation => 'Loading location...';
+
+  @override
+  String locationCoordinates(String latitude, String longitude) {
+    return 'Location: $latitude, $longitude';
+  }
+
+  @override
+  String get locationUnavailable => 'Location unavailable';
+
+  @override
+  String get updateRefuel => 'Update Refuel';
+
+  @override
+  String get addRefuelButton => 'Add Refuel';
+
+  @override
+  String errorLoadingExpenses(String error) {
+    return 'Error loading expenses: $error';
+  }
+
+  @override
+  String errorDeletingExpense(String error) {
+    return 'Error deleting expense: $error';
+  }
+
+  @override
+  String get dateLabel => 'Date:';
+
+  @override
+  String get ratingLabel => 'Rating:';
+
+  @override
+  String get noDescription => 'No description';
+
+  @override
+  String get noRefuelsYet => 'No refuels yet';
+
+  @override
+  String get addFirstRefuel => 'Add your first refuel using the button below';
+
+  @override
+  String get pricePerLiter => 'Price per liter';
+
+  @override
+  String get consumption => 'Consumption';
+
+  @override
+  String get odometerReading => 'Odometer reading';
+
+  @override
+  String get gpsLocation => 'GPS Location';
+
+  @override
+  String get addRefuelTooltip => 'Add refuel';
 }

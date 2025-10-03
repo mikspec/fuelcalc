@@ -872,7 +872,7 @@ abstract class AppLocalizations {
   /// **'Edit Expense'**
   String get editExpense;
 
-  /// Basic data section title
+  /// Basic data section title for refuel form
   ///
   /// In en, this message translates to:
   /// **'Basic Data'**
@@ -1189,6 +1189,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Average cost'**
   String get averageCost;
+
+  /// Invalid volume validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid volume'**
+  String get invalidVolume;
+
+  /// Invalid odometer reading validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid odometer reading'**
+  String get invalidOdometerReading;
+
+  /// Error loading last odometer reading
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading last odometer reading: {error}'**
+  String errorLoadingLastOdometer(String error);
+
+  /// Error loading location
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading location: {error}'**
+  String errorLoadingLocation(String error);
+
+  /// Error calculating distance
+  ///
+  /// In en, this message translates to:
+  /// **'Error calculating distance: {error}'**
+  String errorCalculatingDistance(String error);
+
+  /// Distance from last refuel label
+  ///
+  /// In en, this message translates to:
+  /// **'Distance from last'**
+  String get distanceFromLast;
+
+  /// Last odometer reading
+  ///
+  /// In en, this message translates to:
+  /// **'Last: {reading} km'**
+  String lastOdometer(String reading);
+
+  /// Additional information hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Additional information...'**
+  String get additionalInfoHint;
+
+  /// Loading location text
+  ///
+  /// In en, this message translates to:
+  /// **'Loading location...'**
+  String get loadingLocation;
+
+  /// Location coordinates display
+  ///
+  /// In en, this message translates to:
+  /// **'Location: {latitude}, {longitude}'**
+  String locationCoordinates(String latitude, String longitude);
+
+  /// Location unavailable text
+  ///
+  /// In en, this message translates to:
+  /// **'Location unavailable'**
+  String get locationUnavailable;
+
+  /// Update refuel button text
+  ///
+  /// In en, this message translates to:
+  /// **'Update Refuel'**
+  String get updateRefuel;
+
+  /// Add refuel button text
+  ///
+  /// In en, this message translates to:
+  /// **'Add Refuel'**
+  String get addRefuelButton;
+
+  /// Error loading expenses message
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading expenses: {error}'**
+  String errorLoadingExpenses(String error);
+
+  /// Error deleting expense message
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting expense: {error}'**
+  String errorDeletingExpense(String error);
+
+  /// Date label
+  ///
+  /// In en, this message translates to:
+  /// **'Date:'**
+  String get dateLabel;
+
+  /// Rating label
+  ///
+  /// In en, this message translates to:
+  /// **'Rating:'**
+  String get ratingLabel;
+
+  /// No description placeholder text
+  ///
+  /// In en, this message translates to:
+  /// **'No description'**
+  String get noDescription;
+
+  /// No refuels message
+  ///
+  /// In en, this message translates to:
+  /// **'No refuels yet'**
+  String get noRefuelsYet;
+
+  /// Add first refuel instruction
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first refuel using the button below'**
+  String get addFirstRefuel;
+
+  /// Price per liter label
+  ///
+  /// In en, this message translates to:
+  /// **'Price per liter'**
+  String get pricePerLiter;
+
+  /// Consumption label
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption'**
+  String get consumption;
+
+  /// Odometer reading label
+  ///
+  /// In en, this message translates to:
+  /// **'Odometer reading'**
+  String get odometerReading;
+
+  /// GPS location label
+  ///
+  /// In en, this message translates to:
+  /// **'GPS Location'**
+  String get gpsLocation;
+
+  /// Add refuel tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Add refuel'**
+  String get addRefuelTooltip;
 }
 
 class _AppLocalizationsDelegate

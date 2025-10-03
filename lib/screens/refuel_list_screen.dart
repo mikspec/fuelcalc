@@ -123,20 +123,20 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _refuels.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.local_gas_station, size: 64, color: Colors.grey),
-                      SizedBox(height: 16),
+                      const Icon(Icons.local_gas_station, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
                       Text(
-                        'Brak tankowań',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                        l10n.noRefuelsYet,
+                        style: const TextStyle(fontSize: 18, color: Colors.grey),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                        'Dodaj pierwsze tankowanie używając przycisku poniżej',
-                        style: TextStyle(color: Colors.grey),
+                        l10n.addFirstRefuel,
+                        style: const TextStyle(color: Colors.grey),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -205,19 +205,19 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
                                       _buildDetailItem(
-                                        'Cena za litr',
+                                        l10n.pricePerLiter,
                                         '${_numberFormat.format(refuel.pricePerLiter)} zł/l',
                                         Icons.attach_money,
                                       ),
                                       if (refuel.distance > 0)
                                         _buildDetailItem(
-                                          'Spalanie',
+                                          l10n.consumption,
                                           '${_numberFormat.format(refuel.consumption)} l/100km',
                                           Icons.speed,
                                         ),
                                       if (refuel.distance > 0)
                                         _buildDetailItem(
-                                          'Dystans',
+                                          l10n.distance,
                                           '${_numberFormat.format(refuel.distance)} km',
                                           Icons.route,
                                         ),
@@ -229,7 +229,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         _buildDetailItem(
-                                          'Stan licznika',
+                                          l10n.odometerReading,
                                           '${_numberFormat.format(refuel.odometerState)} km',
                                           Icons.speed,
                                         ),
@@ -242,7 +242,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         _buildDetailItem(
-                                          'Lokalizacja GPS',
+                                          l10n.gpsLocation,
                                           '${refuel.gpsLatitude.toStringAsFixed(4)}, ${refuel.gpsLongitude.toStringAsFixed(4)}',
                                           Icons.location_on,
                                         ),
@@ -286,7 +286,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addRefuel,
-        tooltip: 'Dodaj tankowanie',
+        tooltip: l10n.addRefuelTooltip,
         child: const Icon(Icons.add),
       ),
     );
