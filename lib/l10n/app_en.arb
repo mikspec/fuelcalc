@@ -1285,5 +1285,60 @@
         "type": "String"
       }
     }
+  },
+
+  "refuelMap": "Refuel Map",
+  "@refuelMap": {
+    "description": "Refuel map screen title"
+  },
+
+  "centerMap": "Center Map",
+  "@centerMap": {
+    "description": "Center map button tooltip"
+  },
+
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh button tooltip"
+  },
+
+  "volume": "Volume",
+  "@volume": {
+    "description": "Volume field label"
+  },
+
+  "refuel": "Refuel",
+  "@refuel": {
+    "description": "Refuel label"
+  },
+
+  "noGpsRefuels": "No GPS refuels found",
+  "@noGpsRefuels": {
+    "description": "Message when no refuels with GPS are found"
+  },
+
+  "noGpsRefuelsDescription": "Add refuels with GPS location to see them on the map",
+  "@noGpsRefuelsDescription": {
+    "description": "Description for no GPS refuels"
+  },
+
+  "legend": "Legend",
+  "@legend": {
+    "description": "Map legend title"
+  },
+
+  "totalRefuels": "Total refuels",
+  "@totalRefuels": {
+    "description": "Total refuels count label"
+  },
+
+  "currency": "Currency",
+  "@currency": {
+    "description": "Currency settings menu item"
+  },
+
+  "selectCurrency": "Select Currency",
+  "@selectCurrency": {
+    "description": "Currency selection dialog title"
   }
 }

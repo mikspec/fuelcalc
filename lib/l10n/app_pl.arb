@@ -224,5 +224,16 @@
   "gpsLocation": "Lokalizacja GPS",
   "addRefuelTooltip": "Dodaj tankowanie",
   "odometerMustBeGreaterThanZero": "Stan licznika musi być większy od 0",
-  "odometerMustBeGreaterThanLast": "Stan licznika musi być większy od ostatniego odczytu ({lastReading} km)"
+  "odometerMustBeGreaterThanLast": "Stan licznika musi być większy od ostatniego odczytu ({lastReading} km)",
+  "refuelMap": "Mapa tankowań",
+  "centerMap": "Wyśrodkuj mapę",
+  "refresh": "Odśwież",
+  "volume": "Objętość",
+  "refuel": "Tankowanie",
+  "noGpsRefuels": "Nie znaleziono tankowań z GPS",
+  "noGpsRefuelsDescription": "Dodaj tankowania z lokalizacją GPS, aby zobaczyć je na mapie",
+  "legend": "Legenda",
+  "totalRefuels": "Łącznie tankowań",
+  "currency": "Waluta",
+  "selectCurrency": "Wybierz walutę"
 }

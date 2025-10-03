@@ -301,7 +301,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get quickStats => 'Szybkie statystyki';
 
   @override
-  String get totalRefuels => 'Łączna liczba tankowań';
+  String get totalRefuels => 'Łącznie tankowań';
 
   @override
   String get averageConsumption => 'Średnie spalanie';
@@ -708,4 +708,35 @@ class AppLocalizationsPl extends AppLocalizations {
   String odometerMustBeGreaterThanLast(String lastReading) {
     return 'Stan licznika musi być większy od ostatniego odczytu ($lastReading km)';
   }
+
+  @override
+  String get refuelMap => 'Mapa tankowań';
+
+  @override
+  String get centerMap => 'Wyśrodkuj mapę';
+
+  @override
+  String get refresh => 'Odśwież';
+
+  @override
+  String get volume => 'Objętość';
+
+  @override
+  String get refuel => 'Tankowanie';
+
+  @override
+  String get noGpsRefuels => 'Nie znaleziono tankowań z GPS';
+
+  @override
+  String get noGpsRefuelsDescription =>
+      'Dodaj tankowania z lokalizacją GPS, aby zobaczyć je na mapie';
+
+  @override
+  String get legend => 'Legenda';
+
+  @override
+  String get currency => 'Waluta';
+
+  @override
+  String get selectCurrency => 'Wybierz walutę';
 }
