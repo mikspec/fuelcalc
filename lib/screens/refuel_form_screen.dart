@@ -23,9 +23,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
   final DatabaseService _databaseService = DatabaseService();
   
   late TextEditingController _volumesController;
-  late TextEditingController _prizeController;
+  late TextEditingController _totalCostController;
+  late TextEditingController _pricePerLiterController;
   late TextEditingController _odometerController;
-  late TextEditingController _informationController;
   
   DateTime _selectedDate = DateTime.now();
   double _rating = 5.0;
@@ -43,11 +43,18 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
     super.initState();
     final refuel = widget.refuel;
     _volumesController = TextEditingController(text: refuel?.volumes.toString() ?? '');
-    _prizeController = TextEditingController(text: refuel?.prize.toString() ?? '');
-    _odometerController = TextEditingController(text: refuel?.odometerState.toString() ?? '');
-    _informationController = TextEditingController(text: refuel?.information ?? '');
+    _totalCostController = TextEditingController(text: refuel?.prize.toString() ?? '');
+    _pricePerLiterController = TextEditingController();
+    
+    // Calculate price per liter if both values exist
+    if (refuel != null && refuel.volumes > 0 && refuel.prize > 0) {
+      _pricePerLiterController.text = (refuel.prize / refuel.volumes).toStringAsFixed(2);
+    }
+    
+    _odometerController = TextEditingController();
     
     if (refuel != null) {
+      _odometerController.text = refuel.odometerState.toString();
       _selectedDate = refuel.date;
       _rating = refuel.rating;
       _refuelType = refuel.refuelType;
@@ -63,9 +70,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
   @override
   void dispose() {
     _volumesController.dispose();
-    _prizeController.dispose();
+    _totalCostController.dispose();
+    _pricePerLiterController.dispose();
     _odometerController.dispose();
-    _informationController.dispose();
     super.dispose();
   }
 
@@ -75,6 +82,10 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
       if (refuels.isNotEmpty) {
         setState(() {
           _lastOdometerReading = refuels.first.odometerState;
+          // Set odometer field to last reading for new refuels
+          if (!_isEditing) {
+            _odometerController.text = _lastOdometerReading!.toStringAsFixed(0);
+          }
         });
       }
     } catch (e) {
@@ -131,6 +142,45 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
     }
   }
 
+  void _calculateValues({String? changedField}) {
+    final volume = double.tryParse(_volumesController.text);
+    final totalCost = double.tryParse(_totalCostController.text);
+    final pricePerLiter = double.tryParse(_pricePerLiterController.text);
+
+    // Count how many fields have values
+    int filledFields = 0;
+    if (volume != null && volume > 0) filledFields++;
+    if (totalCost != null && totalCost > 0) filledFields++;
+    if (pricePerLiter != null && pricePerLiter > 0) filledFields++;
+
+    // If exactly 2 fields are filled, calculate the third
+    if (filledFields == 2) {
+      if (volume != null && totalCost != null && (pricePerLiter == null || pricePerLiter == 0)) {
+        // Calculate price per liter from volume and total cost
+        _pricePerLiterController.text = (totalCost / volume).toStringAsFixed(2);
+      } else if (volume != null && pricePerLiter != null && (totalCost == null || totalCost == 0)) {
+        // Calculate total cost from volume and price per liter
+        _totalCostController.text = (volume * pricePerLiter).toStringAsFixed(2);
+      } else if (totalCost != null && pricePerLiter != null && (volume == null || volume == 0)) {
+        // Calculate volume from total cost and price per liter
+        _volumesController.text = (totalCost / pricePerLiter).toStringAsFixed(2);
+      }
+    }
+    // If all 3 fields are filled, don't recalculate volume - only recalculate price and cost
+    else if (filledFields == 3) {
+      if (changedField == 'volume' && volume != null && pricePerLiter != null) {
+        // Volume changed - recalculate total cost
+        _totalCostController.text = (volume * pricePerLiter).toStringAsFixed(2);
+      } else if (changedField == 'totalCost' && totalCost != null && volume != null) {
+        // Total cost changed - recalculate price per liter
+        _pricePerLiterController.text = (totalCost / volume).toStringAsFixed(2);
+      } else if (changedField == 'pricePerLiter' && pricePerLiter != null && volume != null) {
+        // Price per liter changed - recalculate total cost
+        _totalCostController.text = (volume * pricePerLiter).toStringAsFixed(2);
+      }
+    }
+  }
+
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -180,10 +230,8 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
         id: widget.refuel?.id,
         odometerState: double.tryParse(_odometerController.text) ?? 0.0,
         volumes: double.parse(_volumesController.text),
-        prize: double.parse(_prizeController.text),
-        information: _informationController.text.trim().isNotEmpty 
-            ? _informationController.text.trim() 
-            : null,
+        prize: double.parse(_totalCostController.text),
+        information: null,
         rating: _rating,
         date: _selectedDate,
         distance: _calculatedDistance,
@@ -270,6 +318,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                               suffixText: 'l',
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            onChanged: (value) => _calculateValues(changedField: 'volume'),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return l10n.required;
@@ -282,16 +331,30 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: TextFormField(
-                            controller: _prizeController,
+                            controller: _pricePerLiterController,
+                            decoration: InputDecoration(
+                              labelText: l10n.pricePerLiter,
+                              border: const OutlineInputBorder(),
+                              suffixText: 'zł/l',
+                            ),
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            onChanged: (value) => _calculateValues(changedField: 'pricePerLiter'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _totalCostController,
                             decoration: InputDecoration(
                               labelText: '${l10n.cost} *',
                               border: const OutlineInputBorder(),
                               suffixText: 'zł',
                             ),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            onChanged: (value) => _calculateValues(changedField: 'totalCost'),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return l10n.required;
@@ -446,16 +509,6 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                       divisions: 4,
                       label: _rating.toString(),
                       onChanged: (value) => setState(() => _rating = value),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _informationController,
-                      decoration: InputDecoration(
-                        labelText: l10n.notes,
-                        border: const OutlineInputBorder(),
-                        hintText: l10n.additionalInfoHint,
-                      ),
-                      maxLines: 3,
                     ),
                     if (LocationService.isLocationSupported) ...[
                       const SizedBox(height: 16),

@@ -558,7 +558,7 @@ class DatabaseService {
     );
   }
 
-  // ===== STATYSTYKI =====
+  // ===== STATS =====
 
   Future<Map<String, dynamic>> getRefuelStatistics(String tableName, int count) async {
     final refuels = await getRefuels(tableName, limit: count);
@@ -574,11 +574,14 @@ class DatabaseService {
       };
     }
     
+    // Calculate consumption considering partial refuels
+    final consumptionData = _calculateConsumptionWithPartials(refuels);
+    
     final totalVolume = refuels.fold(0.0, (sum, refuel) => sum + refuel.volumes);
     final totalCost = refuels.fold(0.0, (sum, refuel) => sum + refuel.prize);
-    final totalDistance = refuels.fold(0.0, (sum, refuel) => sum + refuel.distance);
+    final totalDistance = consumptionData['totalDistance'] as double;
+    final avgConsumption = consumptionData['avgConsumption'] as double;
     
-    final avgConsumption = totalDistance > 0 ? (totalVolume / totalDistance) * 100 : 0.0;
     final avgPricePerLiter = totalVolume > 0 ? totalCost / totalVolume : 0.0;
     
     return {
@@ -588,6 +591,61 @@ class DatabaseService {
       'totalDistance': totalDistance,
       'avgConsumption': avgConsumption,
       'avgPricePerLiter': avgPricePerLiter,
+    };
+  }
+
+  Map<String, dynamic> _calculateConsumptionWithPartials(List<Refuel> refuels) {
+    if (refuels.isEmpty) {
+      return {'totalDistance': 0.0, 'avgConsumption': 0.0};
+    }
+
+    double totalDistance = 0.0;
+    double totalVolumeForConsumption = 0.0;
+    
+    // Skip newest partial refuels that cannot provide accurate consumption data
+    int startIndex = 0;
+    while (startIndex < refuels.length && refuels[startIndex].refuelType == 0) {
+      startIndex++;
+    }
+    
+    if (startIndex >= refuels.length) {
+      // All refuels are partial - cannot calculate consumption
+      return {'totalDistance': 0.0, 'avgConsumption': 0.0};
+    }
+    
+    // Process refuels from first full tank onwards
+    List<Refuel> currentGroup = [];
+    
+    for (int i = startIndex; i < refuels.length; i++) {
+      final refuel = refuels[i];
+      currentGroup.add(refuel);
+      
+      // If this is a full tank (11) or we're at the end, process the group
+      if (refuel.refuelType == 11 || i == refuels.length - 1) {
+        if (currentGroup.length > 1) {
+          // Calculate consumption for the group
+          final groupDistance = currentGroup.fold(0.0, (sum, r) => sum + r.distance);
+          final groupVolume = currentGroup.fold(0.0, (sum, r) => sum + r.volumes);
+          
+          if (groupDistance > 0) {
+            totalDistance += groupDistance;
+            totalVolumeForConsumption += groupVolume;
+          }
+        } else if (refuel.refuelType == 11 && refuel.distance > 0) {
+          // Single full tank
+          totalDistance += refuel.distance;
+          totalVolumeForConsumption += refuel.volumes;
+        }
+        
+        currentGroup.clear();
+      }
+    }
+    
+    final avgConsumption = totalDistance > 0 ? (totalVolumeForConsumption / totalDistance) * 100 : 0.0;
+    
+    return {
+      'totalDistance': totalDistance,
+      'avgConsumption': avgConsumption,
     };
   }
 
@@ -624,12 +682,63 @@ class DatabaseService {
   Future<List<Map<String, dynamic>>> getRefuelChartData(String tableName, int count) async {
     final refuels = await getRefuels(tableName, limit: count);
     
-    return refuels.reversed.map((refuel) => {
-      'date': refuel.date.toIso8601String(),
-      'volume': refuel.volumes,
-      'consumption': refuel.consumption,
-      'cost': refuel.prize,
-    }).toList();
+    if (refuels.isEmpty) return [];
+    
+    // Skip newest partial refuels that cannot provide accurate consumption data
+    int startIndex = 0;
+    while (startIndex < refuels.length && refuels[startIndex].refuelType == 0) {
+      startIndex++;
+    }
+    
+    if (startIndex >= refuels.length) {
+      // All refuels are partial - cannot show consumption data
+      return [];
+    }
+    
+    List<Map<String, dynamic>> chartData = [];
+    List<Refuel> currentGroup = [];
+    
+    // Process refuels from first full tank onwards
+    for (int i = startIndex; i < refuels.length; i++) {
+      final refuel = refuels[i];
+      currentGroup.add(refuel);
+      
+      // If this is a full tank (11) or we're at the end, process the group
+      if (refuel.refuelType == 11 || i == refuels.length - 1) {
+        if (currentGroup.length > 1) {
+          // Calculate consumption for the group and assign to all refuels in group
+          final groupDistance = currentGroup.fold(0.0, (sum, r) => sum + r.distance);
+          final groupVolume = currentGroup.fold(0.0, (sum, r) => sum + r.volumes);
+          final groupConsumption = groupDistance > 0 ? (groupVolume / groupDistance) * 100 : 0.0;
+          
+          // Add all refuels from the group with calculated consumption
+          for (final groupRefuel in currentGroup.reversed) {
+            chartData.add({
+              'date': groupRefuel.date.toIso8601String(),
+              'volume': groupRefuel.volumes,
+              'consumption': groupConsumption,
+              'cost': groupRefuel.prize,
+              'refuelType': groupRefuel.refuelType,
+            });
+          }
+        } else if (refuel.refuelType == 11) {
+          // Single full tank - use its own consumption
+          chartData.add({
+            'date': refuel.date.toIso8601String(),
+            'volume': refuel.volumes,
+            'consumption': refuel.consumption,
+            'cost': refuel.prize,
+            'refuelType': refuel.refuelType,
+          });
+        }
+        // Partial refuels without following full tank are not added to chart
+        
+        currentGroup.clear();
+      }
+    }
+    
+    // Return in chronological order (oldest first for chart)
+    return chartData.reversed.toList();
   }
 
   // Close database
