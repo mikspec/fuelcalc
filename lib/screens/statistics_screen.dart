@@ -101,7 +101,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           ),
                           const SizedBox(height: 16),
                           DropdownButtonFormField<int>(
-                            value: _selectedRange,
+                            initialValue: _selectedRange,
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
                               labelText: l10n.dataRange,
@@ -239,11 +239,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               _buildStatRow(l10n.numberOfRefuels, '${_refuelStats['count']}'),
               _buildStatRow(l10n.totalDistance, '${NumberFormat('#,##0', 'pl_PL').format(_refuelStats['totalDistance'])} km'),
               _buildStatRow(l10n.totalFuelAmount, '${NumberFormat('#,##0.0', 'pl_PL').format(_refuelStats['totalVolume'])} l'),
-              _buildStatRow(l10n.totalCost, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['totalCost'])}'),
+              _buildStatRow(l10n.totalCost, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['totalCost'])),
               _buildStatRow(l10n.averageConsumption, '${NumberFormat('#,##0.0', 'pl_PL').format(_refuelStats['avgConsumption'])} l/100km'),
-              _buildStatRow(l10n.averagePricePerLiter, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['avgPricePerLiter'])}'),
+              _buildStatRow(l10n.averagePricePerLiter, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_refuelStats['avgPricePerLiter'])),
               if (_refuelStats['totalDistance'] > 0)
-                _buildStatRow(l10n.costPer100km, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format((_refuelStats['totalCost'] / _refuelStats['totalDistance']) * 100)}'),
+                _buildStatRow(l10n.costPer100km, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format((_refuelStats['totalCost'] / _refuelStats['totalDistance']) * 100)),
             ],
           ],
         ),
@@ -271,8 +271,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               Text(l10n.noDataToDisplay)
             else ...[
               _buildStatRow(l10n.numberOfExpenses, '${_expenseStats['count']}'),
-              _buildStatRow(l10n.totalCost, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['totalCost'])}'),
-              _buildStatRow(l10n.averageCost, '${NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['avgCost'])}'),
+              _buildStatRow(l10n.totalCost, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['totalCost'])),
+              _buildStatRow(l10n.averageCost, NumberFormat.currency(locale: 'pl_PL', symbol: 'zł').format(_expenseStats['avgCost'])),
             ],
           ],
         ),

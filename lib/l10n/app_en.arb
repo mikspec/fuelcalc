@@ -1097,5 +1097,178 @@
   "averageCost": "Average cost",
   "@averageCost": {
     "description": "Average cost label"
+  },
+  
+  "basicData": "Basic Data",
+  "@basicData": {
+    "description": "Basic data section title for refuel form"
+  },
+  
+  "invalidVolume": "Invalid volume",
+  "@invalidVolume": {
+    "description": "Invalid volume validation message"
+  },
+  
+  "invalidOdometerReading": "Invalid odometer reading",
+  "@invalidOdometerReading": {
+    "description": "Invalid odometer reading validation message"
+  },
+  
+  "errorLoadingLastOdometer": "Error loading last odometer reading: {error}",
+  "@errorLoadingLastOdometer": {
+    "description": "Error loading last odometer reading",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorLoadingLocation": "Error loading location: {error}",
+  "@errorLoadingLocation": {
+    "description": "Error loading location",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorCalculatingDistance": "Error calculating distance: {error}",
+  "@errorCalculatingDistance": {
+    "description": "Error calculating distance",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "distanceFromLast": "Distance from last",
+  "@distanceFromLast": {
+    "description": "Distance from last refuel label"
+  },
+  
+  "lastOdometer": "Last: {reading} km",
+  "@lastOdometer": {
+    "description": "Last odometer reading",
+    "placeholders": {
+      "reading": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "dateAndDetails": "Date and Details",
+  "@dateAndDetails": {
+    "description": "Date and details section title"
+  },
+  
+  "additionalInfoHint": "Additional information...",
+  "@additionalInfoHint": {
+    "description": "Additional information hint text"
+  },
+  
+  "loadingLocation": "Loading location...",
+  "@loadingLocation": {
+    "description": "Loading location text"
+  },
+  
+  "locationCoordinates": "Location: {latitude}, {longitude}",
+  "@locationCoordinates": {
+    "description": "Location coordinates display",
+    "placeholders": {
+      "latitude": {
+        "type": "String"
+      },
+      "longitude": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "locationUnavailable": "Location unavailable",
+  "@locationUnavailable": {
+    "description": "Location unavailable text"
+  },
+  
+  "updateRefuel": "Update Refuel",
+  "@updateRefuel": {
+    "description": "Update refuel button text"
+  },
+  
+  "addRefuelButton": "Add Refuel",
+  "@addRefuelButton": {
+    "description": "Add refuel button text"
+  },
+  
+  "errorLoadingExpenses": "Error loading expenses: {error}",
+  "@errorLoadingExpenses": {
+    "description": "Error loading expenses message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorDeletingExpense": "Error deleting expense: {error}",
+  "@errorDeletingExpense": {
+    "description": "Error deleting expense message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "dateLabel": "Date:",
+  "@dateLabel": {
+    "description": "Date label"
+  },
+  
+  "ratingLabel": "Rating:",
+  "@ratingLabel": {
+    "description": "Rating label"
+  },
+  
+  "noDescription": "No description",
+  "@noDescription": {
+    "description": "No description placeholder text"
+  },
+  
+  "noRefuelsYet": "No refuels yet",
+  "@noRefuelsYet": {
+    "description": "No refuels message"
+  },
+  
+  "addFirstRefuel": "Add your first refuel using the button below",
+  "@addFirstRefuel": {
+    "description": "Add first refuel instruction"
+  },
+  
+  "pricePerLiter": "Price per liter",
+  "@pricePerLiter": {
+    "description": "Price per liter label"
+  },
+  
+  "consumption": "Consumption",
+  "@consumption": {
+    "description": "Consumption label"
+  },
+  
+  "odometerReading": "Odometer reading",
+  "@odometerReading": {
+    "description": "Odometer reading label"
+  },
+  
+  "gpsLocation": "GPS Location",
+  "@gpsLocation": {
+    "description": "GPS location label"
+  },
+  
+  "addRefuelTooltip": "Add refuel",
+  "@addRefuelTooltip": {
+    "description": "Add refuel tooltip"
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
@@ -77,7 +78,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
         });
       }
     } catch (e) {
-      print('Błąd ładowania ostatniego odczytu licznika: $e');
+      if (kDebugMode) {
+        debugPrint('Error loading last odometer reading: $e');
+      }
     }
   }
 
@@ -95,7 +98,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
       });
     } catch (e) {
       setState(() => _isLoadingLocation = false);
-      print('Błąd pobierania lokalizacji: $e');
+      if (kDebugMode) {
+        debugPrint('Error loading location: $e');
+      }
     }
   }
 
@@ -119,7 +124,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
       );
       setState(() => _calculatedDistance = distance);
     } catch (e) {
-      print('Błąd obliczania dystansu: $e');
+      if (kDebugMode) {
+        debugPrint('Error calculating distance: $e');
+      }
       setState(() => _calculatedDistance = 0.0);
     }
   }
@@ -247,9 +254,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Podstawowe dane',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.basicData,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -265,11 +272,11 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Wymagane';
+                                return l10n.required;
                               }
                               final volume = double.tryParse(value);
                               if (volume == null || volume <= 0) {
-                                return 'Nieprawidłowa ilość';
+                                return l10n.invalidVolume;
                               }
                               return null;
                             },
@@ -287,11 +294,11 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Wymagane';
+                                return l10n.required;
                               }
                               final price = double.tryParse(value);
                               if (price == null || price <= 0) {
-                                return 'Nieprawidłowy koszt';
+                                return l10n.invalidCost;
                               }
                               return null;
                             },
@@ -314,11 +321,11 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             onChanged: (value) => _calculateDistance(),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Wymagane';
+                                return l10n.required;
                               }
                               final odometer = double.tryParse(value);
                               if (odometer == null || odometer <= 0) {
-                                return 'Nieprawidłowy stan';
+                                return l10n.invalidOdometerReading;
                               }
                               
                               // Walidacja czy stan licznika jest większy od ostatniego
@@ -339,9 +346,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Dystans od ostatniego',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.distanceFromLast,
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey,
                                   ),
@@ -366,7 +373,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                                 ),
                                 if (_lastOdometerReading != null && _lastOdometerReading! > 0)
                                   Text(
-                                    'Ostatni: ${_lastOdometerReading!.toStringAsFixed(0)} km',
+                                    l10n.lastOdometer(_lastOdometerReading!.toStringAsFixed(0)),
                                     style: const TextStyle(
                                       fontSize: 10,
                                       color: Colors.grey,
@@ -389,9 +396,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Data i szczegóły',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.dateAndDetails,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -420,7 +427,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                     Text(l10n.refuelType),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
-                      value: _refuelType,
+                      initialValue: _refuelType,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                       ),
@@ -446,7 +453,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                       decoration: InputDecoration(
                         labelText: l10n.notes,
                         border: const OutlineInputBorder(),
-                        hintText: 'Dodatkowe informacje...',
+                        hintText: l10n.additionalInfoHint,
                       ),
                       maxLines: 3,
                     ),
@@ -471,10 +478,10 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                             Expanded(
                               child: Text(
                                 _isLoadingLocation 
-                                  ? 'Pobieranie lokalizacji...'
+                                  ? l10n.loadingLocation
                                   : (_gpsLatitude != 0.0 || _gpsLongitude != 0.0)
-                                    ? 'Lokalizacja: ${_gpsLatitude.toStringAsFixed(6)}, ${_gpsLongitude.toStringAsFixed(6)}'
-                                    : 'Lokalizacja niedostępna',
+                                    ? l10n.locationCoordinates(_gpsLatitude.toStringAsFixed(6), _gpsLongitude.toStringAsFixed(6))
+                                    : l10n.locationUnavailable,
                                 style: const TextStyle(fontSize: 12),
                               ),
                             ),
@@ -499,7 +506,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: Text(
-                  _isEditing ? 'Zaktualizuj tankowanie' : 'Dodaj tankowanie',
+                  _isEditing ? l10n.updateRefuel : l10n.addRefuelButton,
                   style: const TextStyle(fontSize: 16),
                 ),
               ),

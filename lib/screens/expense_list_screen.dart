@@ -41,7 +41,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd ładowania wydatków: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingExpenses(e.toString()))),
         );
       }
     }
@@ -103,7 +103,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Błąd usuwania wydatku: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.errorDeletingExpense(e.toString()))),
           );
         }
       }
@@ -300,7 +300,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
-                                              'Data: ${DateFormat('dd.MM.yyyy HH:mm').format(expense.date)}',
+                                              '${l10n.dateLabel} ${DateFormat('dd.MM.yyyy HH:mm').format(expense.date)}',
                                               style: TextStyle(color: Colors.grey[600]),
                                             ),
                                           ],
@@ -338,7 +338,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                                         const SizedBox(height: 8),
                                         Row(
                                           children: [
-                                            const Text('Ocena: '),
+                                            Text('${l10n.ratingLabel} '),
                                             ...List.generate(5, (i) => Icon(
                                               i < expense.statisticRating ? Icons.star : Icons.star_border,
                                               color: Colors.amber,
