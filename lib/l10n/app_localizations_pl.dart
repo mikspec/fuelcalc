@@ -699,4 +699,13 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get addRefuelTooltip => 'Dodaj tankowanie';
+
+  @override
+  String get odometerMustBeGreaterThanZero =>
+      'Stan licznika musi być większy od 0';
+
+  @override
+  String odometerMustBeGreaterThanLast(String lastReading) {
+    return 'Stan licznika musi być większy od ostatniego odczytu ($lastReading km)';
+  }
 }

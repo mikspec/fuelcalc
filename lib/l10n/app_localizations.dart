@@ -1339,6 +1339,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add refuel'**
   String get addRefuelTooltip;
+
+  /// Validation message for odometer reading
+  ///
+  /// In en, this message translates to:
+  /// **'Odometer reading must be greater than 0'**
+  String get odometerMustBeGreaterThanZero;
+
+  /// Validation message for odometer reading compared to last reading
+  ///
+  /// In en, this message translates to:
+  /// **'Odometer reading must be greater than the last reading ({lastReading} km)'**
+  String odometerMustBeGreaterThanLast(String lastReading);
 }
 
 class _AppLocalizationsDelegate

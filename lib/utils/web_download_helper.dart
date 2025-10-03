@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class WebDownloadHelper {
   static void downloadFile(String content, String fileName) {
-    // Konwertuj string JSON na UTF-8 bytes używając Uint8List
+    // Convert JSON string to UTF-8 bytes using Uint8List
     final bytes = utf8.encode(content);
     final blob = html.Blob([bytes], 'application/json');
     final url = html.Url.createObjectUrl(blob);

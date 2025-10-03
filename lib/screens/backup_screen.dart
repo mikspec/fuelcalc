@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/backup_service.dart';
 import '../l10n/app_localizations.dart';
-// Warunkowy import dla różnych platform
+// Conditional import for different platforms
 import '../utils/web_download_helper_stub.dart'
     if (dart.library.html) '../utils/web_download_helper.dart';
 
@@ -73,7 +73,7 @@ class _BackupScreenState extends State<BackupScreen> {
       if (result != null && result.files.first.bytes != null) {
         final jsonString = String.fromCharCodes(result.files.first.bytes!);
         
-        // Debug: pokaż pierwsze 200 znaków pliku
+        // Debug: show first 200 characters of file
         debugPrint('Import JSON preview: ${jsonString.substring(0, jsonString.length < 200 ? jsonString.length : 200)}...');
         
         if (!_backupService.validateBackup(jsonString)) {
@@ -90,7 +90,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 backgroundColor: Colors.green,
               ),
             );
-            Navigator.of(context).pop(); // Wróć do poprzedniego ekranu
+            Navigator.of(context).pop(); // Return to previous screen
           }
         });
       }
@@ -125,7 +125,7 @@ class _BackupScreenState extends State<BackupScreen> {
       final sqliteData = await _backupService.exportSqliteDatabase();
       
       if (sqliteData != null) {
-        // Na desktop - pokaż dane w dialogu (docelowo save file dialog)
+        // On desktop - show data in dialog (eventually save file dialog)
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -186,7 +186,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 backgroundColor: Colors.green,
               ),
             );
-            Navigator.of(context).pop(); // Wróć do poprzedniego ekranu
+            Navigator.of(context).pop(); // Return to previous screen
           }
         });
       }
@@ -278,7 +278,7 @@ class _BackupScreenState extends State<BackupScreen> {
           );
         }
       } catch (e) {
-        // Fallback - pokaż dialog z JSON
+        // Fallback - show dialog with JSON
         if (mounted) {
           showDialog(
             context: context,

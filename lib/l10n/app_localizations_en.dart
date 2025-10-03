@@ -697,4 +697,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addRefuelTooltip => 'Add refuel';
+
+  @override
+  String get odometerMustBeGreaterThanZero =>
+      'Odometer reading must be greater than 0';
+
+  @override
+  String odometerMustBeGreaterThanLast(String lastReading) {
+    return 'Odometer reading must be greater than the last reading ($lastReading km)';
+  }
 }

@@ -222,5 +222,7 @@
   "consumption": "Spalanie",
   "odometerReading": "Stan licznika",
   "gpsLocation": "Lokalizacja GPS",
-  "addRefuelTooltip": "Dodaj tankowanie"
+  "addRefuelTooltip": "Dodaj tankowanie",
+  "odometerMustBeGreaterThanZero": "Stan licznika musi być większy od 0",
+  "odometerMustBeGreaterThanLast": "Stan licznika musi być większy od ostatniego odczytu ({lastReading} km)"
 }

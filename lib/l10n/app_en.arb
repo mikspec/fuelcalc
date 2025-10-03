@@ -1270,5 +1270,20 @@
   "addRefuelTooltip": "Add refuel",
   "@addRefuelTooltip": {
     "description": "Add refuel tooltip"
+  },
+  
+  "odometerMustBeGreaterThanZero": "Odometer reading must be greater than 0",
+  "@odometerMustBeGreaterThanZero": {
+    "description": "Validation message for odometer reading"
+  },
+  
+  "odometerMustBeGreaterThanLast": "Odometer reading must be greater than the last reading ({lastReading} km)",
+  "@odometerMustBeGreaterThanLast": {
+    "description": "Validation message for odometer reading compared to last reading",
+    "placeholders": {
+      "lastReading": {
+        "type": "String"
+      }
+    }
   }
 }

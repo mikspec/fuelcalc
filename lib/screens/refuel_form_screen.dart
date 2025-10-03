@@ -169,7 +169,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Jeśli to nowe tankowanie, pobierz aktualną lokalizację
+      // If it's a new refuel, get current location
       if (!_isEditing && LocationService.isLocationSupported) {
         final coordinates = await LocationService.getLocationCoordinates();
         _gpsLatitude = coordinates['latitude']!;
@@ -328,9 +328,9 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                                 return l10n.invalidOdometerReading;
                               }
                               
-                              // Walidacja czy stan licznika jest większy od ostatniego
+                              // Validate if odometer reading is greater than last
                               final validationMessage = DistanceCalculatorService
-                                  .getOdometerValidationMessage(odometer, _lastOdometerReading);
+                                  .getOdometerValidationMessage(context, odometer, _lastOdometerReading);
                               return validationMessage;
                             },
                           ),

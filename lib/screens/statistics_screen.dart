@@ -88,7 +88,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
-                  // Wybór zakresu
+                  // Period selection
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -120,15 +120,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   ),
                   const SizedBox(height: 16),
                   
-                  // Podsumowanie kosztów
+                  // Cost summary
                   _buildCostSummaryCard(l10n),
                   const SizedBox(height: 16),
                   
-                  // Statystyki tankowań
+                  // Refuel statistics
                   _buildRefuelStatisticsCard(l10n),
                   const SizedBox(height: 16),
                   
-                  // Statystyki wydatków
+                  // Expense statistics
                   _buildExpenseStatisticsCard(l10n),
                   const SizedBox(height: 16),
                   

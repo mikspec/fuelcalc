@@ -112,23 +112,23 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
   Color _getCategoryColor(int type) {
     switch (type) {
-      case 1: return Colors.red; // Akumulator
-      case 2: return Colors.orange; // Naprawa
-      case 3: return Colors.blue; // Laweta
-      case 4: return Colors.green; // Ubezpieczenie
-      case 5: return Colors.purple; // Przegląd
-      default: return Colors.grey; // Inne
+      case 1: return Colors.red; // Battery
+      case 2: return Colors.orange; // Repair
+      case 3: return Colors.blue; // Towning
+      case 4: return Colors.green; // Insurance
+      case 5: return Colors.purple; // Inspection
+      default: return Colors.grey; // Other
     }
   }
 
   IconData _getCategoryIcon(int type) {
     switch (type) {
-      case 1: return Icons.battery_full; // Akumulator
-      case 2: return Icons.build; // Naprawa
-      case 3: return Icons.local_shipping; // Laweta
-      case 4: return Icons.security; // Ubezpieczenie
-      case 5: return Icons.verified_user; // Przegląd
-      default: return Icons.receipt; // Inne
+      case 1: return Icons.battery_full; // Battery
+      case 2: return Icons.build; // Repair
+      case 3: return Icons.local_shipping; // Twoning
+      case 4: return Icons.security; // Insurance
+      case 5: return Icons.verified_user; // Inspection
+      default: return Icons.receipt; // Other
     }
   }
 
@@ -166,7 +166,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                   onRefresh: _loadExpenses,
                   child: Column(
                     children: [
-                      // Podsumowanie wydatków
+                      // Expense summary
                       if (_expenses.isNotEmpty)
                         Container(
                           margin: const EdgeInsets.all(8.0),
@@ -216,7 +216,7 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
                           ),
                         ),
                       
-                      // Lista wydatków
+                      // Expense list
                       Expanded(
                         child: ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),

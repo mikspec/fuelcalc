@@ -1,7 +1,7 @@
 import '../l10n/app_localizations.dart';
 
 class ExpenseTypeHelper {
-  /// Zwraca zlokalizowaną nazwę typu wydatku
+  /// Returns localized expense type name
   static String getLocalizedTypeName(AppLocalizations l10n, int typeId) {
     switch (typeId) {
       case 0:
@@ -21,7 +21,7 @@ class ExpenseTypeHelper {
     }
   }
 
-  /// Zwraca mapę typów wydatków z zlokalizowanymi nazwami
+  /// Returns map of expense types with localized names
   static Map<int, String> getLocalizedExpenseTypes(AppLocalizations l10n) {
     return {
       0: l10n.expenseTypeOther,
