@@ -23,7 +23,7 @@ class DatabaseService {
     if (kIsWeb) {
       return null; // On web we use SharedPreferences
     }
-    
+
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
@@ -71,11 +71,6 @@ class DatabaseService {
         car_statistics_table TEXT NOT NULL
       )
     ''');
-
-    // Sequence table (for SQLite compatibility)
-    await db.execute('''
-      CREATE TABLE sqlite_sequence(name TEXT, seq INTEGER)
-    ''');
   }
 
   // ===== OPERACJE NA POJAZDACH =====
@@ -91,57 +86,61 @@ class DatabaseService {
   Future<int> _insertCarWeb(Car car) async {
     final prefs = await this.prefs;
     final cars = await getAllCars();
-    
+
     // Generuj ID i nazwy tabel
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final carId = cars.length + 1;
     final carTableName = 'car_${carId}_$timestamp';
     final statsTableName = 'stats_${carId}_$timestamp';
-    
+
     final carWithTables = car.copyWith(
       id: carId,
       carName: carTableName,
       carStatisticsTable: statsTableName,
     );
-    
+
     cars.add(carWithTables);
-    
+
     // Save car list
     final carsJson = cars.map((c) => c.toMap()).toList();
     await prefs.setString(_carsKey, jsonEncode(carsJson));
-    
+
     // Create empty lists for refuels and expenses
     await prefs.setString('$_refuelsPrefix$carTableName', jsonEncode([]));
     await prefs.setString('$_expensesPrefix$statsTableName', jsonEncode([]));
-    
+
     return carId;
   }
 
   Future<int> _insertCarSqlite(Car car) async {
     final db = await database;
     if (db == null) return 0;
-    
+
     // Generuj unikalne nazwy tabel dla nowego samochodu
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final carTableName = 'car_${car.id ?? timestamp}';
     final statsTableName = 'stats_${car.id ?? timestamp}';
-    
+
     // Create new car with appropriate table names
     final carWithTables = car.copyWith(
       carName: carTableName,
       carStatisticsTable: statsTableName,
     );
-    
+
     // Insert car into car_host table
     final carId = await db.insert('car_host', carWithTables.toMap());
-    
+
     // Create dedicated tables for refuels and expenses
     await _createCarTables(db, carTableName, statsTableName);
-    
+
     return carId;
   }
 
-  Future<void> _createCarTables(Database db, String carTableName, String statsTableName) async {
+  Future<void> _createCarTables(
+    Database db,
+    String carTableName,
+    String statsTableName,
+  ) async {
     // Refuel table for the car
     await db.execute('''
       CREATE TABLE $carTableName (
@@ -186,7 +185,7 @@ class DatabaseService {
     final prefs = await this.prefs;
     final carsJson = prefs.getString(_carsKey);
     if (carsJson == null) return [];
-    
+
     final List<dynamic> carsList = jsonDecode(carsJson);
     return carsList.map((carMap) => Car.fromMap(carMap)).toList();
   }
@@ -194,7 +193,7 @@ class DatabaseService {
   Future<List<Car>> _getAllCarsSqlite() async {
     final db = await database;
     if (db == null) return [];
-    
+
     final List<Map<String, dynamic>> maps = await db.query('car_host');
     return List.generate(maps.length, (i) => Car.fromMap(maps[i]));
   }
@@ -219,22 +218,22 @@ class DatabaseService {
   Future<int> _updateCarWeb(Car car) async {
     final prefs = await this.prefs;
     final cars = await getAllCars();
-    
+
     final index = cars.indexWhere((c) => c.id == car.id);
     if (index == -1) return 0;
-    
+
     cars[index] = car;
-    
+
     final carsJson = cars.map((c) => c.toMap()).toList();
     await prefs.setString(_carsKey, jsonEncode(carsJson));
-    
+
     return 1;
   }
 
   Future<int> _updateCarSqlite(Car car) async {
     final db = await database;
     if (db == null) return 0;
-    
+
     return await db.update(
       'car_host',
       car.toMap(),
@@ -255,39 +254,35 @@ class DatabaseService {
     final prefs = await this.prefs;
     final car = await getCarById(id);
     if (car == null) return 0;
-    
+
     // Remove car data
     final cars = await getAllCars();
     cars.removeWhere((c) => c.id == id);
-    
+
     final carsJson = cars.map((c) => c.toMap()).toList();
     await prefs.setString(_carsKey, jsonEncode(carsJson));
-    
+
     // Remove refuel and expense data
     await prefs.remove('$_refuelsPrefix${car.carName}');
     await prefs.remove('$_expensesPrefix${car.carStatisticsTable}');
-    
+
     return 1;
   }
 
   Future<int> _deleteCarSqlite(int id) async {
     final db = await database;
     if (db == null) return 0;
-    
+
     // Pobierz informacje o samochodzie
     final car = await getCarById(id);
     if (car == null) return 0;
-    
+
     // Remove dedicated tables
     await db.execute('DROP TABLE IF EXISTS ${car.carName}');
     await db.execute('DROP TABLE IF EXISTS ${car.carStatisticsTable}');
-    
+
     // Remove car from main table
-    return await db.delete(
-      'car_host',
-      where: '_car_id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('car_host', where: '_car_id = ?', whereArgs: [id]);
   }
 
   // ===== OPERACJE NA TANKOWANIACH =====
@@ -303,20 +298,20 @@ class DatabaseService {
   Future<int> _insertRefuelWeb(String tableName, Refuel refuel) async {
     final prefs = await this.prefs;
     final refuels = await getRefuels(tableName);
-    
+
     final newRefuel = refuel.copyWith(id: refuels.length + 1);
     refuels.insert(0, newRefuel); // Add at beginning (newest first)
-    
+
     final refuelsJson = refuels.map((r) => r.toMap()).toList();
     await prefs.setString('$_refuelsPrefix$tableName', jsonEncode(refuelsJson));
-    
+
     return newRefuel.id!;
   }
 
   Future<int> _insertRefuelSqlite(String tableName, Refuel refuel) async {
     final db = await database;
     if (db == null) return 0;
-    
+
     return await db.insert(tableName, refuel.toMap());
   }
 
@@ -332,24 +327,26 @@ class DatabaseService {
     final prefs = await this.prefs;
     final refuelsJson = prefs.getString('$_refuelsPrefix$tableName');
     if (refuelsJson == null) return [];
-    
+
     final List<dynamic> refuelsList = jsonDecode(refuelsJson);
-    var refuels = refuelsList.map((refuelMap) => Refuel.fromMap(refuelMap)).toList();
-    
+    var refuels = refuelsList
+        .map((refuelMap) => Refuel.fromMap(refuelMap))
+        .toList();
+
     // Sortuj po dacie (najnowsze pierwsze)
     refuels.sort((a, b) => b.date.compareTo(a.date));
-    
+
     if (limit != null && limit > 0) {
       refuels = refuels.take(limit).toList();
     }
-    
+
     return refuels;
   }
 
   Future<List<Refuel>> _getRefuelsSqlite(String tableName, {int? limit}) async {
     final db = await database;
     if (db == null) return [];
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       tableName,
       orderBy: 'date DESC',
@@ -369,22 +366,22 @@ class DatabaseService {
   Future<int> _updateRefuelWeb(String tableName, Refuel refuel) async {
     final prefs = await this.prefs;
     final refuels = await getRefuels(tableName);
-    
+
     final index = refuels.indexWhere((r) => r.id == refuel.id);
     if (index == -1) return 0;
-    
+
     refuels[index] = refuel;
-    
+
     final refuelsJson = refuels.map((r) => r.toMap()).toList();
     await prefs.setString('$_refuelsPrefix$tableName', jsonEncode(refuelsJson));
-    
+
     return 1;
   }
 
   Future<int> _updateRefuelSqlite(String tableName, Refuel refuel) async {
     final db = await database;
     if (db == null) return 0;
-    
+
     return await db.update(
       tableName,
       refuel.toMap(),
@@ -404,24 +401,20 @@ class DatabaseService {
   Future<int> _deleteRefuelWeb(String tableName, int id) async {
     final prefs = await this.prefs;
     final refuels = await getRefuels(tableName);
-    
+
     refuels.removeWhere((r) => r.id == id);
-    
+
     final refuelsJson = refuels.map((r) => r.toMap()).toList();
     await prefs.setString('$_refuelsPrefix$tableName', jsonEncode(refuelsJson));
-    
+
     return 1;
   }
 
   Future<int> _deleteRefuelSqlite(String tableName, int id) async {
     final db = await database;
     if (db == null) return 0;
-    
-    return await db.delete(
-      tableName,
-      where: '_id = ?',
-      whereArgs: [id],
-    );
+
+    return await db.delete(tableName, where: '_id = ?', whereArgs: [id]);
   }
 
   // ===== OPERACJE NA WYDATKACH =====
@@ -437,20 +430,23 @@ class DatabaseService {
   Future<int> _insertExpenseWeb(String tableName, Expense expense) async {
     final prefs = await this.prefs;
     final expenses = await getExpenses(tableName);
-    
+
     final newExpense = expense.copyWith(id: expenses.length + 1);
     expenses.insert(0, newExpense); // Add at beginning (newest first)
-    
+
     final expensesJson = expenses.map((e) => e.toMap()).toList();
-    await prefs.setString('$_expensesPrefix$tableName', jsonEncode(expensesJson));
-    
+    await prefs.setString(
+      '$_expensesPrefix$tableName',
+      jsonEncode(expensesJson),
+    );
+
     return newExpense.id!;
   }
 
   Future<int> _insertExpenseSqlite(String tableName, Expense expense) async {
     final db = await database;
     if (db == null) return 0;
-    
+
     return await db.insert(tableName, expense.toMap());
   }
 
@@ -466,24 +462,29 @@ class DatabaseService {
     final prefs = await this.prefs;
     final expensesJson = prefs.getString('$_expensesPrefix$tableName');
     if (expensesJson == null) return [];
-    
+
     final List<dynamic> expensesList = jsonDecode(expensesJson);
-    var expenses = expensesList.map((expenseMap) => Expense.fromMap(expenseMap)).toList();
-    
+    var expenses = expensesList
+        .map((expenseMap) => Expense.fromMap(expenseMap))
+        .toList();
+
     // Sortuj po dacie (najnowsze pierwsze)
     expenses.sort((a, b) => b.date.compareTo(a.date));
-    
+
     if (limit != null && limit > 0) {
       expenses = expenses.take(limit).toList();
     }
-    
+
     return expenses;
   }
 
-  Future<List<Expense>> _getExpensesSqlite(String tableName, {int? limit}) async {
+  Future<List<Expense>> _getExpensesSqlite(
+    String tableName, {
+    int? limit,
+  }) async {
     final db = await database;
     if (db == null) return [];
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       tableName,
       orderBy: 'date DESC',
@@ -503,22 +504,25 @@ class DatabaseService {
   Future<int> _updateExpenseWeb(String tableName, Expense expense) async {
     final prefs = await this.prefs;
     final expenses = await getExpenses(tableName);
-    
+
     final index = expenses.indexWhere((e) => e.id == expense.id);
     if (index == -1) return 0;
-    
+
     expenses[index] = expense;
-    
+
     final expensesJson = expenses.map((e) => e.toMap()).toList();
-    await prefs.setString('$_expensesPrefix$tableName', jsonEncode(expensesJson));
-    
+    await prefs.setString(
+      '$_expensesPrefix$tableName',
+      jsonEncode(expensesJson),
+    );
+
     return 1;
   }
 
   Future<int> _updateExpenseSqlite(String tableName, Expense expense) async {
     final db = await database;
     if (db == null) return 0;
-    
+
     return await db.update(
       tableName,
       expense.toMap(),
@@ -538,19 +542,22 @@ class DatabaseService {
   Future<int> _deleteExpenseWeb(String tableName, int id) async {
     final prefs = await this.prefs;
     final expenses = await getExpenses(tableName);
-    
+
     expenses.removeWhere((e) => e.id == id);
-    
+
     final expensesJson = expenses.map((e) => e.toMap()).toList();
-    await prefs.setString('$_expensesPrefix$tableName', jsonEncode(expensesJson));
-    
+    await prefs.setString(
+      '$_expensesPrefix$tableName',
+      jsonEncode(expensesJson),
+    );
+
     return 1;
   }
 
   Future<int> _deleteExpenseSqlite(String tableName, int id) async {
     final db = await database;
     if (db == null) return 0;
-    
+
     return await db.delete(
       tableName,
       where: '_statistics_row_id = ?',
@@ -560,9 +567,12 @@ class DatabaseService {
 
   // ===== STATS =====
 
-  Future<Map<String, dynamic>> getRefuelStatistics(String tableName, int count) async {
+  Future<Map<String, dynamic>> getRefuelStatistics(
+    String tableName,
+    int count,
+  ) async {
     final refuels = await getRefuels(tableName, limit: count);
-    
+
     if (refuels.isEmpty) {
       return {
         'count': 0,
@@ -573,17 +583,20 @@ class DatabaseService {
         'avgPricePerLiter': 0.0,
       };
     }
-    
+
     // Calculate consumption considering partial refuels
     final consumptionData = _calculateConsumptionWithPartials(refuels);
-    
-    final totalVolume = refuels.fold(0.0, (sum, refuel) => sum + refuel.volumes);
+
+    final totalVolume = refuels.fold(
+      0.0,
+      (sum, refuel) => sum + refuel.volumes,
+    );
     final totalCost = refuels.fold(0.0, (sum, refuel) => sum + refuel.prize);
     final totalDistance = consumptionData['totalDistance'] as double;
     final avgConsumption = consumptionData['avgConsumption'] as double;
-    
+
     final avgPricePerLiter = totalVolume > 0 ? totalCost / totalVolume : 0.0;
-    
+
     return {
       'count': refuels.length,
       'totalVolume': totalVolume,
@@ -601,32 +614,38 @@ class DatabaseService {
 
     double totalDistance = 0.0;
     double totalVolumeForConsumption = 0.0;
-    
+
     // Skip newest partial refuels that cannot provide accurate consumption data
     int startIndex = 0;
     while (startIndex < refuels.length && refuels[startIndex].refuelType == 0) {
       startIndex++;
     }
-    
+
     if (startIndex >= refuels.length) {
       // All refuels are partial - cannot calculate consumption
       return {'totalDistance': 0.0, 'avgConsumption': 0.0};
     }
-    
+
     // Process refuels from first full tank onwards
     List<Refuel> currentGroup = [];
-    
+
     for (int i = startIndex; i < refuels.length; i++) {
       final refuel = refuels[i];
       currentGroup.add(refuel);
-      
+
       // If this is a full tank (11) or we're at the end, process the group
       if (refuel.refuelType == 11 || i == refuels.length - 1) {
         if (currentGroup.length > 1) {
           // Calculate consumption for the group
-          final groupDistance = currentGroup.fold(0.0, (sum, r) => sum + r.distance);
-          final groupVolume = currentGroup.fold(0.0, (sum, r) => sum + r.volumes);
-          
+          final groupDistance = currentGroup.fold(
+            0.0,
+            (sum, r) => sum + r.distance,
+          );
+          final groupVolume = currentGroup.fold(
+            0.0,
+            (sum, r) => sum + r.volumes,
+          );
+
           if (groupDistance > 0) {
             totalDistance += groupDistance;
             totalVolumeForConsumption += groupVolume;
@@ -636,22 +655,24 @@ class DatabaseService {
           totalDistance += refuel.distance;
           totalVolumeForConsumption += refuel.volumes;
         }
-        
+
         currentGroup.clear();
       }
     }
-    
-    final avgConsumption = totalDistance > 0 ? (totalVolumeForConsumption / totalDistance) * 100 : 0.0;
-    
-    return {
-      'totalDistance': totalDistance,
-      'avgConsumption': avgConsumption,
-    };
+
+    final avgConsumption = totalDistance > 0
+        ? (totalVolumeForConsumption / totalDistance) * 100
+        : 0.0;
+
+    return {'totalDistance': totalDistance, 'avgConsumption': avgConsumption};
   }
 
-  Future<Map<String, dynamic>> getExpenseStatistics(String tableName, int count) async {
+  Future<Map<String, dynamic>> getExpenseStatistics(
+    String tableName,
+    int count,
+  ) async {
     final expenses = await getExpenses(tableName, limit: count);
-    
+
     if (expenses.isEmpty) {
       return {
         'count': 0,
@@ -660,17 +681,20 @@ class DatabaseService {
         'categoryCosts': <int, double>{},
       };
     }
-    
-    final totalCost = expenses.fold(0.0, (sum, expense) => sum + expense.statisticCost);
+
+    final totalCost = expenses.fold(
+      0.0,
+      (sum, expense) => sum + expense.statisticCost,
+    );
     final avgCost = totalCost / expenses.length;
-    
+
     // Group costs by category
     final Map<int, double> categoryCosts = {};
     for (final expense in expenses) {
-      categoryCosts[expense.statisticType] = 
+      categoryCosts[expense.statisticType] =
           (categoryCosts[expense.statisticType] ?? 0.0) + expense.statisticCost;
     }
-    
+
     return {
       'count': expenses.length,
       'totalCost': totalCost,
@@ -679,38 +703,49 @@ class DatabaseService {
     };
   }
 
-  Future<List<Map<String, dynamic>>> getRefuelChartData(String tableName, int count) async {
+  Future<List<Map<String, dynamic>>> getRefuelChartData(
+    String tableName,
+    int count,
+  ) async {
     final refuels = await getRefuels(tableName, limit: count);
-    
+
     if (refuels.isEmpty) return [];
-    
+
     // Skip newest partial refuels that cannot provide accurate consumption data
     int startIndex = 0;
     while (startIndex < refuels.length && refuels[startIndex].refuelType == 0) {
       startIndex++;
     }
-    
+
     if (startIndex >= refuels.length) {
       // All refuels are partial - cannot show consumption data
       return [];
     }
-    
+
     List<Map<String, dynamic>> chartData = [];
     List<Refuel> currentGroup = [];
-    
+
     // Process refuels from first full tank onwards
     for (int i = startIndex; i < refuels.length; i++) {
       final refuel = refuels[i];
       currentGroup.add(refuel);
-      
+
       // If this is a full tank (11) or we're at the end, process the group
       if (refuel.refuelType == 11 || i == refuels.length - 1) {
         if (currentGroup.length > 1) {
           // Calculate consumption for the group and assign to all refuels in group
-          final groupDistance = currentGroup.fold(0.0, (sum, r) => sum + r.distance);
-          final groupVolume = currentGroup.fold(0.0, (sum, r) => sum + r.volumes);
-          final groupConsumption = groupDistance > 0 ? (groupVolume / groupDistance) * 100 : 0.0;
-          
+          final groupDistance = currentGroup.fold(
+            0.0,
+            (sum, r) => sum + r.distance,
+          );
+          final groupVolume = currentGroup.fold(
+            0.0,
+            (sum, r) => sum + r.volumes,
+          );
+          final groupConsumption = groupDistance > 0
+              ? (groupVolume / groupDistance) * 100
+              : 0.0;
+
           // Add all refuels from the group with calculated consumption
           for (final groupRefuel in currentGroup.reversed) {
             chartData.add({
@@ -732,11 +767,11 @@ class DatabaseService {
           });
         }
         // Partial refuels without following full tank are not added to chart
-        
+
         currentGroup.clear();
       }
     }
-    
+
     // Return in chronological order (oldest first for chart)
     return chartData.reversed.toList();
   }
