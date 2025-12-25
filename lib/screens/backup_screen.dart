@@ -20,13 +20,16 @@ class _BackupScreenState extends State<BackupScreen> {
 
   Future<void> _exportBackup() async {
     setState(() => _isLoading = true);
-    
+
     try {
       if (kIsWeb) {
         // Eksport na web - automatyczne pobieranie
         final jsonData = await _backupService.exportToJson();
-        _downloadFile(jsonData, 'fuelcalc_backup_${DateTime.now().millisecondsSinceEpoch}.json');
-        
+        _downloadFile(
+          jsonData,
+          'fuelcalc_backup_${DateTime.now().millisecondsSinceEpoch}.json',
+        );
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -50,19 +53,21 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.exportError(e.toString())),
+            content: Text(
+              AppLocalizations.of(context)!.exportError(e.toString()),
+            ),
             backgroundColor: Colors.red,
           ),
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
   Future<void> _importBackup() async {
     setState(() => _isLoading = true);
-    
+
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -72,21 +77,25 @@ class _BackupScreenState extends State<BackupScreen> {
 
       if (result != null && result.files.first.bytes != null) {
         final jsonString = String.fromCharCodes(result.files.first.bytes!);
-        
+
         // Debug: show first 200 characters of file
-        debugPrint('Import JSON preview: ${jsonString.substring(0, jsonString.length < 200 ? jsonString.length : 200)}...');
-        
+        debugPrint(
+          'Import JSON preview: ${jsonString.substring(0, jsonString.length < 200 ? jsonString.length : 200)}...',
+        );
+
         if (!_backupService.validateBackup(jsonString)) {
           throw Exception(AppLocalizations.of(context)!.invalidBackupFormat);
         }
 
         await _showConfirmationDialog(() async {
           await _backupService.importFromJson(jsonString);
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(AppLocalizations.of(context)!.dataImportedSuccessfully),
+                content: Text(
+                  AppLocalizations.of(context)!.dataImportedSuccessfully,
+                ),
                 backgroundColor: Colors.green,
               ),
             );
@@ -98,13 +107,15 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.importError(e.toString())),
+            content: Text(
+              AppLocalizations.of(context)!.importError(e.toString()),
+            ),
             backgroundColor: Colors.red,
           ),
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -112,7 +123,9 @@ class _BackupScreenState extends State<BackupScreen> {
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.sqliteExportNotAvailableOnWeb),
+          content: Text(
+            AppLocalizations.of(context)!.sqliteExportNotAvailableOnWeb,
+          ),
           backgroundColor: Colors.orange,
         ),
       );
@@ -120,16 +133,18 @@ class _BackupScreenState extends State<BackupScreen> {
     }
 
     setState(() => _isLoading = true);
-    
+
     try {
       final sqliteData = await _backupService.exportSqliteDatabase();
-      
+
       if (sqliteData != null) {
         // On desktop - show data in dialog (eventually save file dialog)
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.sqliteDatabaseExported),
+              content: Text(
+                AppLocalizations.of(context)!.sqliteDatabaseExported,
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -139,13 +154,15 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.sqliteExportError(e.toString())),
+            content: Text(
+              AppLocalizations.of(context)!.sqliteExportError(e.toString()),
+            ),
             backgroundColor: Colors.red,
           ),
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -153,7 +170,9 @@ class _BackupScreenState extends State<BackupScreen> {
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.sqliteImportNotAvailableOnWeb),
+          content: Text(
+            AppLocalizations.of(context)!.sqliteImportNotAvailableOnWeb,
+          ),
           backgroundColor: Colors.orange,
         ),
       );
@@ -161,7 +180,7 @@ class _BackupScreenState extends State<BackupScreen> {
     }
 
     setState(() => _isLoading = true);
-    
+
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -171,18 +190,22 @@ class _BackupScreenState extends State<BackupScreen> {
 
       if (result != null && result.files.first.bytes != null) {
         final sqliteData = result.files.first.bytes!;
-        
+
         if (!_backupService.validateSqliteFile(sqliteData)) {
           throw Exception(AppLocalizations.of(context)!.invalidSqliteFormat);
         }
 
         await _showSqliteConfirmationDialog(() async {
           await _backupService.importSqliteDatabase(sqliteData);
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(AppLocalizations.of(context)!.sqliteDatabaseImportedSuccessfully),
+                content: Text(
+                  AppLocalizations.of(
+                    context,
+                  )!.sqliteDatabaseImportedSuccessfully,
+                ),
                 backgroundColor: Colors.green,
               ),
             );
@@ -194,13 +217,15 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.sqliteImportError(e.toString())),
+            content: Text(
+              AppLocalizations.of(context)!.sqliteImportError(e.toString()),
+            ),
             backgroundColor: Colors.red,
           ),
         );
       }
     }
-    
+
     setState(() => _isLoading = false);
   }
 
@@ -223,9 +248,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 Navigator.of(context).pop();
                 onConfirm();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
               child: Text(l10n.import),
             ),
           ],
@@ -253,9 +276,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 Navigator.of(context).pop();
                 onConfirm();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: Text(l10n.replaceDatabase),
             ),
           ],
@@ -268,11 +289,13 @@ class _BackupScreenState extends State<BackupScreen> {
     if (kIsWeb) {
       try {
         WebDownloadHelper.downloadFile(content, fileName);
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.fileDownloaded(fileName)),
+              content: Text(
+                AppLocalizations.of(context)!.fileDownloaded(fileName),
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -297,7 +320,10 @@ class _BackupScreenState extends State<BackupScreen> {
                       child: SingleChildScrollView(
                         child: SelectableText(
                           content,
-                          style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                          style: const TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -319,7 +345,9 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.fileDownloadInDevelopment),
+            content: Text(
+              AppLocalizations.of(context)!.fileDownloadInDevelopment,
+            ),
             backgroundColor: Colors.orange,
           ),
         );
@@ -339,96 +367,10 @@ class _BackupScreenState extends State<BackupScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.backup, color: Colors.green, size: 24),
-                              const SizedBox(width: 8),
-                              Text(
-                                l10n.exportData,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            l10n.exportDataDescription,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: _exportBackup,
-                              icon: const Icon(Icons.download),
-                              label: Text(l10n.exportDataButton),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.restore, color: Colors.orange, size: 24),
-                              const SizedBox(width: 8),
-                              Text(
-                                l10n.importData,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            l10n.importDataDescription,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: _importBackup,
-                              icon: const Icon(Icons.upload),
-                              label: Text(l10n.importDataButton),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Eksport SQLite
-                  if (!kIsWeb) 
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -437,10 +379,14 @@ class _BackupScreenState extends State<BackupScreen> {
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.storage, color: Colors.teal, size: 24),
+                                Icon(
+                                  Icons.backup,
+                                  color: Colors.green,
+                                  size: 24,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  l10n.exportSqliteDatabase,
+                                  l10n.exportData,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -450,18 +396,18 @@ class _BackupScreenState extends State<BackupScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              l10n.exportSqliteDescription,
+                              l10n.exportDataDescription,
                               style: TextStyle(fontSize: 16),
                             ),
                             const SizedBox(height: 16),
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
-                                onPressed: _exportSqlite,
+                                onPressed: _exportBackup,
                                 icon: const Icon(Icons.download),
-                                label: Text(l10n.exportSqliteButton),
+                                label: Text(l10n.exportDataButton),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal,
+                                  backgroundColor: Colors.green,
                                   foregroundColor: Colors.white,
                                 ),
                               ),
@@ -470,9 +416,6 @@ class _BackupScreenState extends State<BackupScreen> {
                         ),
                       ),
                     ),
-                  
-                  // Import SQLite
-                  if (!kIsWeb) ...[
                     const SizedBox(height: 16),
                     Card(
                       child: Padding(
@@ -482,10 +425,14 @@ class _BackupScreenState extends State<BackupScreen> {
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.input, color: Colors.red, size: 24),
+                                Icon(
+                                  Icons.restore,
+                                  color: Colors.orange,
+                                  size: 24,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  l10n.importSqliteDatabase,
+                                  l10n.importData,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -495,18 +442,18 @@ class _BackupScreenState extends State<BackupScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              l10n.importSqliteDescription,
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                              l10n.importDataDescription,
+                              style: TextStyle(fontSize: 16),
                             ),
                             const SizedBox(height: 16),
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
-                                onPressed: _importSqlite,
+                                onPressed: _importBackup,
                                 icon: const Icon(Icons.upload),
-                                label: Text(l10n.importSqliteButton),
+                                label: Text(l10n.importDataButton),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
+                                  backgroundColor: Colors.orange,
                                   foregroundColor: Colors.white,
                                 ),
                               ),
@@ -515,41 +462,146 @@ class _BackupScreenState extends State<BackupScreen> {
                         ),
                       ),
                     ),
-                  ],
-                  
-                  const SizedBox(height: 24),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                    const SizedBox(height: 16),
+
+                    // Eksport SQLite
+                    if (!kIsWeb)
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.info_outline, color: Colors.blue, size: 24),
-                              const SizedBox(width: 8),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.storage,
+                                    color: Colors.teal,
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    l10n.exportSqliteDatabase,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
                               Text(
-                                l10n.information,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                l10n.exportSqliteDescription,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: _exportSqlite,
+                                  icon: const Icon(Icons.download),
+                                  label: Text(l10n.exportSqliteButton),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.teal,
+                                    foregroundColor: Colors.white,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            l10n.backupInformation,
-                            style: TextStyle(fontSize: 14),
+                        ),
+                      ),
+
+                    // Import SQLite
+                    if (!kIsWeb) ...[
+                      const SizedBox(height: 16),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.input,
+                                    color: Colors.red,
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    l10n.importSqliteDatabase,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                l10n.importSqliteDescription,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: _importSqlite,
+                                  icon: const Icon(Icons.upload),
+                                  label: Text(l10n.importSqliteButton),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 24),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Colors.blue,
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  l10n.information,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              l10n.backupInformation,
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
     );
   }
 }
-

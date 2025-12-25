@@ -23,8 +23,10 @@ class BackupService {
 
       for (final car in cars) {
         final refuels = await _databaseService.getRefuels(car.carName);
-        final expenses = await _databaseService.getExpenses(car.carStatisticsTable);
-        
+        final expenses = await _databaseService.getExpenses(
+          car.carStatisticsTable,
+        );
+
         backupData['cars'].add({
           'car': car.toMap(),
           'refuels': refuels.map((r) => r.toMap()).toList(),
@@ -46,27 +48,27 @@ class BackupService {
       }
 
       final cars = backupData['cars'] as List<dynamic>;
-      
+
       for (final carData in cars) {
         final carMap = carData['car'] as Map<String, dynamic>;
         final car = Car.fromMap(carMap);
-        
+
         // Check if car already exists
         final existingCars = await _databaseService.getAllCars();
         final carExists = existingCars.any((c) => c.carName == car.carName);
-        
+
         if (!carExists) {
           // Add car
           await _databaseService.insertCar(car);
         }
-        
+
         // Add refuels
         final refuelsData = carData['refuels'] as List<dynamic>;
         for (final refuelMap in refuelsData) {
           final refuel = Refuel.fromMap(refuelMap as Map<String, dynamic>);
           await _databaseService.insertRefuel(car.carName, refuel);
         }
-        
+
         // Dodaj wydatki
         final expensesData = carData['expenses'] as List<dynamic>;
         for (final expenseMap in expensesData) {
@@ -83,14 +85,14 @@ class BackupService {
   Future<String> exportToJson() async {
     final data = await exportData();
     final jsonString = jsonEncode(data);
-    
+
     // Check if generated JSON can be parsed back
     try {
       jsonDecode(jsonString);
     } catch (e) {
       throw Exception('Error generating JSON: $e');
     }
-    
+
     return jsonString;
   }
 
@@ -99,12 +101,14 @@ class BackupService {
     try {
       // Check if string is valid JSON
       final data = jsonDecode(jsonString);
-      
+
       // Check if it's a Map (JSON object)
       if (data is! Map<String, dynamic>) {
-        throw Exception('JSON must be an object, not an array or primitive value');
+        throw Exception(
+          'JSON must be an object, not an array or primitive value',
+        );
       }
-      
+
       await importData(data);
     } catch (e) {
       if (e is FormatException) {
@@ -125,24 +129,24 @@ class BackupService {
   bool validateBackup(String jsonString) {
     try {
       final data = jsonDecode(jsonString);
-      
+
       // Check if it's a JSON object
       if (data is! Map<String, dynamic>) {
         return false;
       }
-      
+
       // Check required fields
-      if (!data.containsKey('version') || 
-          !data.containsKey('timestamp') || 
+      if (!data.containsKey('version') ||
+          !data.containsKey('timestamp') ||
           !data.containsKey('cars')) {
         return false;
       }
-      
+
       // Check if cars is a list
       if (data['cars'] is! List) {
         return false;
       }
-      
+
       return true;
     } catch (e) {
       return false;
@@ -161,7 +165,7 @@ class BackupService {
       // Get database path
       final databasePath = await _getDatabasePath();
       final file = File(databasePath);
-      
+
       if (await file.exists()) {
         return await file.readAsBytes();
       } else {
@@ -181,23 +185,23 @@ class BackupService {
     try {
       // Close existing database connection
       await _databaseService.close();
-      
+
       // Get database path
       final databasePath = await _getDatabasePath();
-      
+
       // Create backup of existing database
       final existingFile = File(databasePath);
       if (await existingFile.exists()) {
-        final backupPath = '$databasePath.backup.${DateTime.now().millisecondsSinceEpoch}';
+        final backupPath =
+            '$databasePath.backup.${DateTime.now().millisecondsSinceEpoch}';
         await existingFile.copy(backupPath);
       }
-      
+
       // Save new database
       await File(databasePath).writeAsBytes(sqliteData);
-      
+
       // Reset database connection in DatabaseService
       await _databaseService.resetDatabase();
-      
     } catch (e) {
       throw Exception('Error importing SQLite database: $e');
     }
@@ -206,7 +210,7 @@ class BackupService {
   // Check if file is SQLite
   bool validateSqliteFile(Uint8List data) {
     if (data.length < 16) return false;
-    
+
     // SQLite files start with "SQLite format 3\0"
     final header = String.fromCharCodes(data.take(15));
     return header == 'SQLite format 3';
@@ -214,7 +218,7 @@ class BackupService {
 
   // Get database file path
   Future<String> _getDatabasePath() async {
-    final String databaseName = 'fuel_calculator.db';
+    final String databaseName = 'fuelcalc.db';
     return join(await getDatabasesPath(), databaseName);
   }
 }
