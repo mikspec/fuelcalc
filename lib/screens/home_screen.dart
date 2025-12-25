@@ -39,7 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingVehicles(e.toString()))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorLoadingVehicles(e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -58,9 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _editCar(Car car) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => CarFormScreen(car: car),
-      ),
+      MaterialPageRoute(builder: (context) => CarFormScreen(car: car)),
     );
     if (result == true) {
       _loadCars();
@@ -69,12 +71,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _deleteCar(Car car) async {
     final l10n = AppLocalizations.of(context)!;
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.deleteVehicle),
-        content: Text(l10n.deleteVehicleConfirm(car.carAliasName ?? car.carName)),
+        content: Text(
+          l10n.deleteVehicleConfirm(car.carAliasName ?? car.carName),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -94,13 +98,19 @@ class _HomeScreenState extends State<HomeScreen> {
         _loadCars();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.vehicleDeleted)),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.vehicleDeleted),
+            ),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.errorDeleteVehicle(e.toString()))),
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)!.errorDeleteVehicle(e.toString()),
+              ),
+            ),
           );
         }
       }
@@ -110,15 +120,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openCarDetails(Car car) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => CarDetailsScreen(car: car),
-      ),
+      MaterialPageRoute(builder: (context) => CarDetailsScreen(car: car)),
     );
   }
 
-  void _showLanguageDialog(BuildContext context, LanguageService languageService) {
+  void _showLanguageDialog(
+    BuildContext context,
+    LanguageService languageService,
+  ) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -149,9 +160,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showCurrencyDialog(BuildContext context, CurrencyService currencyService) {
+  void _showCurrencyDialog(
+    BuildContext context,
+    CurrencyService currencyService,
+  ) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -161,7 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: currencyService.availableCurrencies.map((currency) {
             final currencyInfo = currencyService.supportedCurrencies[currency]!;
             return RadioListTile<String>(
-              title: Text('${currencyInfo['name']} (${currencyInfo['symbol']})'),
+              title: Text(
+                '${currencyInfo['name']} (${currencyInfo['symbol']})',
+              ),
               subtitle: Text(currencyInfo['code']!),
               value: currency,
               groupValue: currencyService.currentCurrency,
@@ -189,21 +205,22 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     final languageService = Provider.of<LanguageService>(context);
     final currencyService = Provider.of<CurrencyService>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.homeTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           PopupMenuButton<String>(
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'backup') {
-                Navigator.push(
+                final result = await Navigator.push<bool>(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const BackupScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const BackupScreen()),
                 );
+                if (result == true) {
+                  _loadCars();
+                }
               } else if (value == 'language') {
                 _showLanguageDialog(context, languageService);
               } else if (value == 'currency') {
@@ -248,71 +265,75 @@ class _HomeScreenState extends State<HomeScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _cars.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.directions_car, size: 64, color: Colors.grey),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.noVehicles,
-                        style: const TextStyle(color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.directions_car,
+                    size: 64,
+                    color: Colors.grey,
                   ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(8.0),
-                  itemCount: _cars.length,
-                  itemBuilder: (context, index) {
-                    final car = _cars[index];
-                    return Card(
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                          child: Icon(Icons.directions_car),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.noVehicles,
+                    style: const TextStyle(color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(8.0),
+              itemCount: _cars.length,
+              itemBuilder: (context, index) {
+                final car = _cars[index];
+                return Card(
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      child: Icon(Icons.directions_car),
+                    ),
+                    title: Text(car.carAliasName ?? car.carName),
+                    subtitle: Text(car.carDescription ?? l10n.noDescription),
+                    trailing: PopupMenuButton(
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'edit':
+                            _editCar(car);
+                            break;
+                          case 'delete':
+                            _deleteCar(car);
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              const Icon(Icons.edit),
+                              const SizedBox(width: 8),
+                              Text(l10n.edit),
+                            ],
+                          ),
                         ),
-                        title: Text(car.carAliasName ?? car.carName),
-                        subtitle: Text(car.carDescription ?? l10n.noDescription),
-                        trailing: PopupMenuButton(
-                          onSelected: (value) {
-                            switch (value) {
-                              case 'edit':
-                                _editCar(car);
-                                break;
-                              case 'delete':
-                                _deleteCar(car);
-                                break;
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 'edit',
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.edit),
-                                  const SizedBox(width: 8),
-                                  Text(l10n.edit),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem(
-                              value: 'delete',
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.delete),
-                                  const SizedBox(width: 8),
-                                  Text(l10n.delete),
-                                ],
-                              ),
-                            ),
-                          ],
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              const Icon(Icons.delete),
+                              const SizedBox(width: 8),
+                              Text(l10n.delete),
+                            ],
+                          ),
                         ),
-                        onTap: () => _openCarDetails(car),
-                      ),
-                    );
-                  },
-                ),
+                      ],
+                    ),
+                    onTap: () => _openCarDetails(car),
+                  ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addCar,
         tooltip: l10n.addVehicle,

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
+import '../utils/constants.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
 import '../models/expense.dart';
@@ -11,7 +12,7 @@ import '../models/expense.dart';
 class DatabaseService {
   static Database? _database;
   static SharedPreferences? _prefs;
-  static const String _databaseName = 'fuelcalc.db';
+  static const String _databaseName = kFuelcalcDatabaseName;
   static const int _databaseVersion = 1;
 
   // Klucze dla SharedPreferences

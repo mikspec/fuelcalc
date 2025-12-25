@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:intl/intl.dart';
 import '../services/backup_service.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/constants.dart';
 // Conditional import for different platforms
 import '../utils/web_download_helper_stub.dart'
     if (dart.library.html) '../utils/web_download_helper.dart';
@@ -18,6 +20,10 @@ class _BackupScreenState extends State<BackupScreen> {
   final BackupService _backupService = BackupService();
   bool _isLoading = false;
 
+  String _formattedTimestamp() {
+    return DateFormat('yyyyMMddTHHmmss').format(DateTime.now());
+  }
+
   Future<void> _exportBackup() async {
     setState(() => _isLoading = true);
 
@@ -27,7 +33,7 @@ class _BackupScreenState extends State<BackupScreen> {
         final jsonData = await _backupService.exportToJson();
         _downloadFile(
           jsonData,
-          'fuelcalc_backup_${DateTime.now().millisecondsSinceEpoch}.json',
+          '${kFuelcalcFilePrefix}_backup_${_formattedTimestamp()}.json',
         );
 
         if (mounted) {
@@ -99,7 +105,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 backgroundColor: Colors.green,
               ),
             );
-            Navigator.of(context).pop(); // Return to previous screen
+            Navigator.of(context).pop(true); // Return to previous screen
           }
         });
       }
@@ -138,14 +144,23 @@ class _BackupScreenState extends State<BackupScreen> {
       final sqliteData = await _backupService.exportSqliteDatabase();
 
       if (sqliteData != null) {
-        // On desktop - show data in dialog (eventually save file dialog)
-        if (mounted) {
+        final fileName = '${kFuelcalcFilePrefix}_${_formattedTimestamp()}.db';
+
+        final savedPath = await FilePicker.platform.saveFile(
+          fileName: fileName,
+          type: FileType.custom,
+          allowedExtensions: ['db'],
+          bytes: sqliteData,
+        );
+
+        if (savedPath != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
                 AppLocalizations.of(context)!.sqliteDatabaseExported,
               ),
               backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -209,7 +224,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 backgroundColor: Colors.green,
               ),
             );
-            Navigator.of(context).pop(); // Return to previous screen
+            Navigator.of(context).pop(true); // Return to previous screen
           }
         });
       }

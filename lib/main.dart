@@ -7,6 +7,7 @@ import 'services/currency_service.dart';
 import 'l10n/app_localizations.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const FuelCalcApp());
 }
 
@@ -24,10 +25,7 @@ class FuelCalcApp extends StatelessWidget {
         builder: (context, languageService, child) {
           return MaterialApp(
             title: 'Fuel Calculator',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              useMaterial3: true,
-            ),
+            theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
             locale: languageService.currentLocale,
             localizationsDelegates: const [
               AppLocalizations.delegate,

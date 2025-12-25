@@ -7,6 +7,7 @@ import 'database_service.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
 import '../models/expense.dart';
+import '../utils/constants.dart';
 
 class BackupService {
   final DatabaseService _databaseService = DatabaseService();
@@ -218,7 +219,7 @@ class BackupService {
 
   // Get database file path
   Future<String> _getDatabasePath() async {
-    final String databaseName = 'fuelcalc.db';
+    final String databaseName = kFuelcalcDatabaseName;
     return join(await getDatabasesPath(), databaseName);
   }
 }
