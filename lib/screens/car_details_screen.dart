@@ -14,6 +14,7 @@ import 'expense_form_screen.dart';
 import 'refuel_list_screen.dart';
 import 'expense_list_screen.dart';
 import 'statistics_screen.dart';
+import 'home_screen.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final Car car;
@@ -133,6 +134,14 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
     _loadData();
   }
 
+  void _changeCar() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -143,6 +152,11 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         title: Text(widget.car.carAliasName ?? widget.car.carName),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.directions_car),
+            onPressed: _changeCar,
+            tooltip: l10n.changeCar,
+          ),
           IconButton(
             icon: const Icon(Icons.analytics),
             onPressed: _showStatistics,

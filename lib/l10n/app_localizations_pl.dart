@@ -70,6 +70,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get statistics => 'Statystyki';
 
   @override
+  String get changeCar => 'Zmień Samochód';
+
+  @override
   String get addRefuel => 'Dodaj tankowanie';
 
   @override

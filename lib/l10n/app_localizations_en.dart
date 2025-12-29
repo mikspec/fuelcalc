@@ -70,6 +70,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statistics => 'Statistics';
 
   @override
+  String get changeCar => 'Change Car';
+
+  @override
   String get addRefuel => 'Add refuel';
 
   @override

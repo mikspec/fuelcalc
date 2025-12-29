@@ -508,10 +508,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt();
                           if (index >= 0 && index < _chartData.length) {
-                            return Text(
-                              '${index + 1}',
-                              style: TextStyle(fontSize: 10),
-                            );
+                            // Calculate interval: show ~10 labels for large datasets
+                            final interval = _chartData.length > 10
+                                ? (_chartData.length / 10).ceil()
+                                : 1;
+                            // Only show label if index is at interval or is first/last
+                            if (index % interval == 0 ||
+                                index == _chartData.length - 1) {
+                              return Text(
+                                '${index + 1}',
+                                style: TextStyle(fontSize: 10),
+                              );
+                            }
                           }
                           return const Text('');
                         },
@@ -528,13 +536,25 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   barGroups: _chartData.asMap().entries.map((entry) {
                     final isFullRefuel =
                         entry.value['refuelType'] == RefuelType.full.value;
+                    // Calculate bar width: wider bars for fewer data points
+                    // Range: 30px for <=5 items, down to 8px for >=50 items
+                    final barWidth = (_chartData.length <= 5)
+                        ? 32.0
+                        : (_chartData.length <= 10)
+                        ? 16.0
+                        : (_chartData.length <= 20)
+                        ? 8.0
+                        : (_chartData.length <= 50)
+                        ? 4.0
+                        : 2.0;
                     return BarChartGroupData(
                       x: entry.key,
+                      barsSpace: 4,
                       barRods: [
                         BarChartRodData(
                           toY: entry.value['volume'].toDouble(),
                           color: isFullRefuel ? Colors.orange : Colors.grey,
-                          width: 16,
+                          width: barWidth,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ],
@@ -614,10 +634,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt();
                           if (index >= 0 && index < consumptionData.length) {
-                            return Text(
-                              '${index + 1}',
-                              style: TextStyle(fontSize: 10),
-                            );
+                            // Calculate interval: show ~10 labels for large datasets
+                            final interval = consumptionData.length > 10
+                                ? (consumptionData.length / 10).ceil()
+                                : 1;
+                            // Only show label if index is at interval or is first/last
+                            if (index % interval == 0 ||
+                                index == consumptionData.length - 1) {
+                              return Text(
+                                '${index + 1}',
+                                style: TextStyle(fontSize: 10),
+                              );
+                            }
                           }
                           return const Text('');
                         },
@@ -634,13 +662,25 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   barGroups: consumptionData.asMap().entries.map((entry) {
                     final isFullRefuel =
                         entry.value['refuelType'] == RefuelType.full.value;
+                    // Calculate bar width: wider bars for fewer data points
+                    // Range: 30px for <=5 items, down to 8px for >=50 items
+                    final barWidth = (consumptionData.length <= 5)
+                        ? 32.0
+                        : (consumptionData.length <= 10)
+                        ? 16.0
+                        : (consumptionData.length <= 20)
+                        ? 8.0
+                        : (consumptionData.length <= 50)
+                        ? 4.0
+                        : 2.0;
                     return BarChartGroupData(
                       x: entry.key,
+                      barsSpace: 4,
                       barRods: [
                         BarChartRodData(
                           toY: entry.value['consumption'].toDouble(),
                           color: isFullRefuel ? Colors.red : Colors.grey,
-                          width: 16,
+                          width: barWidth,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ],

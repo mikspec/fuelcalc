@@ -206,6 +206,12 @@ abstract class AppLocalizations {
   /// **'Statistics'**
   String get statistics;
 
+  /// Change car button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Change Car'**
+  String get changeCar;
+
   /// Add refuel tooltip
   ///
   /// In en, this message translates to:

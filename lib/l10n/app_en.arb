@@ -108,6 +108,11 @@
     "description": "Statistics tab title"
   },
   
+  "changeCar": "Change Car",
+  "@changeCar": {
+    "description": "Change car button tooltip"
+  },
+  
   "addRefuel": "Add Refuel",
   "@addRefuel": {
     "description": "Add refuel button text"

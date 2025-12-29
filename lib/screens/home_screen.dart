@@ -4,6 +4,7 @@ import '../models/car.dart';
 import '../services/database_service.dart';
 import '../services/language_service.dart';
 import '../services/currency_service.dart';
+import '../services/settings_service.dart';
 import '../l10n/app_localizations.dart';
 import 'car_form_screen.dart';
 import 'car_details_screen.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final DatabaseService _databaseService = DatabaseService();
+  final SettingsService _settingsService = SettingsService();
   List<Car> _cars = [];
   bool _isLoading = true;
 
@@ -95,6 +97,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (confirmed == true) {
       try {
         await _databaseService.deleteCar(car.id!);
+
+        // Clear saved car if it's the one being deleted
+        final savedCarId = await _settingsService.getChosenCarId();
+        if (savedCarId == car.id) {
+          await _settingsService.clearChosenCarId();
+        }
+
         _loadCars();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -117,11 +126,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _openCarDetails(Car car) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CarDetailsScreen(car: car)),
-    );
+  void _openCarDetails(Car car) async {
+    // Save chosen car to settings
+    await _settingsService.setChosenCarId(car.id!);
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CarDetailsScreen(car: car)),
+      );
+    }
   }
 
   void _showLanguageDialog(
