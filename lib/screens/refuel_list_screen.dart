@@ -243,7 +243,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                         ),
                       ),
                       title: Text(
-                        '${_numberFormat.format(refuel.volumes)} l • ${currencyService.formatCurrency(refuel.prize)}',
+                        '${_numberFormat.format(refuel.volumes)} l • ${currencyService.formatPricePerLiter(refuel.prize)} • ${currencyService.formatCurrency(refuel.totalCost)}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
@@ -350,7 +350,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                   _buildDetailItem(
                                     l10n.pricePerLiter,
                                     currencyService.formatPricePerLiter(
-                                      refuel.pricePerLiter,
+                                      refuel.prize,
                                     ),
                                     Icons.attach_money,
                                   ),

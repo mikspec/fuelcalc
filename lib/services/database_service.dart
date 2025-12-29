@@ -152,7 +152,7 @@ class DatabaseService {
         prize REAL DEFAULT 4,
         information TEXT,
         rating REAL DEFAULT 5,
-        date TEXT NOT NULL,
+        date DATE NOT NULL,
         distance REAL DEFAULT 200,
         gps_latitude REAL DEFAULT 0,
         gps_longitude REAL DEFAULT 0,
@@ -164,7 +164,7 @@ class DatabaseService {
     await db.execute('''
       CREATE TABLE $statsTableName (
         _statistics_row_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT NOT NULL,
+        date DATE NOT NULL,
         information TEXT,
         statistic_title TEXT NOT NULL,
         statistic_cost REAL DEFAULT 0,
@@ -593,7 +593,10 @@ class DatabaseService {
       0.0,
       (sum, refuel) => sum + refuel.volumes,
     );
-    final totalCost = refuels.fold(0.0, (sum, refuel) => sum + refuel.prize);
+    final totalCost = refuels.fold(
+      0.0,
+      (sum, refuel) => sum + (refuel.prize * refuel.volumes),
+    );
     final totalDistance = consumptionData['totalDistance'] as double;
     final avgConsumption = consumptionData['avgConsumption'] as double;
 
@@ -764,7 +767,7 @@ class DatabaseService {
           'date': refuel.date.toIso8601String(),
           'volume': refuel.volumes,
           'consumption': fullConsumptions[i],
-          'cost': refuel.prize,
+          'cost': refuel.prize * refuel.volumes,
           'refuelType': refuel.refuelType.value,
         });
       } else {
@@ -782,7 +785,7 @@ class DatabaseService {
           'date': refuel.date.toIso8601String(),
           'volume': refuel.volumes,
           'consumption': consumption,
-          'cost': refuel.prize,
+          'cost': refuel.prize * refuel.volumes,
           'refuelType': refuel.refuelType.value,
         });
       }

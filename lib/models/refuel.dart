@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'refuel_type.dart';
 
 class Refuel {
@@ -28,6 +29,7 @@ class Refuel {
   });
 
   Map<String, dynamic> toMap() {
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
     return {
       '_id': id,
       'odometer_state': odometerState,
@@ -35,7 +37,7 @@ class Refuel {
       'prize': prize,
       'information': information,
       'rating': rating,
-      'date': date.toIso8601String(),
+      'date': dateFormat.format(date),
       'distance': distance,
       'gps_latitude': gpsLatitude,
       'gps_longitude': gpsLongitude,
@@ -44,6 +46,17 @@ class Refuel {
   }
 
   factory Refuel.fromMap(Map<String, dynamic> map) {
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+    DateTime parseDate(String dateString) {
+      try {
+        // Try custom format first
+        return dateFormat.parse(dateString);
+      } catch (e) {
+        // Fallback to ISO8601 for backward compatibility
+        return DateTime.parse(dateString);
+      }
+    }
+
     return Refuel(
       id: map['_id'],
       odometerState: (map['odometer_state'] ?? 0.0).toDouble(),
@@ -51,7 +64,7 @@ class Refuel {
       prize: (map['prize'] ?? 4.0).toDouble(),
       information: map['information'],
       rating: (map['rating'] ?? 5.0).toDouble(),
-      date: DateTime.parse(map['date']),
+      date: parseDate(map['date']),
       distance: (map['distance'] ?? 200.0).toDouble(),
       gpsLatitude: (map['gps_latitude'] ?? 0.0).toDouble(),
       gpsLongitude: (map['gps_longitude'] ?? 0.0).toDouble(),
@@ -87,12 +100,12 @@ class Refuel {
     );
   }
 
-  // Oblicz spalanie (litry na 100km)
+  // Calculate consumption (liters per 100km)
   double get consumption => distance > 0 ? (volumes / distance) * 100 : 0.0;
 
-  // Oblicz koszt za litr
-  double get pricePerLiter => volumes > 0 ? prize / volumes : 0.0;
+  // Calculate total cost (price per liter * liters)
+  double get totalCost => prize * volumes;
 
-  // Oblicz koszt za 100km
-  double get costPer100km => distance > 0 ? (prize / distance) * 100 : 0.0;
+  // Calculate cost per 100km
+  double get costPer100km => distance > 0 ? (totalCost / distance) * 100 : 0.0;
 }

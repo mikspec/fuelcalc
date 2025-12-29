@@ -48,15 +48,14 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
     _volumesController = TextEditingController(
       text: refuel?.volumes.toString() ?? '',
     );
-    _totalCostController = TextEditingController(
+    _totalCostController = TextEditingController();
+    _pricePerLiterController = TextEditingController(
       text: refuel?.prize.toString() ?? '',
     );
-    _pricePerLiterController = TextEditingController();
 
-    // Calculate price per liter if both values exist
+    // Calculate total cost if both values exist
     if (refuel != null && refuel.volumes > 0 && refuel.prize > 0) {
-      _pricePerLiterController.text = (refuel.prize / refuel.volumes)
-          .toStringAsFixed(2);
+      _totalCostController.text = refuel.totalCost.toStringAsFixed(2);
     }
 
     _odometerController = TextEditingController();
@@ -253,7 +252,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
         id: widget.refuel?.id,
         odometerState: double.tryParse(_odometerController.text) ?? 0.0,
         volumes: double.parse(_volumesController.text),
-        prize: double.parse(_totalCostController.text),
+        prize: double.parse(_pricePerLiterController.text),
         information: null,
         rating: _rating,
         date: _selectedDate,

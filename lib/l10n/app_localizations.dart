@@ -1118,11 +1118,11 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get expenseTypeOther;
 
-  /// Battery expense type
+  /// Maintenance expense type
   ///
   /// In en, this message translates to:
-  /// **'Battery'**
-  String get expenseTypeBattery;
+  /// **'Maintenance'**
+  String get expenseTypeMaintenance;
 
   /// Repair expense type
   ///

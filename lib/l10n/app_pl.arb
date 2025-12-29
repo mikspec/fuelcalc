@@ -179,7 +179,7 @@
   "descriptionLabel": "Opis/Notatki",
   "descriptionHint": "Dodatkowe informacje o wydatku...",
   "expenseTypeOther": "Inne",
-  "expenseTypeBattery": "Akumulator",
+  "expenseTypeMaintenance": "Konserwacja",
   "expenseTypeRepair": "Naprawa",
   "expenseTypeTowing": "Laweta",
   "expenseTypeInsurance": "Ubezpieczenie",

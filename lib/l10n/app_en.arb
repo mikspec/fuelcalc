@@ -1014,9 +1014,9 @@
     "description": "Other expense type"
   },
   
-  "expenseTypeBattery": "Battery",
-  "@expenseTypeBattery": {
-    "description": "Battery expense type"
+  "expenseTypeMaintenance": "Maintenance",
+  "@expenseTypeMaintenance": {
+    "description": "Maintenance expense type"
   },
   
   "expenseTypeRepair": "Repair",

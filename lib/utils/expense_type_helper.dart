@@ -7,7 +7,7 @@ class ExpenseTypeHelper {
       case 0:
         return l10n.expenseTypeOther;
       case 1:
-        return l10n.expenseTypeBattery;
+        return l10n.expenseTypeMaintenance;
       case 2:
         return l10n.expenseTypeRepair;
       case 3:
@@ -25,7 +25,7 @@ class ExpenseTypeHelper {
   static Map<int, String> getLocalizedExpenseTypes(AppLocalizations l10n) {
     return {
       0: l10n.expenseTypeOther,
-      1: l10n.expenseTypeBattery,
+      1: l10n.expenseTypeMaintenance,
       2: l10n.expenseTypeRepair,
       3: l10n.expenseTypeTowing,
       4: l10n.expenseTypeInsurance,

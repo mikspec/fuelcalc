@@ -143,11 +143,11 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
               ),
               _buildDetailRow(
                 l10n.totalCost,
-                currencyService.formatCurrency(refuel.prize),
+                currencyService.formatCurrency(refuel.totalCost),
               ),
               _buildDetailRow(
                 l10n.pricePerLiter,
-                currencyService.formatPricePerLiter(refuel.pricePerLiter),
+                currencyService.formatPricePerLiter(refuel.prize),
               ),
               _buildDetailRow(
                 l10n.refuelType,

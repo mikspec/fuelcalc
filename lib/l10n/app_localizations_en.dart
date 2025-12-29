@@ -574,7 +574,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expenseTypeOther => 'Other';
 
   @override
-  String get expenseTypeBattery => 'Battery';
+  String get expenseTypeMaintenance => 'Maintenance';
 
   @override
   String get expenseTypeRepair => 'Repair';

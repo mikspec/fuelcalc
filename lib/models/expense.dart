@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Expense {
   final int? id;
   final DateTime date;
@@ -20,9 +22,10 @@ class Expense {
   });
 
   Map<String, dynamic> toMap() {
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
     return {
       '_statistics_row_id': id,
-      'date': date.toIso8601String(),
+      'date': dateFormat.format(date),
       'information': information,
       'statistic_title': statisticTitle,
       'statistic_cost': statisticCost,
@@ -33,9 +36,20 @@ class Expense {
   }
 
   factory Expense.fromMap(Map<String, dynamic> map) {
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+    DateTime parseDate(String dateString) {
+      try {
+        // Try custom format first
+        return dateFormat.parse(dateString);
+      } catch (e) {
+        // Fallback to ISO8601 for backward compatibility
+        return DateTime.parse(dateString);
+      }
+    }
+
     return Expense(
       id: map['_statistics_row_id'],
-      date: DateTime.parse(map['date']),
+      date: parseDate(map['date']),
       information: map['information'],
       statisticTitle: map['statistic_title'] ?? '',
       statisticCost: (map['statistic_cost'] ?? 0.0).toDouble(),
@@ -70,7 +84,7 @@ class Expense {
   // Expense categories - identifiers only
   static const Map<int, String> expenseTypes = {
     0: 'other',
-    1: 'battery',
+    1: 'maintenance',
     2: 'repair',
     3: 'towing',
     4: 'insurance',

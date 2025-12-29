@@ -266,7 +266,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                   DateFormat('dd.MM.yyyy').format(refuel.date),
                                 ),
                                 trailing: Text(
-                                  currencyService.formatCurrency(refuel.prize),
+                                  currencyService.formatCurrency(
+                                    refuel.totalCost,
+                                  ),
                                 ),
                               );
                             },

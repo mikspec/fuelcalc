@@ -575,7 +575,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get expenseTypeOther => 'Inne';
 
   @override
-  String get expenseTypeBattery => 'Akumulator';
+  String get expenseTypeMaintenance => 'Konserwacja';
 
   @override
   String get expenseTypeRepair => 'Naprawa';
