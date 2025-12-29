@@ -144,12 +144,13 @@ class _BackupScreenState extends State<BackupScreen> {
       final sqliteData = await _backupService.exportSqliteDatabase();
 
       if (sqliteData != null) {
-        final fileName = '${kFuelcalcFilePrefix}_${_formattedTimestamp()}.db';
+        final fileName =
+            '${kFuelcalcFilePrefix}_${_formattedTimestamp()}.sqlite';
 
         final savedPath = await FilePicker.platform.saveFile(
           fileName: fileName,
           type: FileType.custom,
-          allowedExtensions: ['db'],
+          allowedExtensions: ['sqlite', 'db', 'sqlite3'],
           bytes: sqliteData,
         );
 

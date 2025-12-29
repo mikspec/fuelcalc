@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
+import '../models/refuel_type.dart';
 import '../services/database_service.dart';
 import '../services/currency_service.dart';
 import '../l10n/app_localizations.dart';
@@ -22,7 +23,7 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
   final DatabaseService _databaseService = DatabaseService();
   final MapController _mapController = MapController();
   final NumberFormat _numberFormat = NumberFormat('#,##0.0', 'pl_PL');
-  
+
   List<Refuel> _refuels = [];
   List<Marker> _markers = [];
   bool _isLoading = true;
@@ -38,19 +39,21 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
     setState(() => _isLoading = true);
     try {
       final refuels = await _databaseService.getRefuels(widget.car.carName);
-      
+
       // Filter refuels that have GPS coordinates
-      final gpsRefuels = refuels.where(
-        (refuel) => refuel.gpsLatitude != 0.0 && refuel.gpsLongitude != 0.0
-      ).toList();
-      
+      final gpsRefuels = refuels
+          .where(
+            (refuel) => refuel.gpsLatitude != 0.0 && refuel.gpsLongitude != 0.0,
+          )
+          .toList();
+
       _createMarkers(gpsRefuels);
-      
+
       // Calculate center position if we have GPS refuels
       if (gpsRefuels.isNotEmpty) {
         _calculateCenterPosition(gpsRefuels);
       }
-      
+
       setState(() {
         _refuels = gpsRefuels;
         _isLoading = false;
@@ -59,7 +62,11 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingRefuels(e.toString()))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorLoadingRefuels(e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -67,11 +74,11 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
 
   void _createMarkers(List<Refuel> refuels) {
     final markers = <Marker>[];
-    
+
     for (int i = 0; i < refuels.length; i++) {
       final refuel = refuels[i];
       final position = LatLng(refuel.gpsLatitude, refuel.gpsLongitude);
-      
+
       markers.add(
         Marker(
           point: position,
@@ -79,42 +86,44 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
             onTap: () => _showRefuelDetails(refuel),
             child: Icon(
               Icons.local_gas_station,
-              color: refuel.refuelType == 11 ? Colors.green : Colors.orange,
+              color: refuel.refuelType == RefuelType.full
+                  ? Colors.green
+                  : Colors.orange,
               size: 30,
             ),
           ),
         ),
       );
     }
-    
+
     _markers = markers;
   }
 
   void _calculateCenterPosition(List<Refuel> refuels) {
     if (refuels.isEmpty) return;
-    
+
     double minLat = refuels.first.gpsLatitude;
     double maxLat = refuels.first.gpsLatitude;
     double minLng = refuels.first.gpsLongitude;
     double maxLng = refuels.first.gpsLongitude;
-    
+
     for (final refuel in refuels) {
       minLat = minLat < refuel.gpsLatitude ? minLat : refuel.gpsLatitude;
       maxLat = maxLat > refuel.gpsLatitude ? maxLat : refuel.gpsLatitude;
       minLng = minLng < refuel.gpsLongitude ? minLng : refuel.gpsLongitude;
       maxLng = maxLng > refuel.gpsLongitude ? maxLng : refuel.gpsLongitude;
     }
-    
-    _initialPosition = LatLng(
-      (minLat + maxLat) / 2,
-      (minLng + maxLng) / 2,
-    );
+
+    _initialPosition = LatLng((minLat + maxLat) / 2, (minLng + maxLng) / 2);
   }
 
   void _showRefuelDetails(Refuel refuel) {
     final l10n = AppLocalizations.of(context)!;
-    final currencyService = Provider.of<CurrencyService>(context, listen: false);
-    
+    final currencyService = Provider.of<CurrencyService>(
+      context,
+      listen: false,
+    );
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -124,17 +133,42 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDetailRow(l10n.date, DateFormat('dd.MM.yyyy HH:mm').format(refuel.date)),
-              _buildDetailRow(l10n.volume, '${_numberFormat.format(refuel.volumes)} l'),
-              _buildDetailRow(l10n.totalCost, currencyService.formatCurrency(refuel.prize)),
-              _buildDetailRow(l10n.pricePerLiter, currencyService.formatPricePerLiter(refuel.pricePerLiter)),
-              _buildDetailRow(l10n.refuelType, refuel.refuelType == 11 ? l10n.fullTank : l10n.partial),
+              _buildDetailRow(
+                l10n.date,
+                DateFormat('dd.MM.yyyy HH:mm').format(refuel.date),
+              ),
+              _buildDetailRow(
+                l10n.volume,
+                '${_numberFormat.format(refuel.volumes)} l',
+              ),
+              _buildDetailRow(
+                l10n.totalCost,
+                currencyService.formatCurrency(refuel.prize),
+              ),
+              _buildDetailRow(
+                l10n.pricePerLiter,
+                currencyService.formatPricePerLiter(refuel.pricePerLiter),
+              ),
+              _buildDetailRow(
+                l10n.refuelType,
+                refuel.refuelType == RefuelType.full
+                    ? l10n.fullTank
+                    : l10n.partial,
+              ),
               if (refuel.distance > 0)
-                _buildDetailRow(l10n.distance, '${_numberFormat.format(refuel.distance)} km'),
+                _buildDetailRow(
+                  l10n.distance,
+                  '${_numberFormat.format(refuel.distance)} km',
+                ),
               if (refuel.distance > 0)
-                _buildDetailRow(l10n.consumption, '${_numberFormat.format(refuel.consumption)} l/100km'),
-              _buildDetailRow(l10n.gpsLocation, 
-                '${refuel.gpsLatitude.toStringAsFixed(6)}, ${refuel.gpsLongitude.toStringAsFixed(6)}'),
+                _buildDetailRow(
+                  l10n.consumption,
+                  '${_numberFormat.format(refuel.consumption)} l/100km',
+                ),
+              _buildDetailRow(
+                l10n.gpsLocation,
+                '${refuel.gpsLatitude.toStringAsFixed(6)}, ${refuel.gpsLongitude.toStringAsFixed(6)}',
+              ),
               if (refuel.information != null && refuel.information!.isNotEmpty)
                 _buildDetailRow(l10n.notes, refuel.information!),
             ],
@@ -163,9 +197,7 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          Expanded(
-            child: Text(value),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
     );
@@ -173,31 +205,30 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
 
   void _fitMarkersInView() {
     if (_refuels.isEmpty) return;
-    
+
     double minLat = _refuels.first.gpsLatitude;
     double maxLat = _refuels.first.gpsLatitude;
     double minLng = _refuels.first.gpsLongitude;
     double maxLng = _refuels.first.gpsLongitude;
-    
+
     for (final refuel in _refuels) {
       minLat = minLat < refuel.gpsLatitude ? minLat : refuel.gpsLatitude;
       maxLat = maxLat > refuel.gpsLatitude ? maxLat : refuel.gpsLatitude;
       minLng = minLng < refuel.gpsLongitude ? minLng : refuel.gpsLongitude;
       maxLng = maxLng > refuel.gpsLongitude ? maxLng : refuel.gpsLongitude;
     }
-    
-    final bounds = LatLngBounds(
-      LatLng(minLat, minLng),
-      LatLng(maxLat, maxLng),
+
+    final bounds = LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
+
+    _mapController.fitCamera(
+      CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(50.0)),
     );
-    
-    _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(50.0)));
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.refuelMap),
@@ -216,33 +247,23 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
         ],
       ),
       body: _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : _refuels.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : _refuels.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.location_off,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.location_off, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
                     l10n.noGpsRefuels,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.noGpsRefuelsDescription,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[500],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -258,7 +279,8 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
                   ),
                   children: [
                     TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.example.fuelcalc',
                     ),
                     MarkerLayer(markers: _markers),
@@ -282,17 +304,31 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.local_gas_station, color: Colors.green, size: 16),
+                              Icon(
+                                Icons.local_gas_station,
+                                color: Colors.green,
+                                size: 16,
+                              ),
                               const SizedBox(width: 4),
-                              Text(l10n.fullTank, style: const TextStyle(fontSize: 12)),
+                              Text(
+                                l10n.fullTank,
+                                style: const TextStyle(fontSize: 12),
+                              ),
                             ],
                           ),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.local_gas_station, color: Colors.orange, size: 16),
+                              Icon(
+                                Icons.local_gas_station,
+                                color: Colors.orange,
+                                size: 16,
+                              ),
                               const SizedBox(width: 4),
-                              Text(l10n.partial, style: const TextStyle(fontSize: 12)),
+                              Text(
+                                l10n.partial,
+                                style: const TextStyle(fontSize: 12),
+                              ),
                             ],
                           ),
                         ],

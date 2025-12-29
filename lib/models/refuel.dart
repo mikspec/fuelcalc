@@ -1,3 +1,5 @@
+import 'refuel_type.dart';
+
 class Refuel {
   final int? id;
   final double odometerState;
@@ -9,7 +11,7 @@ class Refuel {
   final double distance;
   final double gpsLatitude;
   final double gpsLongitude;
-  final int refuelType;
+  final RefuelType refuelType;
 
   Refuel({
     this.id,
@@ -22,7 +24,7 @@ class Refuel {
     this.distance = 200.0,
     this.gpsLatitude = 0.0,
     this.gpsLongitude = 0.0,
-    this.refuelType = 0,
+    this.refuelType = RefuelType.partial,
   });
 
   Map<String, dynamic> toMap() {
@@ -37,7 +39,7 @@ class Refuel {
       'distance': distance,
       'gps_latitude': gpsLatitude,
       'gps_longitude': gpsLongitude,
-      'refuel_type': refuelType,
+      'refuel_type': refuelType.value,
     };
   }
 
@@ -53,7 +55,7 @@ class Refuel {
       distance: (map['distance'] ?? 200.0).toDouble(),
       gpsLatitude: (map['gps_latitude'] ?? 0.0).toDouble(),
       gpsLongitude: (map['gps_longitude'] ?? 0.0).toDouble(),
-      refuelType: map['refuel_type'] ?? 0,
+      refuelType: RefuelType.fromValue(map['refuel_type'] ?? 0),
     );
   }
 
@@ -68,7 +70,7 @@ class Refuel {
     double? distance,
     double? gpsLatitude,
     double? gpsLongitude,
-    int? refuelType,
+    RefuelType? refuelType,
   }) {
     return Refuel(
       id: id ?? this.id,

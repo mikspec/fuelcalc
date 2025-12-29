@@ -11,9 +11,13 @@ A comprehensive Flutter application for tracking fuel consumption, vehicle expen
 
 ### ⛽ Fuel Tracking
 - Record fuel refills with automatic consumption calculations
+- **Full and Partial refueling support** with smart consumption calculation
+  - Partial refuels display consumption from previous full tank
+  - Full refuels aggregate fuel from preceding partial refuels
 - GPS location tracking for refueling stations
 - Automatic distance calculation from odometer readings
 - Price per liter tracking and cost analysis
+- Color-coded visualization (orange/red for full, grey for partial)
 
 ### 💰 Expense Management
 - Track various vehicle-related expenses (maintenance, repairs, insurance, etc.)
@@ -21,11 +25,18 @@ A comprehensive Flutter application for tracking fuel consumption, vehicle expen
 - Comprehensive cost tracking beyond fuel
 
 ### 📊 Advanced Statistics
-- Interactive range selection (last 5, 10, or all records)
+- **Flexible range selection**:
+  - Last 5 refuelings
+  - Last 10 refuelings
+  - Current year (2025)
+  - Previous year (2024)
+  - All records
+- **Persistent settings**: Range selection saved across app sessions
 - Detailed fuel consumption analytics
 - Cost analysis including fuel and expenses
 - Visual bar charts for volume and consumption trends
 - Cost per 100km calculations (fuel + expenses)
+- Synchronized statistics across all screens
 
 ### 💾 Backup & Data Management
 - **JSON Backup**: Universal format, works on all platforms
@@ -41,9 +52,10 @@ A comprehensive Flutter application for tracking fuel consumption, vehicle expen
 - **Mobile**: Android and iOS ready
 
 ### Database Architecture
-- **SQLite**: Native database for desktop and mobile platforms
+- **SQLite**: Native database for desktop and mobile platforms (fuel.sqlite)
 - **SharedPreferences**: Web-compatible data storage
 - Automatic platform detection and appropriate storage selection
+- Type-safe RefuelType enum (full/partial) for refueling classification
 
 ### GPS Integration
 - Automatic location capture during refueling (mobile platforms)
@@ -116,9 +128,10 @@ flutter build ios      # iOS
 
 ### Core Dependencies
 - `flutter`: Framework
-- `sqflite`: SQLite database for native platforms
+- `sqflite_common_ffi`: SQLite database for native platforms
 - `shared_preferences`: Web storage and preferences
 - `intl`: Internationalization and Polish locale formatting
+- `provider`: State management for settings
 
 ### UI & Visualization
 - `fl_chart`: Interactive charts and graphs
@@ -155,8 +168,13 @@ flutter build ios      # iOS
 
 ### Fuel Records (per vehicle)
 - Refueling data with consumption calculations
+- **Refuel type classification**: Full tank vs. Partial refueling
+- **Smart consumption logic**:
+  - Partial refuels inherit consumption from previous full tank
+  - Full refuels aggregate preceding partial refuels for accurate calculation
 - GPS coordinates and location tracking
 - Price and volume information
+- Chronological ordering for accurate statistics
 
 ### Expenses (per vehicle)
 - Categorized expense tracking
@@ -164,6 +182,12 @@ flutter build ios      # iOS
 - Date-based expense history
 
 ## 🔧 Configuration
+
+### Application Settings
+- **Statistics Range**: Configurable via settings (persisted using SharedPreferences)
+- Default range: Last 10 refuelings
+- Available options: 5, 10, current year, previous year, or all records
+- Settings automatically sync across Car Details and Statistics screens
 
 ### Location Services
 Add the following permissions for GPS functionality:

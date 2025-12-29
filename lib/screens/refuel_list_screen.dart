@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
+import '../models/refuel_type.dart';
 import '../services/database_service.dart';
 import '../services/currency_service.dart';
 import '../l10n/app_localizations.dart';
@@ -21,8 +22,9 @@ class RefuelListScreen extends StatefulWidget {
 class _RefuelListScreenState extends State<RefuelListScreen> {
   final DatabaseService _databaseService = DatabaseService();
   final NumberFormat _numberFormat = NumberFormat('#,##0.0', 'pl_PL');
-  
+
   List<Refuel> _refuels = [];
+  List<double> _displayConsumptions = [];
   bool _isLoading = true;
 
   @override
@@ -37,16 +39,64 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
       final refuels = await _databaseService.getRefuels(widget.car.carName);
       setState(() {
         _refuels = refuels;
+        _displayConsumptions = _calculateDisplayConsumptions(refuels);
         _isLoading = false;
       });
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingRefuels(e.toString()))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorLoadingRefuels(e.toString()),
+            ),
+          ),
         );
       }
     }
+  }
+
+  List<double> _calculateDisplayConsumptions(List<Refuel> refuels) {
+    if (refuels.isEmpty) return [];
+
+    final consumptions = List<double>.filled(refuels.length, 0.0);
+    double lastFullConsumption = 0.0;
+
+    // Iterate from oldest to newest
+    for (int i = refuels.length - 1; i >= 0; i--) {
+      final refuel = refuels[i];
+
+      if (refuel.refuelType == RefuelType.full) {
+        // Full refuel - calculate consumption including preceding partial refuels
+        double totalFuel = refuel.volumes;
+        double totalDistance = refuel.distance;
+
+        // Look for partial refuels between this full refuel and the previous full refuel
+        for (int j = i + 1; j < refuels.length; j++) {
+          final previousRefuel = refuels[j];
+          if (previousRefuel.refuelType == RefuelType.full) {
+            // Stop at the previous full refuel
+            break;
+          }
+          // Add partial refuel's fuel and distance
+          totalFuel += previousRefuel.volumes;
+          totalDistance += previousRefuel.distance;
+        }
+
+        // Calculate consumption with accumulated values
+        final calculatedConsumption = totalDistance > 0
+            ? (totalFuel / totalDistance) * 100
+            : 0.0;
+
+        consumptions[i] = calculatedConsumption;
+        lastFullConsumption = calculatedConsumption;
+      } else {
+        // Partial refuel - show consumption from the previous full refuel
+        consumptions[i] = lastFullConsumption;
+      }
+    }
+
+    return consumptions;
   }
 
   void _addRefuel() async {
@@ -75,12 +125,16 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
 
   void _deleteRefuel(Refuel refuel) async {
     final l10n = AppLocalizations.of(context)!;
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.deleteRefuel),
-        content: Text(l10n.deleteRefuelConfirm(DateFormat('dd.MM.yyyy').format(refuel.date))),
+        content: Text(
+          l10n.deleteRefuelConfirm(
+            DateFormat('dd.MM.yyyy').format(refuel.date),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -100,13 +154,19 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
         _loadRefuels();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.refuelDeleted)),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.refuelDeleted),
+            ),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.errorDeleteRefuel(e.toString()))),
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)!.errorDeleteRefuel(e.toString()),
+              ),
+            ),
           );
         }
       }
@@ -117,10 +177,12 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currencyService = Provider.of<CurrencyService>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.refuelsTitle(widget.car.carAliasName ?? widget.car.carName)),
+        title: Text(
+          l10n.refuelsTitle(widget.car.carAliasName ?? widget.car.carName),
+        ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
@@ -140,214 +202,242 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _refuels.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.local_gas_station, size: 64, color: Colors.grey),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.noRefuelsYet,
-                        style: const TextStyle(fontSize: 18, color: Colors.grey),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.addFirstRefuel,
-                        style: const TextStyle(color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.local_gas_station,
+                    size: 64,
+                    color: Colors.grey,
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadRefuels,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(8.0),
-                    itemCount: _refuels.length,
-                    itemBuilder: (context, index) {
-                      final l10n = AppLocalizations.of(context)!;
-                      final refuel = _refuels[index];
-                      return Card(
-                        child: ExpansionTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: const Icon(Icons.local_gas_station, color: Colors.white),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.noRefuelsYet,
+                    style: const TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.addFirstRefuel,
+                    style: const TextStyle(color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _loadRefuels,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: _refuels.length,
+                itemBuilder: (context, index) {
+                  final l10n = AppLocalizations.of(context)!;
+                  final refuel = _refuels[index];
+                  return Card(
+                    child: ExpansionTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        child: const Icon(
+                          Icons.local_gas_station,
+                          color: Colors.white,
+                        ),
+                      ),
+                      title: Text(
+                        '${_numberFormat.format(refuel.volumes)} l • ${currencyService.formatCurrency(refuel.prize)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${DateFormat('dd.MM.yyyy HH:mm').format(refuel.date)} • ${refuel.refuelType == RefuelType.full ? l10n.fullTank : l10n.partial}',
+                                ),
+                              ),
+                              if (refuel.gpsLatitude != 0.0 ||
+                                  refuel.gpsLongitude != 0.0)
+                                Tooltip(
+                                  message: l10n.gpsLocation,
+                                  child: Icon(
+                                    Icons.location_on,
+                                    size: 16,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                            ],
                           ),
-                          title: Text(
-                            '${_numberFormat.format(refuel.volumes)} l • ${currencyService.formatCurrency(refuel.prize)}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          if (refuel.distance > 0) ...[
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.route,
+                                  size: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${_numberFormat.format(refuel.distance)} km',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Icon(
+                                  Icons.speed,
+                                  size: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${_numberFormat.format(_displayConsumptions.elementAt(index))} l/100km',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                      trailing: PopupMenuButton(
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'edit':
+                              _editRefuel(refuel);
+                              break;
+                            case 'delete':
+                              _deleteRefuel(refuel);
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.edit),
+                                const SizedBox(width: 8),
+                                Text(l10n.edit),
+                              ],
+                            ),
                           ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.delete),
+                                const SizedBox(width: 8),
+                                Text(l10n.delete),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
                             children: [
                               Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  Expanded(
-                                    child: Text(
-                                      '${DateFormat('dd.MM.yyyy HH:mm').format(refuel.date)} • ${refuel.refuelType == 11 ? l10n.fullTank : l10n.partial}',
+                                  _buildDetailItem(
+                                    l10n.pricePerLiter,
+                                    currencyService.formatPricePerLiter(
+                                      refuel.pricePerLiter,
                                     ),
+                                    Icons.attach_money,
                                   ),
-                                  if (refuel.gpsLatitude != 0.0 || refuel.gpsLongitude != 0.0)
-                                    Tooltip(
-                                      message: l10n.gpsLocation,
-                                      child: Icon(
-                                        Icons.location_on,
-                                        size: 16,
-                                        color: Colors.green,
-                                      ),
+                                  if (refuel.distance > 0)
+                                    _buildDetailItem(
+                                      l10n.consumption,
+                                      '${_numberFormat.format(_displayConsumptions.elementAt(index))} l/100km',
+                                      Icons.speed,
+                                    ),
+                                  if (refuel.distance > 0)
+                                    _buildDetailItem(
+                                      l10n.distance,
+                                      '${_numberFormat.format(refuel.distance)} km',
+                                      Icons.route,
                                     ),
                                 ],
                               ),
-                              if (refuel.distance > 0) ...[
-                                const SizedBox(height: 2),
+                              if (refuel.odometerState > 0) ...[
+                                const SizedBox(height: 12),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.route, size: 14, color: Colors.grey[600]),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${_numberFormat.format(refuel.distance)} km',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Icon(Icons.speed, size: 14, color: Colors.grey[600]),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${_numberFormat.format(refuel.consumption)} l/100km',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
+                                    _buildDetailItem(
+                                      l10n.odometerReading,
+                                      '${_numberFormat.format(refuel.odometerState)} km',
+                                      Icons.speed,
                                     ),
                                   ],
                                 ),
                               ],
-                            ],
-                          ),
-                          trailing: PopupMenuButton(
-                            onSelected: (value) {
-                              switch (value) {
-                                case 'edit':
-                                  _editRefuel(refuel);
-                                  break;
-                                case 'delete':
-                                  _deleteRefuel(refuel);
-                                  break;
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'edit',
-                                child: Row(
+                              if (refuel.gpsLatitude != 0.0 ||
+                                  refuel.gpsLongitude != 0.0) ...[
+                                const SizedBox(height: 12),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.edit),
-                                    const SizedBox(width: 8),
-                                    Text(l10n.edit),
+                                    _buildDetailItem(
+                                      l10n.gpsLocation,
+                                      '${refuel.gpsLatitude.toStringAsFixed(4)}, ${refuel.gpsLongitude.toStringAsFixed(4)}',
+                                      Icons.location_on,
+                                    ),
                                   ],
                                 ),
-                              ),
-                              PopupMenuItem(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.delete),
-                                    const SizedBox(width: 8),
-                                    Text(l10n.delete),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      _buildDetailItem(
-                                        l10n.pricePerLiter,
-                                        currencyService.formatPricePerLiter(refuel.pricePerLiter),
-                                        Icons.attach_money,
-                                      ),
-                                      if (refuel.distance > 0)
-                                        _buildDetailItem(
-                                          l10n.consumption,
-                                          '${_numberFormat.format(refuel.consumption)} l/100km',
-                                          Icons.speed,
-                                        ),
-                                      if (refuel.distance > 0)
-                                        _buildDetailItem(
-                                          l10n.distance,
-                                          '${_numberFormat.format(refuel.distance)} km',
-                                          Icons.route,
-                                        ),
-                                    ],
+                              ],
+                              if (refuel.information != null &&
+                                  refuel.information!.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  if (refuel.odometerState > 0) ...[
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        _buildDetailItem(
-                                          l10n.odometerReading,
-                                          '${_numberFormat.format(refuel.odometerState)} km',
-                                          Icons.speed,
-                                        ),
-                                      ],
+                                  child: Text(
+                                    refuel.information!,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
                                     ),
-                                  ],
-                                  if (refuel.gpsLatitude != 0.0 || refuel.gpsLongitude != 0.0) ...[
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        _buildDetailItem(
-                                          l10n.gpsLocation,
-                                          '${refuel.gpsLatitude.toStringAsFixed(4)}, ${refuel.gpsLongitude.toStringAsFixed(4)}',
-                                          Icons.location_on,
-                                        ),
-                                      ],
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Text('${l10n.rating} '),
+                                  ...List.generate(
+                                    5,
+                                    (i) => Icon(
+                                      i < refuel.rating
+                                          ? Icons.star
+                                          : Icons.star_border,
+                                      color: Colors.amber,
+                                      size: 16,
                                     ),
-                                  ],
-                                  if (refuel.information != null && refuel.information!.isNotEmpty) ...[
-                                    const SizedBox(height: 12),
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[100],
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        refuel.information!,
-                                        style: const TextStyle(color: Colors.black87),
-                                      ),
-                                    ),
-                                  ],
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Text('${l10n.rating} '),
-                                      ...List.generate(5, (i) => Icon(
-                                        i < refuel.rating ? Icons.star : Icons.star_border,
-                                        color: Colors.amber,
-                                        size: 16,
-                                      )),
-                                    ],
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addRefuel,
         tooltip: l10n.addRefuelTooltip,
@@ -361,14 +451,8 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
       children: [
         Icon(icon, color: Theme.of(context).primaryColor, size: 20),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
   }

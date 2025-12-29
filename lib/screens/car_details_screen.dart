@@ -6,6 +6,7 @@ import '../models/refuel.dart';
 import '../models/expense.dart';
 import '../services/database_service.dart';
 import '../services/currency_service.dart';
+import '../services/settings_service.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/expense_type_helper.dart';
 import 'refuel_form_screen.dart';
@@ -25,11 +26,13 @@ class CarDetailsScreen extends StatefulWidget {
 
 class _CarDetailsScreenState extends State<CarDetailsScreen> {
   final DatabaseService _databaseService = DatabaseService();
+  final SettingsService _settingsService = SettingsService();
   final NumberFormat _numberFormat = NumberFormat('#,##0.0', 'pl_PL');
-  
+
   List<Refuel> _recentRefuels = [];
   List<Expense> _recentExpenses = [];
   Map<String, dynamic> _statistics = {};
+  int _statisticsRange = 10;
   bool _isLoading = true;
 
   @override
@@ -41,21 +44,37 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final refuels = await _databaseService.getRefuels(widget.car.carName, limit: 5);
-      final expenses = await _databaseService.getExpenses(widget.car.carStatisticsTable, limit: 5);
-      final stats = await _databaseService.getRefuelStatistics(widget.car.carName, 10);
-      
+      final statisticsRange = await _settingsService.getStatisticsRange();
+      final limit = statisticsRange == 0 ? 999999 : statisticsRange;
+      final refuels = await _databaseService.getRefuels(
+        widget.car.carName,
+        limit: 5,
+      );
+      final expenses = await _databaseService.getExpenses(
+        widget.car.carStatisticsTable,
+        limit: 5,
+      );
+      final stats = await _databaseService.getRefuelStatistics(
+        widget.car.carName,
+        limit,
+      );
+
       setState(() {
         _recentRefuels = refuels;
         _recentExpenses = expenses;
         _statistics = stats;
+        _statisticsRange = statisticsRange;
         _isLoading = false;
       });
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingData(e.toString()))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorLoadingData(e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -103,20 +122,22 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
     );
   }
 
-  void _showStatistics() {
-    Navigator.push(
+  void _showStatistics() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => StatisticsScreen(car: widget.car),
       ),
     );
+    // Reload data in case statistics range was changed
+    _loadData();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currencyService = Provider.of<CurrencyService>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.car.carAliasName ?? widget.car.carName),
@@ -144,8 +165,17 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            AppLocalizations.of(context)!.lastRefuels,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            _statisticsRange == 0
+                                ? '${l10n.all} ${l10n.refuels.toLowerCase()}'
+                                : _statisticsRange == -1
+                                ? '${DateTime.now().year} ${l10n.refuels.toLowerCase()}'
+                                : _statisticsRange == -2
+                                ? '${DateTime.now().year - 1} ${l10n.refuels.toLowerCase()}'
+                                : '${l10n.last10.replaceAll('10', _statisticsRange.toString())} ${l10n.refuels.toLowerCase()}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 16),
                           Row(
@@ -160,7 +190,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                               Expanded(
                                 child: _buildStatItem(
                                   AppLocalizations.of(context)!.avgPrice,
-                                  currencyService.formatPricePerLiter(_statistics['avgPricePerLiter'] ?? 0),
+                                  currencyService.formatPricePerLiter(
+                                    _statistics['avgPricePerLiter'] ?? 0,
+                                  ),
                                   Icons.attach_money,
                                 ),
                               ),
@@ -179,7 +211,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                               Expanded(
                                 child: _buildStatItem(
                                   AppLocalizations.of(context)!.fuelCosts,
-                                  currencyService.formatCurrency(_statistics['totalCost'] ?? 0),
+                                  currencyService.formatCurrency(
+                                    _statistics['totalCost'] ?? 0,
+                                  ),
                                   Icons.receipt,
                                 ),
                               ),
@@ -190,7 +224,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Ostatnie tankowania
                   Card(
                     child: Column(
@@ -225,9 +259,15 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                               final refuel = _recentRefuels[index];
                               return ListTile(
                                 leading: const Icon(Icons.local_gas_station),
-                                title: Text('${_numberFormat.format(refuel.volumes)} l'),
-                                subtitle: Text(DateFormat('dd.MM.yyyy').format(refuel.date)),
-                                trailing: Text(currencyService.formatCurrency(refuel.prize)),
+                                title: Text(
+                                  '${_numberFormat.format(refuel.volumes)} l',
+                                ),
+                                subtitle: Text(
+                                  DateFormat('dd.MM.yyyy').format(refuel.date),
+                                ),
+                                trailing: Text(
+                                  currencyService.formatCurrency(refuel.prize),
+                                ),
                               );
                             },
                           ),
@@ -235,7 +275,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Ostatnie wydatki
                   Card(
                     child: Column(
@@ -271,8 +311,14 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                               return ListTile(
                                 leading: const Icon(Icons.build),
                                 title: Text(expense.statisticTitle),
-                                subtitle: Text('${ExpenseTypeHelper.getLocalizedTypeName(l10n, expense.statisticType)} • ${DateFormat('dd.MM.yyyy').format(expense.date)}'),
-                                trailing: Text(currencyService.formatCurrency(expense.statisticCost)),
+                                subtitle: Text(
+                                  '${ExpenseTypeHelper.getLocalizedTypeName(l10n, expense.statisticType)} • ${DateFormat('dd.MM.yyyy').format(expense.date)}',
+                                ),
+                                trailing: Text(
+                                  currencyService.formatCurrency(
+                                    expense.statisticCost,
+                                  ),
+                                ),
                               );
                             },
                           ),
