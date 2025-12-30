@@ -742,4 +742,31 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get selectCurrency => 'Wybierz walutę';
+
+  @override
+  String get currencyExchange => 'Wymiana walut';
+
+  @override
+  String get foreignCurrency => 'Waluta obca';
+
+  @override
+  String get amountInForeignCurrency => 'Kwota w walucie obcej';
+
+  @override
+  String get exchangeRate => 'Kurs wymiany';
+
+  @override
+  String get convertedAmount => 'Kwota po przeliczeniu';
+
+  @override
+  String get accept => 'Akceptuj';
+
+  @override
+  String get invalidAmount => 'Nieprawidłowa kwota';
+
+  @override
+  String get invalidExchangeRate => 'Nieprawidłowy kurs wymiany';
+
+  @override
+  String get loading => 'Ładowanie...';
 }

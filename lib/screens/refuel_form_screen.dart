@@ -9,6 +9,7 @@ import '../services/database_service.dart';
 import '../services/location_service.dart';
 import '../services/distance_calculator_service.dart';
 import '../services/currency_service.dart';
+import '../widgets/currency_exchange_dialog.dart';
 import '../l10n/app_localizations.dart';
 
 class RefuelFormScreen extends StatefulWidget {
@@ -264,6 +265,30 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
     }
   }
 
+  Future<void> _showCurrencyExchange() async {
+    final currencyService = Provider.of<CurrencyService>(
+      context,
+      listen: false,
+    );
+    final currentCost = double.tryParse(_totalCostController.text);
+
+    final result = await showDialog<double>(
+      context: context,
+      builder: (context) => CurrencyExchangeDialog(
+        baseCurrency: currencyService.currentCurrency,
+        initialAmount: currentCost,
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _totalCostController.text = result.toStringAsFixed(2);
+      });
+      // Recalculate other values based on new total cost
+      _calculateValues(changedField: 'totalCost');
+    }
+  }
+
   Future<void> _saveRefuel() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -418,6 +443,11 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                               labelText: '${l10n.cost} *',
                               border: const OutlineInputBorder(),
                               suffixText: currencyService.currencySymbol,
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.currency_exchange),
+                                onPressed: _showCurrencyExchange,
+                                tooltip: l10n.currencyExchange,
+                              ),
                             ),
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,

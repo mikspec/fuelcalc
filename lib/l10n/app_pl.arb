@@ -236,5 +236,14 @@
   "legend": "Legenda",
   "totalRefuels": "Łącznie tankowań",
   "currency": "Waluta",
-  "selectCurrency": "Wybierz walutę"
+  "selectCurrency": "Wybierz walutę",
+  "currencyExchange": "Wymiana walut",
+  "foreignCurrency": "Waluta obca",
+  "amountInForeignCurrency": "Kwota w walucie obcej",
+  "exchangeRate": "Kurs wymiany",
+  "convertedAmount": "Kwota po przeliczeniu",
+  "accept": "Akceptuj",
+  "invalidAmount": "Nieprawidłowa kwota",
+  "invalidExchangeRate": "Nieprawidłowy kurs wymiany",
+  "loading": "Ładowanie..."
 }

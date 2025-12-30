@@ -1342,8 +1342,58 @@
     "description": "Currency settings menu item"
   },
 
+  "currency": "Currency",
+  "@currency": {
+    "description": "Currency settings menu item"
+  },
+
   "selectCurrency": "Select Currency",
   "@selectCurrency": {
     "description": "Currency selection dialog title"
+  },
+
+  "currencyExchange": "Currency Exchange",
+  "@currencyExchange": {
+    "description": "Currency exchange dialog title"
+  },
+
+  "foreignCurrency": "Foreign Currency",
+  "@foreignCurrency": {
+    "description": "Foreign currency selector label"
+  },
+
+  "amountInForeignCurrency": "Amount in Foreign Currency",
+  "@amountInForeignCurrency": {
+    "description": "Amount in foreign currency field label"
+  },
+
+  "exchangeRate": "Exchange Rate",
+  "@exchangeRate": {
+    "description": "Exchange rate field label"
+  },
+
+  "convertedAmount": "Converted Amount",
+  "@convertedAmount": {
+    "description": "Converted amount label"
+  },
+
+  "accept": "Accept",
+  "@accept": {
+    "description": "Accept button text"
+  },
+
+  "invalidAmount": "Invalid amount",
+  "@invalidAmount": {
+    "description": "Invalid amount validation message"
+  },
+
+  "invalidExchangeRate": "Invalid exchange rate",
+  "@invalidExchangeRate": {
+    "description": "Invalid exchange rate validation message"
+  },
+
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading text"
   }
 }

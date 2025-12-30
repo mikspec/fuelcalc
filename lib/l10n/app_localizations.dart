@@ -1417,6 +1417,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Currency'**
   String get selectCurrency;
+
+  /// Currency exchange dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Currency Exchange'**
+  String get currencyExchange;
+
+  /// Foreign currency selector label
+  ///
+  /// In en, this message translates to:
+  /// **'Foreign Currency'**
+  String get foreignCurrency;
+
+  /// Amount in foreign currency field label
+  ///
+  /// In en, this message translates to:
+  /// **'Amount in Foreign Currency'**
+  String get amountInForeignCurrency;
+
+  /// Exchange rate field label
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange Rate'**
+  String get exchangeRate;
+
+  /// Converted amount label
+  ///
+  /// In en, this message translates to:
+  /// **'Converted Amount'**
+  String get convertedAmount;
+
+  /// Accept button text
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// Invalid amount validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid amount'**
+  String get invalidAmount;
+
+  /// Invalid exchange rate validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid exchange rate'**
+  String get invalidExchangeRate;
+
+  /// Loading text
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
 }
 
 class _AppLocalizationsDelegate

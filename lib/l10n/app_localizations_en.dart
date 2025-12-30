@@ -740,4 +740,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectCurrency => 'Select Currency';
+
+  @override
+  String get currencyExchange => 'Currency Exchange';
+
+  @override
+  String get foreignCurrency => 'Foreign Currency';
+
+  @override
+  String get amountInForeignCurrency => 'Amount in Foreign Currency';
+
+  @override
+  String get exchangeRate => 'Exchange Rate';
+
+  @override
+  String get convertedAmount => 'Converted Amount';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get invalidAmount => 'Invalid amount';
+
+  @override
+  String get invalidExchangeRate => 'Invalid exchange rate';
+
+  @override
+  String get loading => 'Loading...';
 }
