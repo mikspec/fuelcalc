@@ -10,8 +10,8 @@ class Refuel {
   final double rating;
   final DateTime date;
   final double distance;
-  final double gpsLatitude;
-  final double gpsLongitude;
+  final double? gpsLatitude;
+  final double? gpsLongitude;
   final RefuelType refuelType;
 
   Refuel({
@@ -23,8 +23,8 @@ class Refuel {
     this.rating = 5.0,
     required this.date,
     this.distance = 200.0,
-    this.gpsLatitude = 0.0,
-    this.gpsLongitude = 0.0,
+    this.gpsLatitude,
+    this.gpsLongitude,
     this.refuelType = RefuelType.partial,
   });
 
@@ -66,8 +66,12 @@ class Refuel {
       rating: (map['rating'] ?? 5.0).toDouble(),
       date: parseDate(map['date']),
       distance: (map['distance'] ?? 200.0).toDouble(),
-      gpsLatitude: (map['gps_latitude'] ?? 0.0).toDouble(),
-      gpsLongitude: (map['gps_longitude'] ?? 0.0).toDouble(),
+      gpsLatitude: map['gps_latitude'] != null
+          ? (map['gps_latitude'] as num).toDouble()
+          : null,
+      gpsLongitude: map['gps_longitude'] != null
+          ? (map['gps_longitude'] as num).toDouble()
+          : null,
       refuelType: RefuelType.fromValue(map['refuel_type'] ?? 0),
     );
   }

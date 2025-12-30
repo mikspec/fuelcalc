@@ -38,8 +38,8 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
   bool _isLoadingLocation = false;
   double _calculatedDistance = 0.0;
   double? _lastOdometerReading;
-  double _gpsLatitude = 0.0;
-  double _gpsLongitude = 0.0;
+  double? _gpsLatitude;
+  double? _gpsLongitude;
   bool get _isEditing => widget.refuel != null;
 
   @override
@@ -297,9 +297,15 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
     try {
       // If it's a new refuel, get current location
       if (!_isEditing && LocationService.isLocationSupported) {
-        final coordinates = await LocationService.getLocationCoordinates();
-        _gpsLatitude = coordinates['latitude']!;
-        _gpsLongitude = coordinates['longitude']!;
+        try {
+          final coordinates = await LocationService.getLocationCoordinates();
+          _gpsLatitude = coordinates['latitude']!;
+          _gpsLongitude = coordinates['longitude']!;
+        } catch (e) {
+          // If location fails, keep GPS coordinates as null
+          _gpsLatitude = null;
+          _gpsLongitude = null;
+        }
       }
 
       final refuel = Refuel(
@@ -663,18 +669,18 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                               child: Text(
                                 _isLoadingLocation
                                     ? l10n.loadingLocation
-                                    : (_gpsLatitude != 0.0 ||
-                                          _gpsLongitude != 0.0)
+                                    : (_gpsLatitude != null &&
+                                          _gpsLongitude != null)
                                     ? l10n.locationCoordinates(
-                                        _gpsLatitude.toStringAsFixed(6),
-                                        _gpsLongitude.toStringAsFixed(6),
+                                        _gpsLatitude!.toStringAsFixed(6),
+                                        _gpsLongitude!.toStringAsFixed(6),
                                       )
                                     : l10n.locationUnavailable,
                                 style: const TextStyle(fontSize: 12),
                               ),
                             ),
                             if (!_isLoadingLocation &&
-                                (_gpsLatitude == 0.0 && _gpsLongitude == 0.0))
+                                (_gpsLatitude == null || _gpsLongitude == null))
                               TextButton(
                                 onPressed: _getCurrentLocation,
                                 child: Text(

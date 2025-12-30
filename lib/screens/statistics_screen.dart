@@ -28,35 +28,81 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   List<Map<String, dynamic>> _chartData = [];
   bool _isLoading = true;
 
-  final List<int> _rangeOptions = [
+  List<int> _rangeOptions = [
     5,
     10,
-    -1,
-    -2,
     0,
-  ]; // -1 means current year, -2 means previous year, 0 means all
+  ]; // 0 means all, positive numbers mean last N refuelings, negative numbers represent years
+  List<int> _availableYears = []; // Store all available years for picker
+  static const int _yearPickerOption =
+      -999999; // Special value to trigger year picker
 
   String _getRangeLabel(int range, AppLocalizations l10n) {
-    switch (range) {
-      case 5:
-        return l10n.last5;
-      case 10:
-        return l10n.last10;
-      case -1:
-        return '${DateTime.now().year}';
-      case -2:
-        return '${DateTime.now().year - 1}';
-      case 0:
-        return l10n.all;
-      default:
-        return '${l10n.last10} $range';
+    if (range == _yearPickerOption) {
+      return 'Select year...';
+    } else if (range > 0) {
+      // Positive numbers: last N refuelings
+      if (range == 5) return l10n.last5;
+      if (range == 10) return l10n.last10;
+      return '${l10n.last10} $range';
+    } else if (range < 0) {
+      // Negative numbers: year (e.g., -2025 represents year 2025)
+      return '${-range}';
+    } else {
+      // 0 means all
+      return l10n.all;
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _loadSavedRange();
+    _loadAvailableYears();
+  }
+
+  Future<void> _loadAvailableYears() async {
+    try {
+      // Load all refuels to extract available years
+      final refuels = await _databaseService.getRefuels(widget.car.carName);
+      final years = refuels.map((r) => r.date.year).toSet().toList()
+        ..sort((a, b) => b.compareTo(a));
+
+      _availableYears = years;
+
+      // Load saved range and start loading statistics
+      await _loadSavedRange();
+
+      // Build range options after loading saved range to ensure selected year is included
+      _updateRangeOptions();
+    } catch (e) {
+      // If loading years fails, continue with default options
+      await _loadSavedRange();
+    }
+  }
+
+  void _updateRangeOptions() {
+    // Build range options: [5, 10] + recent 3 years + selected year (if not recent) + "Select year..." + [0]
+    final recentYears = _availableYears.take(3).map((year) => -year).toSet();
+    final needsYearPicker = _availableYears.length > 3;
+
+    // If selected range is a year not in recent years, add it
+    if (_selectedRange < 0 &&
+        _selectedRange != _yearPickerOption &&
+        !recentYears.contains(_selectedRange)) {
+      recentYears.add(_selectedRange);
+    }
+
+    final sortedYears = recentYears.toList()..sort();
+
+    setState(() {
+      _rangeOptions = [
+        5,
+        10,
+        ...sortedYears,
+        if (needsYearPicker) _yearPickerOption,
+        0,
+      ];
+    });
   }
 
   Future<void> _loadSavedRange() async {
@@ -70,11 +116,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Future<void> _loadStatistics() async {
     setState(() => _isLoading = true);
     try {
-      // For current year or previous year, fetch all and filter by date
-      final count =
-          (_selectedRange == 0 || _selectedRange == -1 || _selectedRange == -2)
-          ? 999999
-          : _selectedRange;
+      // For all data or any specific year, fetch all and filter by date
+      final count = (_selectedRange <= 0) ? 999999 : _selectedRange;
 
       var refuelStats = await _databaseService.getRefuelStatistics(
         widget.car.carName,
@@ -89,11 +132,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         count,
       );
 
-      // Filter by current year or previous year if selected
-      if (_selectedRange == -1 || _selectedRange == -2) {
-        final targetYear = _selectedRange == -1
-            ? DateTime.now().year
-            : DateTime.now().year - 1;
+      // Filter by specific year if selected (negative range values represent years)
+      if (_selectedRange < 0) {
+        final targetYear = -_selectedRange;
         final refuels = await _databaseService.getRefuels(widget.car.carName);
         final expenses = await _databaseService.getExpenses(
           widget.car.carStatisticsTable,
@@ -166,9 +207,55 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   void _onRangeChanged(int? newRange) async {
-    if (newRange != null && newRange != _selectedRange) {
-      setState(() => _selectedRange = newRange);
-      await _settingsService.setStatisticsRange(newRange);
+    if (newRange != null) {
+      if (newRange == _yearPickerOption) {
+        // Show year picker dialog
+        await _showYearPicker();
+      } else if (newRange != _selectedRange) {
+        setState(() => _selectedRange = newRange);
+        await _settingsService.setStatisticsRange(newRange);
+        _loadStatistics();
+      }
+    }
+  }
+
+  Future<void> _showYearPicker() async {
+    if (_availableYears.isEmpty) return;
+
+    final selectedYear = await showDialog<int>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Select Year'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _availableYears.length,
+              itemBuilder: (context, index) {
+                final year = _availableYears[index];
+                return ListTile(
+                  title: Text('$year'),
+                  onTap: () => Navigator.pop(context, year),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (selectedYear != null) {
+      final yearRange = -selectedYear;
+      setState(() => _selectedRange = yearRange);
+      await _settingsService.setStatisticsRange(yearRange);
+      _updateRangeOptions(); // Update dropdown options to include selected year
       _loadStatistics();
     }
   }
@@ -571,7 +658,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   Widget _buildConsumptionChart(AppLocalizations l10n) {
     final consumptionData = _chartData
-        .where((data) => data['consumption'] != null)
+        .where(
+          (data) => data['consumption'] != null && data['consumption'] <= 30.0,
+        )
         .toList();
 
     if (consumptionData.isEmpty) {

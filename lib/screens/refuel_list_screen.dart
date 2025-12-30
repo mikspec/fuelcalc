@@ -275,8 +275,8 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                   '${DateFormat('dd.MM.yyyy HH:mm').format(refuel.date)} • ${refuel.refuelType == RefuelType.full ? l10n.fullTank : l10n.partial}',
                                 ),
                               ),
-                              if (refuel.gpsLatitude != 0.0 ||
-                                  refuel.gpsLongitude != 0.0)
+                              if (refuel.gpsLatitude != null &&
+                                  refuel.gpsLongitude != null)
                                 Tooltip(
                                   message: l10n.gpsLocation,
                                   child: Icon(
@@ -401,15 +401,15 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                   ],
                                 ),
                               ],
-                              if (refuel.gpsLatitude != 0.0 ||
-                                  refuel.gpsLongitude != 0.0) ...[
+                              if (refuel.gpsLatitude != null &&
+                                  refuel.gpsLongitude != null) ...[
                                 const SizedBox(height: 12),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     _buildDetailItem(
                                       l10n.gpsLocation,
-                                      '${refuel.gpsLatitude.toStringAsFixed(4)}, ${refuel.gpsLongitude.toStringAsFixed(4)}',
+                                      '${refuel.gpsLatitude!.toStringAsFixed(4)}, ${refuel.gpsLongitude!.toStringAsFixed(4)}',
                                       Icons.location_on,
                                     ),
                                   ],

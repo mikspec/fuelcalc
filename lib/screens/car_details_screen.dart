@@ -185,10 +185,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           Text(
                             _statisticsRange == 0
                                 ? '${l10n.all} ${l10n.refuels.toLowerCase()}'
-                                : _statisticsRange == -1
-                                ? '${DateTime.now().year} ${l10n.refuels.toLowerCase()}'
-                                : _statisticsRange == -2
-                                ? '${DateTime.now().year - 1} ${l10n.refuels.toLowerCase()}'
+                                : _statisticsRange < 0
+                                ? '${-_statisticsRange} ${l10n.refuels.toLowerCase()}'
                                 : '${l10n.last10.replaceAll('10', _statisticsRange.toString())} ${l10n.refuels.toLowerCase()}',
                             style: const TextStyle(
                               fontSize: 18,

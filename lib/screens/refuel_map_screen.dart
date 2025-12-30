@@ -43,7 +43,8 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
       // Filter refuels that have GPS coordinates
       final gpsRefuels = refuels
           .where(
-            (refuel) => refuel.gpsLatitude != 0.0 && refuel.gpsLongitude != 0.0,
+            (refuel) =>
+                refuel.gpsLatitude != null && refuel.gpsLongitude != null,
           )
           .toList();
 
@@ -77,7 +78,9 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
 
     for (int i = 0; i < refuels.length; i++) {
       final refuel = refuels[i];
-      final position = LatLng(refuel.gpsLatitude, refuel.gpsLongitude);
+      if (refuel.gpsLatitude == null || refuel.gpsLongitude == null) continue;
+
+      final position = LatLng(refuel.gpsLatitude!, refuel.gpsLongitude!);
 
       markers.add(
         Marker(
@@ -102,16 +105,18 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
   void _calculateCenterPosition(List<Refuel> refuels) {
     if (refuels.isEmpty) return;
 
-    double minLat = refuels.first.gpsLatitude;
-    double maxLat = refuels.first.gpsLatitude;
-    double minLng = refuels.first.gpsLongitude;
-    double maxLng = refuels.first.gpsLongitude;
+    double minLat = refuels.first.gpsLatitude!;
+    double maxLat = refuels.first.gpsLatitude!;
+    double minLng = refuels.first.gpsLongitude!;
+    double maxLng = refuels.first.gpsLongitude!;
 
     for (final refuel in refuels) {
-      minLat = minLat < refuel.gpsLatitude ? minLat : refuel.gpsLatitude;
-      maxLat = maxLat > refuel.gpsLatitude ? maxLat : refuel.gpsLatitude;
-      minLng = minLng < refuel.gpsLongitude ? minLng : refuel.gpsLongitude;
-      maxLng = maxLng > refuel.gpsLongitude ? maxLng : refuel.gpsLongitude;
+      if (refuel.gpsLatitude == null || refuel.gpsLongitude == null) continue;
+
+      minLat = minLat < refuel.gpsLatitude! ? minLat : refuel.gpsLatitude!;
+      maxLat = maxLat > refuel.gpsLatitude! ? maxLat : refuel.gpsLatitude!;
+      minLng = minLng < refuel.gpsLongitude! ? minLng : refuel.gpsLongitude!;
+      maxLng = maxLng > refuel.gpsLongitude! ? maxLng : refuel.gpsLongitude!;
     }
 
     _initialPosition = LatLng((minLat + maxLat) / 2, (minLng + maxLng) / 2);
@@ -167,7 +172,9 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
                 ),
               _buildDetailRow(
                 l10n.gpsLocation,
-                '${refuel.gpsLatitude.toStringAsFixed(6)}, ${refuel.gpsLongitude.toStringAsFixed(6)}',
+                (refuel.gpsLatitude != null && refuel.gpsLongitude != null)
+                    ? '${refuel.gpsLatitude!.toStringAsFixed(6)}, ${refuel.gpsLongitude!.toStringAsFixed(6)}'
+                    : l10n.locationUnavailable,
               ),
               if (refuel.information != null && refuel.information!.isNotEmpty)
                 _buildDetailRow(l10n.notes, refuel.information!),
@@ -206,16 +213,18 @@ class _RefuelMapScreenState extends State<RefuelMapScreen> {
   void _fitMarkersInView() {
     if (_refuels.isEmpty) return;
 
-    double minLat = _refuels.first.gpsLatitude;
-    double maxLat = _refuels.first.gpsLatitude;
-    double minLng = _refuels.first.gpsLongitude;
-    double maxLng = _refuels.first.gpsLongitude;
+    double minLat = _refuels.first.gpsLatitude!;
+    double maxLat = _refuels.first.gpsLatitude!;
+    double minLng = _refuels.first.gpsLongitude!;
+    double maxLng = _refuels.first.gpsLongitude!;
 
     for (final refuel in _refuels) {
-      minLat = minLat < refuel.gpsLatitude ? minLat : refuel.gpsLatitude;
-      maxLat = maxLat > refuel.gpsLatitude ? maxLat : refuel.gpsLatitude;
-      minLng = minLng < refuel.gpsLongitude ? minLng : refuel.gpsLongitude;
-      maxLng = maxLng > refuel.gpsLongitude ? maxLng : refuel.gpsLongitude;
+      if (refuel.gpsLatitude == null || refuel.gpsLongitude == null) continue;
+
+      minLat = minLat < refuel.gpsLatitude! ? minLat : refuel.gpsLatitude!;
+      maxLat = maxLat > refuel.gpsLatitude! ? maxLat : refuel.gpsLatitude!;
+      minLng = minLng < refuel.gpsLongitude! ? minLng : refuel.gpsLongitude!;
+      maxLng = maxLng > refuel.gpsLongitude! ? maxLng : refuel.gpsLongitude!;
     }
 
     final bounds = LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
