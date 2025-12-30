@@ -184,25 +184,29 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.selectCurrency),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: currencyService.availableCurrencies.map((currency) {
-            final currencyInfo = currencyService.supportedCurrencies[currency]!;
-            return RadioListTile<String>(
-              title: Text(
-                '${currencyInfo['name']} (${currencyInfo['symbol']})',
-              ),
-              subtitle: Text(currencyInfo['code']!),
-              value: currency,
-              groupValue: currencyService.currentCurrency,
-              onChanged: (String? value) {
-                if (value != null) {
-                  currencyService.changeCurrency(value);
-                  Navigator.pop(context);
-                }
-              },
-            );
-          }).toList(),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView(
+            shrinkWrap: true,
+            children: currencyService.availableCurrencies.map((currency) {
+              final currencyInfo =
+                  currencyService.supportedCurrencies[currency]!;
+              return RadioListTile<String>(
+                title: Text(
+                  '${currencyInfo['name']} (${currencyInfo['symbol']})',
+                ),
+                subtitle: Text(currencyInfo['code']!),
+                value: currency,
+                groupValue: currencyService.currentCurrency,
+                onChanged: (String? value) {
+                  if (value != null) {
+                    currencyService.changeCurrency(value);
+                    Navigator.pop(context);
+                  }
+                },
+              );
+            }).toList(),
+          ),
         ),
         actions: [
           TextButton(
