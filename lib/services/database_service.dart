@@ -16,7 +16,7 @@ class DatabaseService {
   static const String _databaseName = kFuelcalcDatabaseName;
   static const int _databaseVersion = 1;
 
-  // Klucze dla SharedPreferences
+  // Keys for SharedPreferences
   static const String _carsKey = 'cars';
   static const String _refuelsPrefix = 'refuels_';
   static const String _expensesPrefix = 'expenses_';
@@ -42,7 +42,7 @@ class DatabaseService {
       throw UnsupportedError('SQLite is not supported on web');
     }
 
-    // Inicjalizacja FFI dla desktop platform
+    // Initialize FFI for desktop platforms
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
@@ -75,7 +75,7 @@ class DatabaseService {
     ''');
   }
 
-  // ===== OPERACJE NA POJAZDACH =====
+  // ===== CAR OPERATIONS =====
 
   Future<int> insertCar(Car car) async {
     if (kIsWeb) {
@@ -89,7 +89,7 @@ class DatabaseService {
     final prefs = await this.prefs;
     final cars = await getAllCars();
 
-    // Generuj ID i nazwy tabel
+    // Generate ID and table names
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final carId = cars.length + 1;
     final carTableName = 'car_${carId}_$timestamp';
@@ -118,7 +118,7 @@ class DatabaseService {
     final db = await database;
     if (db == null) return 0;
 
-    // Generuj unikalne nazwy tabel dla nowego samochodu
+    // Generate unique table names for new car
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final carTableName = 'car_${car.id ?? timestamp}';
     final statsTableName = 'stats_${car.id ?? timestamp}';
@@ -275,7 +275,7 @@ class DatabaseService {
     final db = await database;
     if (db == null) return 0;
 
-    // Pobierz informacje o samochodzie
+    // Get car information
     final car = await getCarById(id);
     if (car == null) return 0;
 
@@ -287,7 +287,7 @@ class DatabaseService {
     return await db.delete('car_host', where: '_car_id = ?', whereArgs: [id]);
   }
 
-  // ===== OPERACJE NA TANKOWANIACH =====
+  // ===== REFUEL OPERATIONS =====
 
   Future<int> insertRefuel(String tableName, Refuel refuel) async {
     if (kIsWeb) {
@@ -419,7 +419,7 @@ class DatabaseService {
     return await db.delete(tableName, where: '_id = ?', whereArgs: [id]);
   }
 
-  // ===== OPERACJE NA WYDATKACH =====
+  // ===== EXPENSE OPERATIONS =====
 
   Future<int> insertExpense(String tableName, Expense expense) async {
     if (kIsWeb) {

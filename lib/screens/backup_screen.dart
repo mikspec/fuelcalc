@@ -29,7 +29,7 @@ class _BackupScreenState extends State<BackupScreen> {
 
     try {
       if (kIsWeb) {
-        // Eksport na web - automatyczne pobieranie
+        // Export on web - automatic download
         final jsonData = await _backupService.exportToJson();
         _downloadFile(
           jsonData,
@@ -45,7 +45,7 @@ class _BackupScreenState extends State<BackupScreen> {
           );
         }
       } else {
-        // Eksport na mobile - na razie tylko komunikat
+        // Export on mobile - message only for now
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -357,7 +357,7 @@ class _BackupScreenState extends State<BackupScreen> {
         }
       }
     } else {
-      // Na platformach mobilnych/desktop - na razie fallback
+      // On mobile/desktop platforms - fallback for now
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -480,7 +480,7 @@ class _BackupScreenState extends State<BackupScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Eksport SQLite
+                    // SQLite Export
                     if (!kIsWeb)
                       Card(
                         child: Padding(
@@ -528,7 +528,7 @@ class _BackupScreenState extends State<BackupScreen> {
                         ),
                       ),
 
-                    // Import SQLite
+                    // SQLite Import
                     if (!kIsWeb) ...[
                       const SizedBox(height: 16),
                       Card(

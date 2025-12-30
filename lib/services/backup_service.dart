@@ -12,7 +12,7 @@ import '../utils/constants.dart';
 class BackupService {
   final DatabaseService _databaseService = DatabaseService();
 
-  // Eksport danych do JSON
+  // Export data to JSON
   Future<Map<String, dynamic>> exportData() async {
     try {
       final cars = await _databaseService.getAllCars();
@@ -82,7 +82,7 @@ class BackupService {
     }
   }
 
-  // Eksport do pliku (web)
+  // Export to file (web)
   Future<String> exportToJson() async {
     final data = await exportData();
     final jsonString = jsonEncode(data);
@@ -120,7 +120,7 @@ class BackupService {
     }
   }
 
-  // Eksport do pliku (przygotowanie danych do pobrania)
+  // Export to file (prepare data for download)
   Future<Uint8List> exportToFile() async {
     final jsonString = await exportToJson();
     return Uint8List.fromList(utf8.encode(jsonString));
