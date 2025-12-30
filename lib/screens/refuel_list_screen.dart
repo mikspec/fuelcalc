@@ -25,6 +25,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
 
   List<Refuel> _refuels = [];
   List<double> _displayConsumptions = [];
+  List<double> _calculatedOdometers = []; // Store calculated odometer readings
   bool _isLoading = true;
 
   @override
@@ -40,6 +41,7 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
       setState(() {
         _refuels = refuels;
         _displayConsumptions = _calculateDisplayConsumptions(refuels);
+        _calculatedOdometers = _calculateOdometers(refuels);
         _isLoading = false;
       });
     } catch (e) {
@@ -97,6 +99,23 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
     }
 
     return consumptions;
+  }
+
+  /// Calculate odometer readings based on car_initial_millage + sum of distances
+  List<double> _calculateOdometers(List<Refuel> refuels) {
+    if (refuels.isEmpty) return [];
+
+    final odometers = <double>[];
+    double cumulativeDistance = 0.0;
+
+    // Iterate from oldest to newest (reverse order since refuels are newest first)
+    for (int i = refuels.length - 1; i >= 0; i--) {
+      cumulativeDistance += refuels[i].distance;
+      final odometer = widget.car.carInitialMileage + cumulativeDistance;
+      odometers.insert(0, odometer); // Insert at beginning to maintain order
+    }
+
+    return odometers;
   }
 
   void _addRefuel() async {
@@ -368,14 +387,15 @@ class _RefuelListScreenState extends State<RefuelListScreen> {
                                     ),
                                 ],
                               ),
-                              if (refuel.odometerState > 0) ...[
+                              if (_calculatedOdometers.isNotEmpty &&
+                                  _calculatedOdometers[index] > 0) ...[
                                 const SizedBox(height: 12),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     _buildDetailItem(
                                       l10n.odometerReading,
-                                      '${_numberFormat.format(refuel.odometerState)} km',
+                                      '${_numberFormat.format(_calculatedOdometers[index])} km',
                                       Icons.speed,
                                     ),
                                   ],

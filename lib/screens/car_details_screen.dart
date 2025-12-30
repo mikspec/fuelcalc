@@ -105,22 +105,26 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
     }
   }
 
-  void _showAllRefuels() {
-    Navigator.push(
+  void _showAllRefuels() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => RefuelListScreen(car: widget.car),
       ),
     );
+    // Reload data in case refuels were added, edited, or deleted
+    _loadData();
   }
 
-  void _showAllExpenses() {
-    Navigator.push(
+  void _showAllExpenses() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ExpenseListScreen(car: widget.car),
       ),
     );
+    // Reload data in case expenses were added, edited, or deleted
+    _loadData();
   }
 
   void _showStatistics() async {

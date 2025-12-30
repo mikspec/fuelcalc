@@ -61,13 +61,14 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
     _odometerController = TextEditingController();
 
     if (refuel != null) {
-      _odometerController.text = refuel.odometerState.toString();
+      // When editing, calculate the odometer value from initial mileage + distances up to this refuel
       _selectedDate = refuel.date;
       _rating = refuel.rating;
       _refuelType = refuel.refuelType;
       _calculatedDistance = refuel.distance;
       _gpsLatitude = refuel.gpsLatitude;
       _gpsLongitude = refuel.gpsLongitude;
+      _loadOdometerForEdit(refuel);
     } else {
       _loadLastOdometerReading();
       _getCurrentLocation();
@@ -85,22 +86,49 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
 
   Future<void> _loadLastOdometerReading() async {
     try {
-      final refuels = await _databaseService.getRefuels(
-        widget.car.carName,
-        limit: 1,
-      );
-      if (refuels.isNotEmpty) {
-        setState(() {
-          _lastOdometerReading = refuels.first.odometerState;
-          // Set odometer field to last reading for new refuels
-          if (!_isEditing) {
-            _odometerController.text = _lastOdometerReading!.toStringAsFixed(0);
-          }
-        });
-      }
+      // Calculate last odometer as: car_initial_millage + sum_of_all_distances
+      final lastOdometer =
+          await DistanceCalculatorService.calculateCurrentOdometer(
+            widget.car.carName,
+            widget.car,
+          );
+      setState(() {
+        _lastOdometerReading = lastOdometer;
+        // Set odometer field to last reading for new refuels
+        if (!_isEditing) {
+          _odometerController.text = _lastOdometerReading!.toStringAsFixed(0);
+        }
+      });
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error loading last odometer reading: $e');
+      }
+    }
+  }
+
+  Future<void> _loadOdometerForEdit(Refuel refuel) async {
+    try {
+      // Calculate odometer value for this refuel: car_initial_millage + sum_of_distances_up_to_this_refuel
+      final allRefuels = await _databaseService.getRefuels(widget.car.carName);
+      double sumOfDistances = 0.0;
+
+      // Sum distances up to (and including) this refuel
+      for (var r in allRefuels) {
+        sumOfDistances += r.distance;
+        if (r.id == refuel.id) {
+          break;
+        }
+      }
+
+      final calculatedOdometer = widget.car.carInitialMileage + sumOfDistances;
+      setState(() {
+        _odometerController.text = calculatedOdometer.toStringAsFixed(0);
+        _lastOdometerReading =
+            calculatedOdometer - refuel.distance; // Previous odometer
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error loading odometer for edit: $e');
       }
     }
   }
@@ -142,6 +170,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
       final distance = await DistanceCalculatorService.calculateDistance(
         widget.car.carName,
         currentOdometer,
+        widget.car,
       );
       setState(() => _calculatedDistance = distance);
     } catch (e) {
@@ -250,7 +279,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
 
       final refuel = Refuel(
         id: widget.refuel?.id,
-        odometerState: double.tryParse(_odometerController.text) ?? 0.0,
+        odometerState: 0.0, // Always store as 0.0, not used for calculations
         volumes: double.parse(_volumesController.text),
         prize: double.parse(_pricePerLiterController.text),
         information: null,
@@ -548,7 +577,7 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                     Text(l10n.refuelType),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<RefuelType>(
-                      value: _refuelType,
+                      initialValue: _refuelType,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                       ),

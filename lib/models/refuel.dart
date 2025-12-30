@@ -32,7 +32,7 @@ class Refuel {
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
     return {
       '_id': id,
-      'odometer_state': odometerState,
+      'odometer_state': 0.0, // Always store as 0.0, not used for calculations
       'volumes': volumes,
       'prize': prize,
       'information': information,

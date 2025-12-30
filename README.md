@@ -28,8 +28,8 @@ A comprehensive Flutter application for tracking fuel consumption, vehicle expen
 - **Flexible range selection**:
   - Last 5 refuelings
   - Last 10 refuelings
-  - Current year (2025)
-  - Previous year (2024)
+  - Current year
+  - Previous year
   - All records
 - **Persistent settings**: Range selection saved across app sessions
 - Detailed fuel consumption analytics
