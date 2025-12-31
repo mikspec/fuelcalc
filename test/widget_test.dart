@@ -5,16 +5,35 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fuelcalc/main.dart';
 
 void main() {
-  testWidgets('App starts correctly', (WidgetTester tester) async {
+  testWidgets('App starts and shows loading indicator', (
+    WidgetTester tester,
+  ) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const FuelCalcApp());
 
-    // Verify that the app title is present.
-    expect(find.text('Fuel Calculator'), findsOneWidget);
+    // Verify that a loading indicator is shown during initialization.
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets('App creates MaterialApp with correct properties', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const FuelCalcApp());
+
+    // Find the MaterialApp
+    final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+
+    // Verify app title
+    expect(materialApp.title, equals('Fuel Calculator'));
+
+    // Verify theme is set
+    expect(materialApp.theme, isNotNull);
+    expect(materialApp.theme?.useMaterial3, isTrue);
   });
 }
