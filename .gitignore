@@ -50,3 +50,4 @@ assets/*.txt
 assets/*.sql
 assets/*.sqlite
 assets/*.py
+.icon_venv/
