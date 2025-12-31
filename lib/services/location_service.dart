@@ -4,19 +4,19 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class LocationService {
-  static bool get isLocationSupported => 
+  static bool get isLocationSupported =>
       !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   static Future<bool> hasPermission() async {
     if (!isLocationSupported) return false;
-    
+
     final status = await Permission.location.status;
     return status.isGranted;
   }
 
   static Future<bool> requestPermission() async {
     if (!isLocationSupported) return false;
-    
+
     // Check if location services are enabled
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -31,7 +31,7 @@ class LocationService {
         return false;
       }
     }
-    
+
     if (permission == LocationPermission.deniedForever) {
       return false;
     }
@@ -42,13 +42,15 @@ class LocationService {
   static Future<Position?> getCurrentLocation() async {
     try {
       if (!isLocationSupported) return null;
-      
+
       bool hasPermission = await requestPermission();
       if (!hasPermission) return null;
 
       return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
       );
     } catch (e) {
       if (kDebugMode) {
@@ -61,14 +63,8 @@ class LocationService {
   static Future<Map<String, double>> getLocationCoordinates() async {
     final position = await getCurrentLocation();
     if (position != null) {
-      return {
-        'latitude': position.latitude,
-        'longitude': position.longitude,
-      };
+      return {'latitude': position.latitude, 'longitude': position.longitude};
     }
-    return {
-      'latitude': 0.0,
-      'longitude': 0.0,
-    };
+    return {'latitude': 0.0, 'longitude': 0.0};
   }
 }

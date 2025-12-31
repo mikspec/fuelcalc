@@ -72,6 +72,7 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   Future<void> _importBackup() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
 
     try {
@@ -90,7 +91,7 @@ class _BackupScreenState extends State<BackupScreen> {
         );
 
         if (!_backupService.validateBackup(jsonString)) {
-          throw Exception(AppLocalizations.of(context)!.invalidBackupFormat);
+          throw Exception(l10n.invalidBackupFormat);
         }
 
         await _showConfirmationDialog(() async {
@@ -183,12 +184,11 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   Future<void> _importSqlite() async {
+    final l10n = AppLocalizations.of(context)!;
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.sqliteImportNotAvailableOnWeb,
-          ),
+          content: Text(l10n.sqliteImportNotAvailableOnWeb),
           backgroundColor: Colors.orange,
         ),
       );
@@ -208,7 +208,7 @@ class _BackupScreenState extends State<BackupScreen> {
         final sqliteData = result.files.first.bytes!;
 
         if (!_backupService.validateSqliteFile(sqliteData)) {
-          throw Exception(AppLocalizations.of(context)!.invalidSqliteFormat);
+          throw Exception(l10n.invalidSqliteFormat);
         }
 
         await _showSqliteConfirmationDialog(() async {
