@@ -1471,6 +1471,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading...'**
   String get loading;
+
+  /// Select year option in statistics range dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Select year...'**
+  String get selectYear;
 }
 
 class _AppLocalizationsDelegate

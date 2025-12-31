@@ -1395,5 +1395,10 @@
   "loading": "Loading...",
   "@loading": {
     "description": "Loading text"
+  },
+
+  "selectYear": "Select year...",
+  "@selectYear": {
+    "description": "Select year option in statistics range dropdown"
   }
 }

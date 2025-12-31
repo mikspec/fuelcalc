@@ -39,7 +39,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   String _getRangeLabel(int range, AppLocalizations l10n) {
     if (range == _yearPickerOption) {
-      return 'Select year...';
+      return l10n.selectYear;
     } else if (range > 0) {
       // Positive numbers: last N refuelings
       if (range == 5) return l10n.last5;

@@ -767,4 +767,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loading => 'Loading...';
+
+  @override
+  String get selectYear => 'Select year...';
 }

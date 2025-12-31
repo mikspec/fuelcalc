@@ -245,5 +245,6 @@
   "accept": "Akceptuj",
   "invalidAmount": "Nieprawidłowa kwota",
   "invalidExchangeRate": "Nieprawidłowy kurs wymiany",
-  "loading": "Ładowanie..."
+  "loading": "Ładowanie...",
+  "selectYear": "Wybierz rok..."
 }

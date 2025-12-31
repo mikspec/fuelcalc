@@ -769,4 +769,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get loading => 'Ładowanie...';
+
+  @override
+  String get selectYear => 'Wybierz rok...';
 }
