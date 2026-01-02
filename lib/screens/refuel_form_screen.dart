@@ -47,11 +47,11 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
     super.initState();
     final refuel = widget.refuel;
     _volumesController = TextEditingController(
-      text: refuel?.volumes.toString() ?? '',
+      text: refuel != null ? refuel.volumes.toStringAsFixed(2) : '',
     );
     _totalCostController = TextEditingController();
     _pricePerLiterController = TextEditingController(
-      text: refuel?.prize.toString() ?? '',
+      text: refuel != null ? refuel.prize.toStringAsFixed(2) : '',
     );
 
     // Calculate total cost if both values exist
@@ -113,12 +113,13 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
       final allRefuels = await _databaseService.getRefuels(widget.car.carName);
       double sumOfDistances = 0.0;
 
-      // Sum distances up to (and including) this refuel
-      for (var r in allRefuels) {
-        sumOfDistances += r.distance;
-        if (r.id == refuel.id) {
-          break;
-        }
+      // Find the index of the refuel being edited
+      final targetIndex = allRefuels.indexWhere((r) => r.id == refuel.id);
+      if (targetIndex == -1) return;
+
+      // Sum distances from the target refuel to the oldest (end of list)
+      for (int i = targetIndex; i < allRefuels.length; i++) {
+        sumOfDistances += allRefuels[i].distance;
       }
 
       final calculatedOdometer = widget.car.carInitialMileage + sumOfDistances;
