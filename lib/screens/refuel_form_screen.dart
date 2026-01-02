@@ -400,7 +400,8 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        Expanded(
+                        Flexible(
+                          flex: 3,
                           child: TextFormField(
                             controller: _volumesController,
                             decoration: InputDecoration(
@@ -426,7 +427,8 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Expanded(
+                        Flexible(
+                          flex: 3,
                           child: TextFormField(
                             controller: _pricePerLiterController,
                             decoration: InputDecoration(
@@ -442,7 +444,8 @@ class _RefuelFormScreenState extends State<RefuelFormScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Expanded(
+                        Flexible(
+                          flex: 4,
                           child: TextFormField(
                             controller: _totalCostController,
                             decoration: InputDecoration(
