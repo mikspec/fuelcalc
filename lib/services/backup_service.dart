@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'database_service.dart';
+import 'google_drive_service.dart';
 import '../models/car.dart';
 import '../models/refuel.dart';
 import '../models/expense.dart';
@@ -11,6 +12,7 @@ import '../utils/constants.dart';
 
 class BackupService {
   final DatabaseService _databaseService = DatabaseService();
+  final GoogleDriveService _googleDriveService = GoogleDriveService();
 
   // Export data to JSON
   Future<Map<String, dynamic>> exportData() async {
@@ -221,5 +223,87 @@ class BackupService {
   Future<String> _getDatabasePath() async {
     final String databaseName = kFuelcalcDatabaseName;
     return join(await getDatabasesPath(), databaseName);
+  }
+
+  // ===== GOOGLE DRIVE INTEGRATION =====
+
+  // Get Google Drive service
+  GoogleDriveService get googleDriveService => _googleDriveService;
+
+  // Export SQLite database to Google Drive
+  Future<String> exportSqliteToGoogleDrive({required String fileName}) async {
+    if (kIsWeb) {
+      throw UnsupportedError(
+        'SQLite export to Google Drive is not supported on web',
+      );
+    }
+
+    try {
+      // Get the SQLite database bytes
+      final sqliteData = await exportSqliteDatabase();
+      if (sqliteData == null) {
+        throw Exception('Failed to export SQLite database');
+      }
+
+      // Sign in if not already signed in
+      if (!_googleDriveService.isSignedIn()) {
+        final signedIn = await _googleDriveService.signIn();
+        if (!signedIn) {
+          throw Exception('Failed to sign in to Google Drive');
+        }
+      }
+
+      // Find or create FuelCalc folder
+      final folderId = await _googleDriveService.findOrCreateFolder(
+        'FuelCalc_Backups',
+      );
+
+      // Upload file to Google Drive (replace if exists)
+      final fileId = await _googleDriveService.uploadFile(
+        fileName: fileName,
+        fileBytes: sqliteData,
+        mimeType: 'application/x-sqlite3',
+        folderId: folderId,
+        replaceExisting: true,
+      );
+
+      if (fileId == null) {
+        throw Exception('Failed to upload file to Google Drive');
+      }
+
+      return fileId;
+    } catch (e) {
+      throw Exception('Error exporting to Google Drive: $e');
+    }
+  }
+
+  // Import SQLite database from Google Drive
+  Future<void> importSqliteFromGoogleDrive(String fileId) async {
+    if (kIsWeb) {
+      throw UnsupportedError(
+        'SQLite import from Google Drive is not supported on web',
+      );
+    }
+
+    try {
+      // Sign in if not already signed in
+      if (!_googleDriveService.isSignedIn()) {
+        final signedIn = await _googleDriveService.signIn();
+        if (!signedIn) {
+          throw Exception('Failed to sign in to Google Drive');
+        }
+      }
+
+      // Download file from Google Drive
+      final sqliteData = await _googleDriveService.downloadFile(fileId);
+      if (sqliteData == null) {
+        throw Exception('Failed to download file from Google Drive');
+      }
+
+      // Import the database
+      await importSqliteDatabase(sqliteData);
+    } catch (e) {
+      throw Exception('Error importing from Google Drive: $e');
+    }
   }
 }

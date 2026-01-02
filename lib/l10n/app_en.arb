@@ -938,6 +938,43 @@
     "description": "Invalid SQLite format error message"
   },
   
+  "exportToGoogleDrive": "Export to Google Drive",
+  "@exportToGoogleDrive": {
+    "description": "Export to Google Drive button text"
+  },
+  
+  "signedInAs": "Signed in as",
+  "@signedInAs": {
+    "description": "Signed in as label for Google account"
+  },
+  
+  "googleSignInCancelled": "Google sign-in was cancelled",
+  "@googleSignInCancelled": {
+    "description": "Google sign-in cancelled message"
+  },
+  
+  "sqliteExportedToGoogleDrive": "Database exported to Google Drive: {fileName}",
+  "@sqliteExportedToGoogleDrive": {
+    "description": "SQLite exported to Google Drive success message",
+    "placeholders": {
+      "fileName": {
+        "type": "String",
+        "example": "backup.sqlite"
+      }
+    }
+  },
+  
+  "googleDriveExportError": "Google Drive export error: {error}",
+  "@googleDriveExportError": {
+    "description": "Google Drive export error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+  
   "fileDownloaded": "File {fileName} has been downloaded",
   "@fileDownloaded": {
     "description": "File downloaded success message",

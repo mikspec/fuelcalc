@@ -540,6 +540,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidSqliteFormat => 'Invalid SQLite file format';
 
   @override
+  String get exportToGoogleDrive => 'Export to Google Drive';
+
+  @override
+  String get signedInAs => 'Signed in as';
+
+  @override
+  String get googleSignInCancelled => 'Google sign-in was cancelled';
+
+  @override
+  String sqliteExportedToGoogleDrive(String fileName) {
+    return 'Database exported to Google Drive: $fileName';
+  }
+
+  @override
+  String googleDriveExportError(String error) {
+    return 'Google Drive export error: $error';
+  }
+
+  @override
   String fileDownloaded(String fileName) {
     return 'File $fileName has been downloaded';
   }

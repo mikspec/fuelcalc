@@ -1058,6 +1058,36 @@ abstract class AppLocalizations {
   /// **'Invalid SQLite file format'**
   String get invalidSqliteFormat;
 
+  /// Export to Google Drive button text
+  ///
+  /// In en, this message translates to:
+  /// **'Export to Google Drive'**
+  String get exportToGoogleDrive;
+
+  /// Signed in as label for Google account
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as'**
+  String get signedInAs;
+
+  /// Google sign-in cancelled message
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in was cancelled'**
+  String get googleSignInCancelled;
+
+  /// SQLite exported to Google Drive success message
+  ///
+  /// In en, this message translates to:
+  /// **'Database exported to Google Drive: {fileName}'**
+  String sqliteExportedToGoogleDrive(String fileName);
+
+  /// Google Drive export error message
+  ///
+  /// In en, this message translates to:
+  /// **'Google Drive export error: {error}'**
+  String googleDriveExportError(String error);
+
   /// File downloaded success message
   ///
   /// In en, this message translates to:

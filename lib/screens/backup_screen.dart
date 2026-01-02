@@ -19,6 +19,7 @@ class BackupScreen extends StatefulWidget {
 class _BackupScreenState extends State<BackupScreen> {
   final BackupService _backupService = BackupService();
   bool _isLoading = false;
+  String? _googleUserEmail;
 
   String _formattedTimestamp() {
     return DateFormat('yyyyMMddTHHmmss').format(DateTime.now());
@@ -237,6 +238,83 @@ class _BackupScreenState extends State<BackupScreen> {
               AppLocalizations.of(context)!.sqliteImportError(e.toString()),
             ),
             backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _exportToGoogleDrive() async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.sqliteExportNotAvailableOnWeb,
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // Check if already signed in, if not, sign in
+      if (!_backupService.googleDriveService.isSignedIn()) {
+        final signedIn = await _backupService.googleDriveService.signIn();
+        if (!signedIn) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context)!.googleSignInCancelled,
+                ),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        // Update user email
+        setState(() {
+          _googleUserEmail = _backupService.googleDriveService
+              .getCurrentUserEmail();
+        });
+      }
+
+      // Export to Google Drive
+      const fileName = 'fuelcalc_backup.sqlite';
+      await _backupService.exportSqliteToGoogleDrive(fileName: fileName);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.sqliteExportedToGoogleDrive(fileName),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.googleDriveExportError(e.toString()),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -523,6 +601,30 @@ class _BackupScreenState extends State<BackupScreen> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: _exportToGoogleDrive,
+                                  icon: const Icon(Icons.cloud_upload),
+                                  label: Text(l10n.exportToGoogleDrive),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              if (_googleUserEmail != null) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  '${l10n.signedInAs}: $_googleUserEmail',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),

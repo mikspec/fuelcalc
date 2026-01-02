@@ -50,6 +50,9 @@ dependencies:
   flutter_map: ^6.1.0
   latlong2: ^0.9.1
   web: ^1.1.0
+  google_sign_in: ^6.2.2
+  googleapis: ^13.2.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.13
 
 dev_dependencies:
   flutter_test:

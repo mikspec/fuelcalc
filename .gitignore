@@ -51,3 +51,7 @@ assets/*.sql
 assets/*.sqlite
 assets/*.py
 .icon_venv/
+
+# Google Services configuration files
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
