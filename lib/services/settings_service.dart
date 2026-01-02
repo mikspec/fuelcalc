@@ -5,6 +5,7 @@ class SettingsService {
   static const String _statisticsRangeKey = 'statistics_range';
   static const String _chosenCarIdKey = 'chosen_car_id';
   static const String _exchangeRatesKey = 'exchange_rates';
+  static const String _lastUsedCurrencyKey = 'last_used_currency';
   static const int _defaultRange = 10;
 
   static SharedPreferences? _prefs;
@@ -105,5 +106,17 @@ class SettingsService {
     } catch (e) {
       return {};
     }
+  }
+
+  /// Get the last used currency for exchange
+  Future<String?> getLastUsedCurrency() async {
+    final prefs = await this.prefs;
+    return prefs.getString(_lastUsedCurrencyKey);
+  }
+
+  /// Set the last used currency for exchange
+  Future<void> setLastUsedCurrency(String currency) async {
+    final prefs = await this.prefs;
+    await prefs.setString(_lastUsedCurrencyKey, currency);
   }
 }

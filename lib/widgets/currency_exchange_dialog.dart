@@ -53,7 +53,16 @@ class _CurrencyExchangeDialogState extends State<CurrencyExchangeDialog> {
         .toList();
 
     if (availableCurrencies.isNotEmpty) {
-      _selectedCurrency = availableCurrencies.first;
+      // Try to load the last used currency
+      final lastUsedCurrency = await _settingsService.getLastUsedCurrency();
+
+      if (lastUsedCurrency != null &&
+          availableCurrencies.contains(lastUsedCurrency)) {
+        _selectedCurrency = lastUsedCurrency;
+      } else {
+        // Fall back to the first available currency
+        _selectedCurrency = availableCurrencies.first;
+      }
 
       // Try to load saved exchange rate
       final savedRate = await _settingsService.getExchangeRate(
@@ -121,6 +130,9 @@ class _CurrencyExchangeDialogState extends State<CurrencyExchangeDialog> {
         widget.baseCurrency,
         rate,
       );
+
+      // Save the selected currency as last used
+      await _settingsService.setLastUsedCurrency(_selectedCurrency!);
     }
 
     final convertedAmount = amount * rate;
