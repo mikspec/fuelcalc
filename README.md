@@ -41,6 +41,11 @@ A comprehensive Flutter application for tracking fuel consumption, vehicle expen
 ### 💾 Backup & Data Management
 - **JSON Backup**: Universal format, works on all platforms
 - **SQLite Backup**: Original database file export/import (desktop/mobile only)
+- **Google Drive Backup**: Cloud backup and restore functionality (mobile platforms)
+  - Export database backups directly to Google Drive
+  - Secure authentication via Google OAuth
+  - Automatic folder creation ("FuelCalc_Backups")
+  - Requires internet connection and Google account
 - Complete data export/import functionality
 - Cross-platform data migration support
 
@@ -196,13 +201,39 @@ Add the following permissions for GPS functionality:
 ```xml
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.INTERNET" />
 ```
 
 **iOS** (`ios/Runner/Info.plist`):
 ```xml
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>This app needs location access to track refueling locations.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app needs location access to track refueling locations.</string>
 ```
+
+### Google Drive Integration
+For Google Drive backup functionality, ensure internet connectivity and add the following:
+
+**Android**: Internet permission is required (included above).
+
+**iOS** (`ios/Runner/Info.plist`):
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.googleusercontent.apps.YOUR-CLIENT-ID</string>
+        </array>
+    </dict>
+</array>
+```
+Replace `YOUR-CLIENT-ID` with your reversed client ID from Google Cloud Console.
+
+For detailed setup instructions, see [GOOGLE_DRIVE_SETUP.md](GOOGLE_DRIVE_SETUP.md).
 
 ## 🤝 Contributing
 
@@ -227,6 +258,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - GPS tracking only available on mobile platforms
 - SQLite backup/restore not available on web platform
+- Internet connection required for Google Drive backup and OpenStreetMap visualization
 - File picker limitations on some web browsers
 - Location permission required for GPS features
 

@@ -75,35 +75,48 @@ keytool -list -v -keystore /path/to/your/keystore.jks -alias your-alias
    - `http://localhost` (for local testing)
    - Your production domain
 
-### 4. Download and Configure OAuth Client
+### 4. How Authentication Works
 
-1. Download the OAuth client configuration file (`google-services.json` for Android or `GoogleService-Info.plist` for iOS)
-2. Place the files in the appropriate directories:
-   - Android: `android/app/google-services.json`
-   - iOS: `ios/Runner/GoogleService-Info.plist`
+**Important:** This app uses Google OAuth directly through Google Cloud Console, **not Firebase**.
 
-### 5. Update Android Configuration
+The `google_sign_in` package authenticates users by:
+1. Reading your app's digital signature (from the APK)
+2. Calculating its SHA-1 fingerprint
+3. Sending the fingerprint + package name to Google's servers
+4. Google verifies this matches what you registered in Google Cloud Console
 
-Add the following to `android/app/build.gradle.kts`:
+No configuration files (`google-services.json`) are needed for Android.
 
-```kotlin
-plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")  // Add this line
-}
-```
+#### For iOS:
 
-Add to `android/build.gradle.kts`:
+1. Download the `GoogleService-Info.plist` file from Google Cloud Console.
+2. Place it in `ios/Runner/GoogleService-Info.plist`.
 
-```kotlin
-buildscript {
-    dependencies {
-        classpath("com.google.gms:google-services:4.4.0")  // Add this line
-    }
-}
-```
+### 5. Configure Release Signing (Android)
+
+**For production builds**, you must sign your APK with a custom keystore:
+
+1. Generate a keystore (if not already done):
+   ```bash
+   keytool -genkey -v -keystore android/app/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+   ```
+
+2. Get the SHA-1 fingerprint from your release keystore:
+   ```bash
+   keytool -list -v -keystore android/app/upload-keystore.jks -alias upload
+   ```
+
+3. Register this SHA-1 in Google Cloud Console ("APIs & Services" > "Credentials" > your Android OAuth client)
+
+4. Update `android/app/build.gradle.kts`:
+   - Set your keystore passwords in the `signingConfigs` block
+   - Uncomment the `signingConfig = signingConfigs.getByName("release")` line in `buildTypes`
+   - Never commit passwords to version control!
+
+5. Build the release APK:
+   ```bash
+   flutter build apk --release
+   ```
 
 ### 6. Update iOS Configuration
 
@@ -147,18 +160,21 @@ Add the following URL scheme to `ios/Runner/Info.plist`:
 
 ### "Invalid client" error
 - Verify that you're using the correct OAuth client ID for the platform
-- Check that google-services.json or GoogleService-Info.plist is in the correct location
+- For iOS: Check that GoogleService-Info.plist is in the correct location
+- For Android: Verify your SHA-1 fingerprint matches what's registered in Google Cloud Console
 
 ## Security Notes
 
-1. **Never commit** `google-services.json` or `GoogleService-Info.plist` to version control
-2. Add these files to `.gitignore`:
+1. **Never commit** sensitive files to version control:
+   - iOS: `GoogleService-Info.plist`
+   - Android: `upload-keystore.jks` and keystore passwords
+2. Add these to `.gitignore`:
    ```
-   android/app/google-services.json
    ios/Runner/GoogleService-Info.plist
+   android/app/*.jks
    ```
-3. Use different OAuth clients for debug and release builds
-4. Keep your keystore and credentials secure
+3. Use different OAuth clients and keystores for debug and release builds
+4. Keep your keystore passwords secure (use environment variables or secure vaults in CI/CD)
 
 ## Production Deployment
 
